@@ -74,15 +74,28 @@ export default function ProjectCard({ project, index }: Props) {
           {project.description}
         </p>
         <div className="flex flex-wrap gap-2">
-          {project.tags.map((tag) => (
-            <span
-              key={tag}
-              className="px-2.5 py-0.5 rounded-full border border-border text-[0.6875rem] font-medium text-text-secondary tracking-wide transition-all duration-200 hover:border-[var(--tag-color)] hover:text-[var(--tag-color)]"
-              style={{ '--tag-color': tagColors[tag] || '#6b6865' } as React.CSSProperties}
-            >
-              {tag}
-            </span>
-          ))}
+          {project.tags.map((tag) => {
+            const color = tagColors[tag] || '#c97d5c';
+            return (
+              <span
+                key={tag}
+                className="px-2.5 py-0.5 rounded-full border text-[0.6875rem] font-medium tracking-wide transition-all duration-200"
+                style={{
+                  color,
+                  borderColor: `${color}40`,
+                  backgroundColor: `${color}10`,
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLSpanElement).style.backgroundColor = `${color}20`;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLSpanElement).style.backgroundColor = `${color}10`;
+                }}
+              >
+                {tag}
+              </span>
+            );
+          })}
         </div>
       </div>
     </div>
