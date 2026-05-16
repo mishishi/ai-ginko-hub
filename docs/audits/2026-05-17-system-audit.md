@@ -27,10 +27,10 @@
 | U-1 | **ProjectCard 缩略图 alt=""**，无障碍-alt 文本缺失 → ✅ 已修复 | 高 | `src/components/ProjectCard.tsx:40` |
 | U-2 | **About 页 h1 层级不合理**，只有一个 h1 但内容结构不清晰 → ✅ 已修复 | 中 | `src/pages/About.tsx` |
 | U-3 | **内联 style 色值**，如 `style={{ backgroundColor: '#f3f4f6' }}`，应使用 Tailwind 令牌 → ✅ 已修复 | 中 | 多个组件 |
-| U-4 | **卡片 hover 阴影过重**，在深色背景上影响可读性 | 低 | `src/components/ProjectCard.tsx` |
+| U-4 | **卡片 hover 阴影过重**，在深色背景上影响可读性 → ✅ 已修复 | 低 | `src/components/ProjectCard.tsx` |
 | U-5 | **搜索输入框较窄**，在宽屏上显得不协调 | 低 | `src/components/Header.tsx` |
 | U-6 | **无面包屑导航**，在详情页/编辑页用户难以理解当前位置 | 低 | `src/pages/ProjectDetail.tsx` |
-| U-7 | **favicon 未定制**，使用浏览器默认 | 低 | `index.html` |
+| U-7 | **favicon 未定制**，使用浏览器默认 → ✅ 已有 (`public/favicon.svg`) | 低 | `index.html` |
 
 ---
 
@@ -74,7 +74,7 @@
 | # | 问题 | 严重程度 | 文件 |
 |---|------|----------|------|
 | P-1 | **无分页/无限滚动**，大数据集一次性加载 → ✅ 已修复 | 中 | `src/data/projects.ts` |
-| P-2 | **缩略图无懒加载**，首屏外图片即时请求 | 中 | `src/components/ProjectCard.tsx` |
+| P-2 | **缩略图无懒加载**，首屏外图片即时请求 → ✅ 已修复 | 中 | `src/components/ProjectCard.tsx` |
 | P-3 | **无 WebP 格式**，未利用现代图片格式 | 低 | `src/components/ProjectForm.tsx` |
 | P-4 | **无 HTTP 缓存头**，静态资源无缓存策略 | 低 | `api/src/index.js` |
 
@@ -86,8 +86,8 @@
 |---|------|----------|------|
 | S-1 | **html 无 lang 属性**，应为 `lang="zh-CN"` → ✅ 已正确 | 中 | `index.html` |
 | S-2 | **og-default.png 不存在**，OG 默认图配置错误 | 中 | `index.html` |
-| S-3 | **无 robots.txt 和 sitemap.xml** | 低 | — |
-| S-4 | **无 Twitter OG 标签**（twitter:card 等） | 低 | `index.html` |
+| S-3 | **无 robots.txt 和 sitemap.xml** → ✅ 已修复 | 低 | `public/robots.txt`, `public/sitemap.xml` |
+| S-4 | **无 Twitter OG 标签**（twitter:card 等） → ✅ 已有 (index.html 中已配置) | 低 | `index.html` |
 | S-5 | **无 JSON-LD 结构化数据** | 低 | — |
 | S-6 | **ProjectCard alt="" 影响搜索索引** | 中 | `src/components/ProjectCard.tsx` |
 
