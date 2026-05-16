@@ -1,8 +1,18 @@
 // Disable TLS certificate verification for Clerk API calls behind corporate proxy
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+// Only apply in development; production must never set this
+if (process.env.NODE_ENV !== 'production') {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+}
 import 'dotenv/config';
 import { buildApp } from './app.js';
 import { getDb } from './db/index.js';
+
+// Validate critical environment variables at startup
+const jwtSecret = process.env.JWT_SECRET;
+if (!jwtSecret || jwtSecret === 'undefined' || jwtSecret === 'your-secret-key-here') {
+  console.error('[Startup] JWT_SECRET is not configured. Set a strong secret in .env (NODE_ENV=production in deployment).');
+  process.exit(1);
+}
 
 await getDb(); // warm up DB connection before accepting requests
 const app = await buildApp();

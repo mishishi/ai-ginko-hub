@@ -45,8 +45,8 @@ export async function saveDb() {
   if (rawDb) {
     const data = rawDb.export();
     const buffer = Buffer.from(data);
-    const fs = await import('fs');
-    fs.writeFileSync(dbPath, buffer);
+    const fs = await import('fs/promises');
+    await fs.writeFile(dbPath, buffer);
   }
 }
 
