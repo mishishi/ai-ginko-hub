@@ -12,7 +12,15 @@ let db: ReturnType<typeof drizzle> | null = null;
 let rawDb: Database | null = null;
 
 export async function getDb() {
-  if (db) return db;
+  if (db && rawDb) {
+    try {
+      rawDb.exec('SELECT 1');
+      return db;
+    } catch {
+      db = null;
+      rawDb = null;
+    }
+  }
 
   const SQL = await initSqlJs();
 

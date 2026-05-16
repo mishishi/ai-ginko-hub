@@ -33,7 +33,8 @@ export default function HomePage() {
         setHasMore(data.length < totalCount);
         setPage(1);
       })
-      .catch(() => {
+      .catch((err) => {
+        if (err.name === 'AbortError') return;
         setProjects([]);
         toast.error('加载项目失败，请稍后重试');
       })

@@ -58,7 +58,7 @@ export default function Header({ searchQuery = '', onSearchChange }: Props) {
         )}
 
         {isSignedIn ? (
-          <UserButton afterSignOutUrl="/" />
+          <UserButton />
         ) : (
           <SignInButton mode="modal">
             <button className="flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-lg border border-border text-text-secondary hover:text-text-primary hover:border-border-hover transition-all duration-200">

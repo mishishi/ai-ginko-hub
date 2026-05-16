@@ -1,47 +1,51 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth, useUser } from '@clerk/react';
+import { useEffect, useState, useRef } from 'react';
+import { useAuth } from '@clerk/react';
 import Header from '../components/Header';
 import ProjectGrid from '../components/ProjectGrid';
+import { useFavorites } from '../hooks/useFavorites';
 import { API_BASE } from '../lib/api';
 import type { Project } from '../types';
 
 export default function FavoritesPage() {
   const { isSignedIn } = useAuth();
-  const { getToken } = useUser();
-  const navigate = useNavigate();
+  const { favorites, loading: favoritesLoading } = useFavorites();
   const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [projectsLoading, setProjectsLoading] = useState(true);
+  const initialFetchDone = useRef(false);
 
+  // Redirect if not signed in
   useEffect(() => {
     if (!isSignedIn) {
-      navigate('/');
+      window.location.href = '/';
+    }
+  }, [isSignedIn]);
+
+  // Fetch project details once when favorites are loaded
+  useEffect(() => {
+    if (favoritesLoading || initialFetchDone.current) return;
+    initialFetchDone.current = true;
+
+    if (favorites.length === 0) {
+      setProjects([]);
+      setProjectsLoading(false);
       return;
     }
-    getToken().then((token) => {
-      fetch(`${API_BASE}/api/favorites`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((r) => r.json())
-        .then(async (favorites: { projectId: string }[]) => {
-          if (!Array.isArray(favorites) || favorites.length === 0) {
-            setProjects([]);
-            return;
-          }
-          const projectIds = favorites.map((f) => f.projectId);
-          const allProjects: Project[] = [];
-          for (const id of projectIds) {
-            try {
-              const p = await fetch(`${API_BASE}/api/projects/${id}`).then((r) => r.json());
-              if (p && p.id) allProjects.push(p);
-            } catch {}
-          }
-          setProjects(allProjects);
-        })
-        .catch(() => {})
-        .finally(() => setLoading(false));
+
+    const projectIds = favorites.map((f) => f.projectId);
+    Promise.all(
+      projectIds.map((id) =>
+        fetch(`${API_BASE}/api/projects/${id}`)
+          .then((r) => r.json())
+          .catch(() => null)
+      )
+    ).then((results) => {
+      const valid = results.filter((p): p is Project => p != null && p.id != null);
+      setProjects(valid);
+      setProjectsLoading(false);
     });
-  }, [isSignedIn, getToken, navigate]);
+  }, [favorites, favoritesLoading]);
+
+  const loading = favoritesLoading || projectsLoading;
 
   return (
     <div className="flex flex-col min-h-screen">

@@ -1,40 +1,24 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@clerk/react';
-import toast from 'react-hot-toast';
 import { useScrollReveal } from '../hooks/useScrollReveal';
+import { useFavorites } from '../hooks/useFavorites';
 import type { Project } from '../types';
-import { API_BASE } from '../lib/api';
+
+import { cardGradients } from '../data/cardGradients';
 
 interface Props {
   project: Project;
   index: number;
 }
 
-import { cardGradients } from '../data/cardGradients';
-
 export default function ProjectCard({ project, index }: Props) {
   const navigate = useNavigate();
   const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
-  const { isSignedIn, getToken } = useAuth();
-  const [isFavorited, setIsFavorited] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { isFavorited, toggle } = useFavorites();
+  const [toggling, setToggling] = useState(false);
 
   const gradient = cardGradients[index % cardGradients.length];
-
-  useEffect(() => {
-    if (!isSignedIn) return;
-    getToken().then((token) => {
-      fetch(`${API_BASE}/api/favorites`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((r) => r.json())
-        .then((data) => {
-          setIsFavorited(Array.isArray(data) && data.some((f: { projectId: string }) => f.projectId === project.id));
-        })
-        .catch(() => {});
-    });
-  }, [isSignedIn, project.id, getToken]);
+  const isFav = isFavorited(project.id);
 
   const handleClick = () => {
     navigate(`/project/${project.id}`);
@@ -47,37 +31,15 @@ export default function ProjectCard({ project, index }: Props) {
     }
   };
 
-  const toggleFavorite = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!isSignedIn) {
-      toast.error('请先登录后再收藏');
-      return;
-    }
-    setLoading(true);
-    try {
-      const token = await getToken();
-      if (isFavorited) {
-        await fetch(`${API_BASE}/api/favorites/${project.id}`, {
-          method: 'DELETE',
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setIsFavorited(false);
-        toast.success('已取消收藏');
-      } else {
-        await fetch(`${API_BASE}/api/favorites`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ projectId: project.id }),
-        });
-        setIsFavorited(true);
-        toast.success('已收藏');
-      }
-    } catch {
-      toast.error('操作失败，请重试');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const toggleFavorite = useCallback(
+    async (e: React.MouseEvent) => {
+      e.stopPropagation();
+      setToggling(true);
+      await toggle(project.id);
+      setToggling(false);
+    },
+    [project.id, toggle]
+  );
 
   return (
     <div
@@ -141,15 +103,15 @@ export default function ProjectCard({ project, index }: Props) {
           </h3>
           <button
             onClick={toggleFavorite}
-            disabled={loading}
+            disabled={toggling}
             className={`ml-auto p-1.5 rounded-lg transition-all duration-200 ${
-              isFavorited
+              isFav
                 ? 'text-accent hover:text-accent-dim'
                 : 'text-text-muted hover:text-accent'
             }`}
-            aria-label={isFavorited ? '取消收藏' : '添加收藏'}
+            aria-label={isFav ? '取消收藏' : '添加收藏'}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill={isFavorited ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill={isFav ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
             </svg>
           </button>

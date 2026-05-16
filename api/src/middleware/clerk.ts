@@ -20,7 +20,6 @@ export async function requireClerkAuth(
   request: FastifyRequest,
   reply: FastifyReply
 ): Promise<void> {
-  // Get token from Authorization header or __session cookie
   const authHeader = request.headers.authorization;
   const sessionToken = authHeader?.startsWith('Bearer ')
     ? authHeader.slice(7)
@@ -33,20 +32,23 @@ export async function requireClerkAuth(
   try {
     const result = await verifyToken(sessionToken, {
       secretKey: process.env.CLERK_SECRET_KEY,
+      issuer: process.env.CLERK_ISSUER,
       audience: process.env.CLERK_AUDIENCE,
     });
 
-    if (result.errors || !result.data) {
+    if (result.errors) {
       return reply.status(401).send({ error: 'Invalid token' });
     }
 
-    const payload = result.data as TokenPayload;
-    if (!payload.sub) {
+    // Clerk v5+: result IS the decoded JWT payload (no .data wrapper)
+    const payload = (result as unknown as TokenPayload) ?? (result as { data?: TokenPayload }).data;
+    if (!payload?.sub) {
       return reply.status(401).send({ error: 'Invalid token' });
     }
 
     request.clerkUser = { userId: payload.sub };
-  } catch {
+  } catch (err) {
+    console.error('[Clerk] verifyToken threw:', err);
     return reply.status(401).send({ error: 'Invalid token' });
   }
 }
