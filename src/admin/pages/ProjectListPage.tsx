@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { API_BASE } from '../../lib/api';
 
 interface Project {
   id: string;
@@ -18,7 +19,7 @@ export default function ProjectListPage() {
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
-    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/projects`, {
+    fetch(`${API_BASE}/api/projects`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => r.json())
@@ -34,7 +35,7 @@ export default function ProjectListPage() {
     setDeleting(id);
     const token = localStorage.getItem('admin_token')!;
     await fetch(
-      `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/projects/${id}`,
+      `${API_BASE}/api/projects/${id}`,
       { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } }
     );
     setProjects((prev) => prev.filter((p) => p.id !== id));

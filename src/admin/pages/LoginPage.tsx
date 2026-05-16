@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAdminAuth } from '../hooks/useAdminAuth';
+import { useAdminAuth } from '../contexts/AdminAuthContext';
 
 export default function LoginPage() {
   const { login } = useAdminAuth();
@@ -16,9 +16,12 @@ export default function LoginPage() {
     setError('');
     setIsLoading(true);
     try {
+      console.log('[LoginPage] before login');
       await login(username, password);
+      console.log('[LoginPage] login succeeded, token set, navigate to /admin');
       navigate('/admin');
     } catch (err) {
+      console.error('[LoginPage] login error:', err);
       setError(err instanceof Error ? err.message : 'Login failed');
     } finally {
       setIsLoading(false);

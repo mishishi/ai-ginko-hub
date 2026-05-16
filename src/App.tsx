@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import ProjectDetail from './pages/ProjectDetail'
 import About from './pages/About'
+import AdminApp from './admin/AdminApp'
 
 export default function App() {
   return (
@@ -10,6 +11,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/project/:id" element={<ProjectDetail />} />
         <Route path="/about" element={<About />} />
+        <Route path="/admin/*" element={<AdminApp />} />
       </Routes>
     </div>
   )

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import ProjectForm, { type ProjectFormData } from '../components/ProjectForm';
+import { API_BASE } from '../../lib/api';
 
 export default function ProjectFormPage() {
   const { id } = useParams<{ id: string }>();
@@ -13,7 +14,7 @@ export default function ProjectFormPage() {
     if (!isEditing) return;
     const token = localStorage.getItem('admin_token')!;
     fetch(
-      `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/projects/${id}`,
+      `${API_BASE}/api/projects/${id}`,
       { headers: { Authorization: `Bearer ${token}` } }
     )
       .then((r) => r.json())
@@ -27,7 +28,7 @@ export default function ProjectFormPage() {
     const token = localStorage.getItem('admin_token')!;
     const url = isEditing
       ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/projects/${id}`
-      : `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/projects`;
+      : `${API_BASE}/api/projects`;
 
     await fetch(url, {
       method: isEditing ? 'PUT' : 'POST',

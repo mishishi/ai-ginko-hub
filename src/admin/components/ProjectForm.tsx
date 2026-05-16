@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import type { FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
+import { API_BASE } from '../../lib/api';
 
 interface ProjectFormProps {
   initialData?: Partial<ProjectFormData>;
@@ -60,7 +60,7 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
       const token = localStorage.getItem('admin_token')!;
       // Get presigned URL
       const presignedRes = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/upload`,
+        `${API_BASE}/api/upload`,
         {
           method: 'POST',
           headers: {

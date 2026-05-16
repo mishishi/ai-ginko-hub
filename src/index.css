@@ -131,6 +131,17 @@ body::after {
   background: var(--color-border-hover);
 }
 
+/* Light theme scrollbar */
+[data-theme="light"] ::-webkit-scrollbar-track {
+  background: #f5f4f2;
+}
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: #d6d3d1;
+}
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: #a8a29e;
+}
+
 /* ============================================
    Motion-Driven: Reveal & Microinteractions
    ============================================ */
@@ -152,6 +163,11 @@ body::after {
 .reveal.visible .badge-reveal {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* --- Badge reveal (reduced motion) --- */
+.badge-reveal {
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 /* --- Hero Fade-in --- */
@@ -191,6 +207,12 @@ body::after {
     transform: none;
   }
 
+  .badge-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
   *,
   *::before,
   *::after {
@@ -200,6 +222,15 @@ body::after {
 
   html {
     scroll-behavior: auto;
+  }
+}
+
+@layer components {
+  .form-input {
+    @apply w-full px-3 py-2 border border-border rounded-lg bg-bg-elevated text-text-primary text-sm outline-none transition-colors focus:border-accent;
+  }
+  .btn-secondary {
+    @apply px-3 py-2 border border-border rounded-lg text-text-secondary text-sm hover:border-border-hover transition-colors;
   }
 }
 

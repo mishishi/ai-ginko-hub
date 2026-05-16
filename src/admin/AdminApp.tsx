@@ -1,13 +1,14 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAdminAuth } from './hooks/useAdminAuth';
+import { AdminAuthProvider, useAdminAuth } from './contexts/AdminAuthContext';
 import LoginPage from './pages/LoginPage';
 import AdminLayout from './components/AdminLayout';
 import DashboardPage from './pages/DashboardPage';
 import ProjectListPage from './pages/ProjectListPage';
 import ProjectFormPage from './pages/ProjectFormPage';
 
-export default function AdminApp() {
+function AdminRoutes() {
   const { token, isLoading } = useAdminAuth();
+  console.log('[AdminRoutes] render', { token: !!token, isLoading, path: window.location.pathname });
 
   if (isLoading) {
     return (
@@ -20,14 +21,15 @@ export default function AdminApp() {
   if (!token) {
     return (
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="*" element={<Navigate to="/admin/login" replace />} />
+        <Route path="login" element={<LoginPage />} />
+        <Route path="*" element={<Navigate to="login" replace />} />
       </Routes>
     );
   }
 
   return (
     <Routes>
+      <Route path="login" element={<Navigate to="/admin" replace />} />
       <Route path="/" element={<AdminLayout />}>
         <Route index element={<DashboardPage />} />
         <Route path="projects" element={<ProjectListPage />} />
@@ -35,5 +37,13 @@ export default function AdminApp() {
         <Route path="projects/:id/edit" element={<ProjectFormPage />} />
       </Route>
     </Routes>
+  );
+}
+
+export default function AdminApp() {
+  return (
+    <AdminAuthProvider>
+      <AdminRoutes />
+    </AdminAuthProvider>
   );
 }

@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
+import { API_BASE } from '../../lib/api';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const TOKEN_KEY = 'admin_token';
 
 interface AuthState {
@@ -8,6 +8,13 @@ interface AuthState {
   username: string | null;
   isLoading: boolean;
 }
+
+interface AdminAuthContextValue extends AuthState {
+  login: (username: string, password: string) => Promise<void>;
+  logout: () => void;
+}
+
+const AdminAuthContext = createContext<AdminAuthContextValue | null>(null);
 
 function getInitialAuthState(): AuthState {
   const token = localStorage.getItem(TOKEN_KEY);
@@ -17,7 +24,7 @@ function getInitialAuthState(): AuthState {
   return { token, username: null, isLoading: true };
 }
 
-export function useAdminAuth() {
+export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [auth, setAuth] = useState<AuthState>(getInitialAuthState);
 
   // Verify token on mount
@@ -71,5 +78,17 @@ export function useAdminAuth() {
     setAuth({ token: null, username: null, isLoading: false });
   }, []);
 
-  return { ...auth, login, logout };
+  return (
+    <AdminAuthContext.Provider value={{ ...auth, login, logout }}>
+      {children}
+    </AdminAuthContext.Provider>
+  );
+}
+
+export function useAdminAuth() {
+  const ctx = useContext(AdminAuthContext);
+  if (!ctx) {
+    throw new Error('useAdminAuth must be used within AdminAuthProvider');
+  }
+  return ctx;
 }

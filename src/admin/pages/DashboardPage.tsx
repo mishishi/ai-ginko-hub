@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { API_BASE } from '../../lib/api';
 
 interface Stats {
   total: number;
@@ -14,7 +15,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
-    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/stats`, {
+    fetch(`${API_BASE}/api/stats`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => r.json())
