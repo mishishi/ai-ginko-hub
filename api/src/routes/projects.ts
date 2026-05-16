@@ -71,7 +71,7 @@ export async function projectRoutes(app: FastifyInstance) {
       tags: parseTags(p.tags),
     }));
 
-    return reply.header('X-Total-Count', total).send(parsed);
+    return reply.header('X-Total-Count', total).header('Cache-Control', 'public, max-age=60, stale-while-revalidate=300').send(parsed);
   });
 
   // GET /api/projects/:id - Get single project by id
@@ -94,10 +94,10 @@ export async function projectRoutes(app: FastifyInstance) {
       .run();
     await saveDb();
 
-    return {
+    return reply.header('Cache-Control', 'public, max-age=60, stale-while-revalidate=300').send({
       ...project,
       tags: parseTags(project.tags),
-    };
+    });
   });
 
   // POST /api/projects - Create new project (auth required)
