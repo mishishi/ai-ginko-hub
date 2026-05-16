@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { SignInButton, UserButton, useAuth } from '@clerk/react';
 import { useTheme } from '../hooks/useTheme';
 
 interface Props {
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export default function Header({ searchQuery = '', onSearchChange }: Props) {
+  const { isSignedIn } = useAuth();
   const { theme, toggleTheme } = useTheme();
   return (
     <header className="sticky top-0 z-50 bg-bg-base/85 backdrop-blur-[16px] saturate-[1.2] border-b border-border">
@@ -53,6 +55,16 @@ export default function Header({ searchQuery = '', onSearchChange }: Props) {
               onChange={(e) => onSearchChange(e.target.value)}
             />
           </div>
+        )}
+
+        {isSignedIn ? (
+          <UserButton afterSignOutUrl="/" />
+        ) : (
+          <SignInButton mode="modal">
+            <button className="flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-lg border border-border text-text-secondary hover:text-text-primary hover:border-border-hover transition-all duration-200">
+              登录
+            </button>
+          </SignInButton>
         )}
 
         <button
