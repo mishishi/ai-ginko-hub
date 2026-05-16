@@ -221,42 +221,53 @@ export default function HomePage() {
         </div>
       </main>
 
-      <footer className="border-t border-border py-8 mt-auto">
+      <footer className="border-t border-border py-10 mt-auto">
         <div className="mx-auto max-w-[90rem] px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
-            {/* Logo + tagline */}
-            <div className="flex items-center gap-2">
-              <svg width="20" height="20" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-                <rect width="32" height="32" rx="6" fill="#c97d5c" opacity="0.15" />
-                <path d="M16 6C12 6 8 10 8 14c0 4 2 6 4 8l4 4 4-4c2-2 4-4 4-8 0-4-4-8-8-8z" fill="#c97d5c" opacity="0.9" />
-                <path d="M16 10c-2 0-4 2-4 4s1.5 3 2.5 4L16 20l1.5-2c1-1 2.5-2 2.5-4s-2-4-4-4z" fill="#ece8e3" opacity="0.85" />
-              </svg>
-              <span className="font-heading text-sm text-text-secondary">Ginko Hub</span>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8 mb-8">
+            {/* Brand */}
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2.5">
+                <svg width="22" height="22" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                  <rect width="32" height="32" rx="6" fill="#c97d5c" opacity="0.15" />
+                  <path d="M16 6C12 6 8 10 8 14c0 4 2 6 4 8l4 4 4-4c2-2 4-4 4-8 0-4-4-8-8-8z" fill="#c97d5c" opacity="0.9" />
+                  <path d="M16 10c-2 0-4 2-4 4s1.5 3 2.5 4L16 20l1.5-2c1-1 2.5-2 2.5-4s-2-4-4-4z" fill="#ece8e3" opacity="0.85" />
+                </svg>
+                <span className="font-heading text-base text-text-primary">Ginko Hub</span>
+              </div>
+              <p className="text-xs text-text-muted max-w-[220px] leading-relaxed">
+                AI 辅助开发的 Web 项目展示站，记录每一次从概念到部署的探索。
+              </p>
             </div>
-            {/* Social links */}
-            <nav aria-label="页脚链接">
-              <div className="flex items-center gap-4">
-                <a
-                  href="https://github.com"
+
+            {/* Navigation */}
+            <nav aria-label="页脚导航" className="grid grid-cols-2 gap-x-8 gap-y-2">
+              <Link to="/" className="text-xs text-text-muted hover:text-accent transition-colors duration-200">项目</Link>
+              <Link to="/about" className="text-xs text-text-muted hover:text-accent transition-colors duration-200">关于</Link>
+              <a
+                href="https://github.com/mishishi"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1.5 text-xs text-text-muted hover:text-accent transition-colors duration-200"
-                aria-label="GitHub 主页"
+                className="text-xs text-text-muted hover:text-accent transition-colors duration-200"
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                </svg>
                 GitHub
               </a>
-                <Link to="/about" className="flex items-center gap-1.5 text-xs text-text-muted hover:text-accent transition-colors duration-200">
-                  关于
-                </Link>
-              </div>
+              <a
+                href="https://ginko-hub.example.com/sitemap.xml"
+                className="text-xs text-text-muted hover:text-accent transition-colors duration-200"
+              >
+                Sitemap
+              </a>
             </nav>
           </div>
-          <p className="text-center text-[11px] text-text-muted tracking-wide">
-            &copy; {new Date().getFullYear()} Ginko Hub &mdash; Built with AI
-          </p>
+
+          <div className="pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-[11px] text-text-muted tracking-wide">
+              &copy; {new Date().getFullYear()} Ginko Hub &mdash; Built with AI
+            </p>
+            <p className="text-[11px] text-text-muted tracking-wide">
+              Made with React &amp; Tailwind CSS
+            </p>
+          </div>
         </div>
       </footer>
     </div>
