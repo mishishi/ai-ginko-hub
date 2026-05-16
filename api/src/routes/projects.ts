@@ -42,14 +42,17 @@ export async function projectRoutes(app: FastifyInstance) {
       });
     }
 
-    // Filter by search query (name or description)
+    // Filter by search query (name, description, or tags)
     if (q) {
       const query = q.toLowerCase();
-      results = results.filter(
-        (p) =>
+      results = results.filter((p) => {
+        const tags = parseTags(p.tags);
+        return (
           p.name.toLowerCase().includes(query) ||
-          p.description.toLowerCase().includes(query)
-      );
+          p.description.toLowerCase().includes(query) ||
+          tags.some((t) => t.toLowerCase().includes(query))
+        );
+      });
     }
 
     const total = results.length;
