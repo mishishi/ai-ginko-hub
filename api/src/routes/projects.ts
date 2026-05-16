@@ -55,8 +55,11 @@ export async function projectRoutes(app: FastifyInstance) {
     const total = results.length;
 
     // Apply pagination
-    const limitNum = limit ? Math.min(parseInt(limit, 10), 100) : 12;
-    const offsetNum = offset ? parseInt(offset, 10) : 0;
+    const parsedLimit = parseInt(limit, 10);
+    const limitNum = Number.isNaN(parsedLimit) ? 12 : Math.min(parsedLimit, 100);
+
+    const parsedOffset = parseInt(offset, 10);
+    const offsetNum = Number.isNaN(parsedOffset) ? 0 : Math.max(0, parsedOffset);
     const paginatedResults = results.slice(offsetNum, offsetNum + limitNum);
 
     // Parse tags back to array for each project
