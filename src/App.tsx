@@ -8,6 +8,7 @@ import ProfilePage from './pages/ProfilePage'
 import NotFound from './pages/NotFound'
 import ErrorPage from './pages/ErrorPage'
 import AdminApp from './admin/AdminApp'
+import ErrorBoundary from './components/ErrorBoundary'
 
 export default function App() {
   return (
@@ -38,15 +39,17 @@ export default function App() {
           },
         }}
       />
-      <Routes>
-        <Route path="/" element={<HomePage />} errorElement={<ErrorPage />} />
-        <Route path="/project/:id" element={<ProjectDetail />} errorElement={<ErrorPage />} />
-        <Route path="/about" element={<About />} errorElement={<ErrorPage />} />
-        <Route path="/favorites" element={<FavoritesPage />} errorElement={<ErrorPage />} />
-        <Route path="/profile" element={<ProfilePage />} errorElement={<ErrorPage />} />
-        <Route path="/admin/*" element={<AdminApp />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <ErrorBoundary>
+        <Routes>
+          <Route path="/" element={<HomePage />} errorElement={<ErrorPage />} />
+          <Route path="/project/:id" element={<ProjectDetail />} errorElement={<ErrorPage />} />
+          <Route path="/about" element={<About />} errorElement={<ErrorPage />} />
+          <Route path="/favorites" element={<FavoritesPage />} errorElement={<ErrorPage />} />
+          <Route path="/profile" element={<ProfilePage />} errorElement={<ErrorPage />} />
+          <Route path="/admin/*" element={<AdminApp />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </ErrorBoundary>
     </div>
   )
 }
