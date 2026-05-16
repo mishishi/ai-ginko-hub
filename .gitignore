@@ -28,3 +28,4 @@ api/.env
 *.njsproj
 *.sln
 *.sw?
+api/data.db
