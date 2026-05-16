@@ -22,12 +22,17 @@ function serializeTags(tags: string[]): string {
 }
 
 export async function projectRoutes(app: FastifyInstance) {
-  // GET /api/projects - List all projects with optional filtering
-  app.get('/api/projects', async (request) => {
+  // GET /api/projects - List all projects with optional filtering and pagination
+  app.get('/api/projects', async (request, reply) => {
     const db = await getDb();
-    const { tag, q } = request.query as { tag?: string; q?: string };
+    const { tag, q, limit, offset } = request.query as {
+      tag?: string;
+      q?: string;
+      limit?: string;
+      offset?: string;
+    };
 
-    let results = await db.select().from(projects);
+    let results = await db.select().from(projects).all();
 
     // Filter by tag
     if (tag) {
@@ -47,13 +52,20 @@ export async function projectRoutes(app: FastifyInstance) {
       );
     }
 
+    const total = results.length;
+
+    // Apply pagination
+    const limitNum = limit ? Math.min(parseInt(limit, 10), 100) : 12;
+    const offsetNum = offset ? parseInt(offset, 10) : 0;
+    const paginatedResults = results.slice(offsetNum, offsetNum + limitNum);
+
     // Parse tags back to array for each project
-    const parsed = results.map((p) => ({
+    const parsed = paginatedResults.map((p) => ({
       ...p,
       tags: parseTags(p.tags),
     }));
 
-    return parsed;
+    return reply.header('X-Total-Count', total).send(parsed);
   });
 
   // GET /api/projects/:id - Get single project by id
