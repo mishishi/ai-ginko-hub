@@ -13,7 +13,7 @@
 | P-1 | **评论功能是占位符**，无实际功能 | 中 | `src/pages/ProjectDetail.tsx` |
 | P-2 | **About 页使用硬编码数据**（项目数=10、精选=4、allTags 数组）→ ✅ 已修复 | 高 | `src/pages/About.tsx` |
 | P-3 | **社交链接为假链接**（github.com/ginko、x.com/ginko）→ ✅ 已修复 | 中 | `src/pages/About.tsx` |
-| P-4 | **无分页/无限滚动**，项目增多后影响性能 | 中 | `src/pages/HomePage.tsx` |
+| P-4 | **无分页/无限滚动**，项目增多后影响性能 → ✅ 已修复 (load more) | 中 | `src/pages/HomePage.tsx` |
 | P-5 | **无收藏功能**，用户无法保存感兴趣的项目 | 低 | — |
 | P-6 | **无 404 页面**，未找到项目时体验不友好 | 低 | — |
 | P-7 | **无错误 toast 提示**，操作失败时用户无感知 | 中 | — |
@@ -73,7 +73,7 @@
 
 | # | 问题 | 严重程度 | 文件 |
 |---|------|----------|------|
-| P-1 | **无分页/无限滚动**，大数据集一次性加载 | 中 | `src/data/projects.ts` |
+| P-1 | **无分页/无限滚动**，大数据集一次性加载 → ✅ 已修复 | 中 | `src/data/projects.ts` |
 | P-2 | **缩略图无懒加载**，首屏外图片即时请求 | 中 | `src/components/ProjectCard.tsx` |
 | P-3 | **无 WebP 格式**，未利用现代图片格式 | 低 | `src/components/ProjectForm.tsx` |
 | P-4 | **无 HTTP 缓存头**，静态资源无缓存策略 | 低 | `api/src/index.js` |
@@ -118,7 +118,7 @@
 - B-4: viewCount await saveDb ✅
 
 ### P2（逐步改进）
-- P-4 / P-1: 添加分页
+- P-4 / P-1: 添加分页 ✅
 - C-3: 搜索逻辑统一
 - P-6: 添加 404 页面
 - U-2: About 页 heading 结构
