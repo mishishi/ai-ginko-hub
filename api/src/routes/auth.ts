@@ -2,8 +2,9 @@ import type { FastifyInstance } from 'fastify';
 import { getDb } from '../db/index.js';
 import { admin } from '../db/schema.js';
 import { eq } from 'drizzle-orm';
-import { SignJWT, jwtVerify } from 'jose';
+import { SignJWT } from 'jose';
 import { verifyPassword } from '../utils/password.js';
+import { requireAuth } from '../middleware/auth.js';
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
@@ -37,24 +38,7 @@ export async function authRoutes(app: FastifyInstance) {
     return { token, username: user.username };
   });
 
-  app.get('/api/auth/me', {
-    preHandler: [async (request, reply) => {
-      const authHeader = request.headers.authorization;
-
-      if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return reply.status(401).send({ error: 'Unauthorized' });
-      }
-
-      const token = authHeader.slice(7);
-
-      try {
-        const { payload } = await jwtVerify(token, JWT_SECRET);
-        request.user = payload as { sub: number; username: string };
-      } catch {
-        return reply.status(401).send({ error: 'Invalid token' });
-      }
-    }]
-  }, async (request, reply) => {
+  app.get('/api/auth/me', { preHandler: [requireAuth] }, async (request) => {
     return { username: request.user?.username };
   });
 }
