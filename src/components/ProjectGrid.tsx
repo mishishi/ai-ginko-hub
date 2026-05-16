@@ -1,0 +1,34 @@
+import type { Project } from '../types';
+import ProjectCard from './ProjectCard';
+
+interface Props {
+  projects: Project[];
+}
+
+export default function ProjectGrid({ projects }: Props) {
+  if (projects.length === 0) {
+    return (
+      <div className="col-span-full flex flex-col items-center justify-center py-12 sm:py-20 text-center text-text-muted">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-30 mb-6" aria-hidden="true">
+          <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+          <line x1="12" y1="22.08" x2="12" y2="12" />
+        </svg>
+        <p className="text-sm sm:text-base mb-2 text-text-secondary">没有匹配的项目</p>
+        <span className="text-xs sm:text-sm">试试其他筛选条件</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-16 sm:mb-24">
+      {projects.map((project, index) => (
+        <ProjectCard
+          key={project.id}
+          project={project}
+          index={index}
+        />
+      ))}
+    </div>
+  );
+}

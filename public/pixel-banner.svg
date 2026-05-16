@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="240" viewBox="0 0 900 240">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&amp;display=swap');
+      .pixel { font-family: 'Press Start 2P', monospace; }
+    </style>
+
+    <!-- Background gradient -->
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0a0a0c"/>
+      <stop offset="100%" stop-color="#141418"/>
+    </linearGradient>
+
+    <!-- Scanline pattern -->
+    <pattern id="scanlines" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="4" height="2" fill="transparent"/>
+      <rect y="2" width="4" height="2" fill="#000" opacity="0.08"/>
+    </pattern>
+
+    <!-- Grid pattern (subdued) -->
+    <pattern id="grid" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#1a1a1c" stroke-width="0.5"/>
+    </pattern>
+
+    <!-- Glow filter -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <!-- Neon glow -->
+    <filter id="neon">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="240" fill="url(#bg)"/>
+  <rect width="900" height="240" fill="url(#grid)"/>
+
+  <!-- Top/bottom border stripes (retro pixel style) -->
+  <g>
+    <!-- Top stripe row -->
+    <rect x="0" y="0" width="900" height="4" fill="#c97d5c" opacity="0.3"/>
+    <rect x="0" y="4" width="900" height="2" fill="#c97d5c" opacity="0.1"/>
+
+    <!-- Bottom stripe row -->
+    <rect x="0" y="236" width="900" height="4" fill="#c97d5c" opacity="0.3"/>
+    <rect x="0" y="234" width="900" height="2" fill="#c97d5c" opacity="0.1"/>
+  </g>
+
+  <!-- Pixel corner decorations -->
+  <g fill="#c97d5c" opacity="0.5">
+    <!-- Top-left corner -->
+    <rect x="20" y="20" width="6" height="6"/>
+    <rect x="20" y="32" width="6" height="6"/>
+    <rect x="20" y="44" width="6" height="6"/>
+    <rect x="32" y="20" width="6" height="6"/>
+    <rect x="44" y="20" width="6" height="6"/>
+
+    <!-- Top-right corner -->
+    <rect x="874" y="20" width="6" height="6"/>
+    <rect x="874" y="32" width="6" height="6"/>
+    <rect x="874" y="44" width="6" height="6"/>
+    <rect x="862" y="20" width="6" height="6"/>
+    <rect x="850" y="20" width="6" height="6"/>
+
+    <!-- Bottom-left corner -->
+    <rect x="20" y="190" width="6" height="6"/>
+    <rect x="20" y="202" width="6" height="6"/>
+    <rect x="20" y="214" width="6" height="6"/>
+    <rect x="32" y="214" width="6" height="6"/>
+    <rect x="44" y="214" width="6" height="6"/>
+
+    <!-- Bottom-right corner -->
+    <rect x="874" y="190" width="6" height="6"/>
+    <rect x="874" y="202" width="6" height="6"/>
+    <rect x="874" y="214" width="6" height="6"/>
+    <rect x="862" y="214" width="6" height="6"/>
+    <rect x="850" y="214" width="6" height="6"/>
+  </g>
+
+  <!-- Pixel diamond decoration -->
+  <g fill="#7d9a8e" opacity="0.4" transform="translate(450, 30)">
+    <rect x="0" y="-12" width="4" height="4"/>
+    <rect x="-6" y="-6" width="4" height="4"/>
+    <rect x="6" y="-6" width="4" height="4"/>
+    <rect x="-12" y="0" width="4" height="4"/>
+    <rect x="12" y="0" width="4" height="4"/>
+    <rect x="-6" y="6" width="4" height="4"/>
+    <rect x="6" y="6" width="4" height="4"/>
+    <rect x="0" y="12" width="4" height="4"/>
+  </g>
+
+  <!-- Main title: GINKO HUB -->
+  <text x="450" y="108" text-anchor="middle" dominant-baseline="middle"
+        class="pixel" font-size="36" fill="#ece8e3" letter-spacing="6">
+    GINKO HUB
+  </text>
+
+  <!-- Subtitle: AI PROJECT SHOWCASE -->
+  <text x="450" y="148" text-anchor="middle"
+        class="pixel" font-size="10" fill="#7d9a8e" letter-spacing="4">
+    AI PROJECT SHOWCASE
+  </text>
+
+  <!-- Subtitle: BUILT WITH AI -->
+  <text x="450" y="175" text-anchor="middle"
+        class="pixel" font-size="8" fill="#6b6865" letter-spacing="3">
+    BUILT WITH AI
+  </text>
+
+  <!-- Retro cursor blink element -->
+  <g transform="translate(668, 88)">
+    <rect x="0" y="0" width="18" height="32" fill="#c97d5c" opacity="0.8">
+      <animate attributeName="opacity" values="0.8;0;0.8" dur="1s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+
+  <!-- Pixel art monitor icon (left side, small) -->
+  <g transform="translate(60, 85)" opacity="0.3">
+    <rect x="0" y="0" width="60" height="44" rx="2" fill="none" stroke="#c97d5c" stroke-width="2"/>
+    <rect x="4" y="4" width="52" height="30" rx="1" fill="#c97d5c" opacity="0.1"/>
+    <rect x="18" y="44" width="24" height="6" fill="none" stroke="#c97d5c" stroke-width="2"/>
+    <rect x="10" y="50" width="40" height="4" fill="none" stroke="#c97d5c" stroke-width="1.5"/>
+    <line x1="12" y1="12" x2="26" y2="24" stroke="#c97d5c" stroke-width="2"/>
+    <line x1="48" y1="12" x2="34" y2="24" stroke="#c97d5c" stroke-width="2"/>
+    <line x1="26" y1="24" x2="34" y2="24" stroke="#c97d5c" stroke-width="1"/>
+  </g>
+
+  <!-- Scanline overlay -->
+  <rect width="900" height="240" fill="url(#scanlines)" pointer-events="none"/>
+</svg>
