@@ -55,7 +55,7 @@ export default function About() {
       <main id="main-content" className="flex-1">
         <div className="mx-auto max-w-4xl px-4 py-12">
           {/* Page title */}
-          <h1 className="sr-only">About</h1>
+          <h1 className="font-heading text-4xl text-text-primary text-center mb-12">About</h1>
 
           {/* Avatar + Name + One-liner */}
           <section className="flex flex-col items-center text-center mb-12">
@@ -73,6 +73,7 @@ export default function About() {
 
           {/* Bio */}
           <section className="mb-12 space-y-4">
+            <h2 className="font-heading text-xl text-text-primary">简介</h2>
             <p className="text-text-secondary leading-relaxed">
               我是一名热爱 AI 技术的独立开发者，专注于使用人工智能辅助构建高质量的
               Web 应用。从前端的交互设计到后端的架构实现，我享受将创意转化为产品的完整过程。
@@ -90,7 +91,7 @@ export default function About() {
 
           {/* Skills */}
           <section className="mb-12">
-            <h3 className="font-heading text-xl text-text-primary mb-4">技术栈</h3>
+            <h2 className="font-heading text-xl text-text-primary mb-4">技术栈</h2>
             <div className="flex flex-wrap gap-2">
               {allTags.map((tag) => {
                 const color = tagColors[tag] ?? '#c97d5c';
@@ -113,7 +114,7 @@ export default function About() {
 
           {/* Social Links */}
           <section className="mb-12">
-            <h3 className="font-heading text-xl text-text-primary mb-4">社交链接</h3>
+            <h2 className="font-heading text-xl text-text-primary mb-4">社交链接</h2>
             <div className="flex flex-wrap gap-6">
               {/* GitHub */}
               <a
@@ -162,7 +163,7 @@ export default function About() {
 
           {/* Stats */}
           <section>
-            <h3 className="font-heading text-xl text-text-primary mb-4">数据统计</h3>
+            <h2 className="font-heading text-xl text-text-primary mb-4">数据统计</h2>
             <div className="grid grid-cols-3 gap-4">
               <div className="bg-bg-card border border-border rounded-xl p-6 text-center">
                 <div className="font-heading text-3xl text-text-primary mb-1">
