@@ -16,6 +16,7 @@ let _fetchedForUserId: string | null = null; // Track which user we've fetched f
 let _fetchPromise: Promise<unknown> | null = null; // In-flight fetch to share across instances
 let _listeners: Array<(favs: FavoriteItem[]) => void> = [];
 let _loadingListeners: Array<(loading: boolean) => void> = [];
+let _toggleInflight = new Set<string>(); // Prevent rapid toggles for same projectId
 
 function _notify() {
   for (const cb of _listeners) cb([..._favorites]);
@@ -121,6 +122,10 @@ export function useFavorites() {
         return;
       }
 
+      // Debounce: ignore if a toggle for this projectId is already in-flight
+      if (_toggleInflight.has(projectId)) return;
+      _toggleInflight.add(projectId);
+
       const isFav = _favorites.some((f) => f.projectId === projectId);
       const token = await stableGetToken();
 
@@ -186,6 +191,8 @@ export function useFavorites() {
         }
         _notify();
         toast.error('操作失败，请重试');
+      } finally {
+        _toggleInflight.delete(projectId);
       }
     },
     [isSignedIn, stableGetToken]
