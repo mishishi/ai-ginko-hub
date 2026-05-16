@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast'
 import HomePage from './pages/HomePage'
 import ProjectDetail from './pages/ProjectDetail'
 import About from './pages/About'
+import FavoritesPage from './pages/FavoritesPage'
 import NotFound from './pages/NotFound'
 import AdminApp from './admin/AdminApp'
 
@@ -39,6 +40,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/project/:id" element={<ProjectDetail />} />
         <Route path="/about" element={<About />} />
+        <Route path="/favorites" element={<FavoritesPage />} />
         <Route path="/admin/*" element={<AdminApp />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
