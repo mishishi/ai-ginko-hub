@@ -24,13 +24,16 @@ export default function HomePage() {
   const [sort, setSort] = useState<SortOption>(
     () => (new URLSearchParams(window.location.search).get('sort') as SortOption) || 'default'
   );
+  const [featuredOnly, setFeaturedOnly] = useState<boolean>(
+    () => new URLSearchParams(window.location.search).get('featured') === 'true'
+  );
   const isPopStateRef = useRef(false);
   const isInitialMount = useRef(true);
 
   // Initial load — fetch first page only
   useEffect(() => {
     const controller = new AbortController();
-    fetchProjects(undefined, undefined, PAGE_SIZE, 0, controller.signal, sort)
+    fetchProjects(undefined, undefined, PAGE_SIZE, 0, controller.signal, sort, featuredOnly ? true : undefined)
       .then(({ projects: data, total: totalCount }) => {
         setProjects(data);
         setHasMore(data.length < totalCount);
@@ -56,7 +59,7 @@ export default function HomePage() {
     setLoading(true);
     setPage(0);
     setHasMore(true);
-    fetchProjects(activeTag || undefined, searchQuery || undefined, PAGE_SIZE, 0, controller.signal, sort)
+    fetchProjects(activeTag || undefined, searchQuery || undefined, PAGE_SIZE, 0, controller.signal, sort, featuredOnly ? true : undefined)
       .then(({ projects: data, total: totalCount }) => {
         setProjects(data);
         setHasMore(data.length < totalCount);
@@ -68,7 +71,7 @@ export default function HomePage() {
       })
       .finally(() => setLoading(false));
     return () => controller.abort();
-  }, [activeTag, searchQuery, sort]);
+  }, [activeTag, searchQuery, sort, featuredOnly]);
 
   const loadMore = useCallback(async () => {
     const currentLoadingMore = loadingMore;
@@ -81,7 +84,10 @@ export default function HomePage() {
         activeTag || undefined,
         searchQuery || undefined,
         PAGE_SIZE,
-        offset
+        offset,
+        undefined,
+        sort,
+        featuredOnly ? true : undefined
       );
       setProjects((prev) => {
         setHasMore(prev.length + data.length < totalCount);
@@ -93,7 +99,7 @@ export default function HomePage() {
     } finally {
       setLoadingMore(false);
     }
-  }, [page, activeTag, searchQuery]);
+  }, [page, activeTag, searchQuery, sort, featuredOnly]);
 
   // Sync filter state to URL — pushState so back/forward navigation works
   useEffect(() => {
@@ -105,11 +111,12 @@ export default function HomePage() {
     if (searchQuery) params.set('q', searchQuery);
     if (activeTag) params.set('tag', activeTag);
     if (sort && sort !== 'default') params.set('sort', sort);
+    if (featuredOnly) params.set('featured', 'true');
     const url = params.toString()
       ? `${window.location.pathname}?${params.toString()}`
       : window.location.pathname;
     window.history.pushState(null, '', url);
-  }, [searchQuery, activeTag, sort]);
+  }, [searchQuery, activeTag, sort, featuredOnly]);
 
   // Restore filter state on browser back/forward
   useEffect(() => {
@@ -119,6 +126,7 @@ export default function HomePage() {
       setSearchQuery(params.get('q') || '');
       setActiveTag(params.get('tag') || null);
       setSort((params.get('sort') as SortOption) || 'default');
+      setFeaturedOnly(params.get('featured') === 'true');
     };
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
@@ -211,6 +219,8 @@ export default function HomePage() {
             onTagChange={setActiveTag}
             sort={sort}
             onSortChange={setSort}
+            featuredOnly={featuredOnly}
+            onFeaturedChange={setFeaturedOnly}
           />
 
           {/* Section Header */}
