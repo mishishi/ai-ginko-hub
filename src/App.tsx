@@ -6,6 +6,7 @@ import About from './pages/About'
 import FavoritesPage from './pages/FavoritesPage'
 import ProfilePage from './pages/ProfilePage'
 import NotFound from './pages/NotFound'
+import ErrorPage from './pages/ErrorPage'
 import AdminApp from './admin/AdminApp'
 
 export default function App() {
@@ -38,11 +39,11 @@ export default function App() {
         }}
       />
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/project/:id" element={<ProjectDetail />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/favorites" element={<FavoritesPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/" element={<HomePage />} errorElement={<ErrorPage />} />
+        <Route path="/project/:id" element={<ProjectDetail />} errorElement={<ErrorPage />} />
+        <Route path="/about" element={<About />} errorElement={<ErrorPage />} />
+        <Route path="/favorites" element={<FavoritesPage />} errorElement={<ErrorPage />} />
+        <Route path="/profile" element={<ProfilePage />} errorElement={<ErrorPage />} />
         <Route path="/admin/*" element={<AdminApp />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
