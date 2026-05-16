@@ -6,6 +6,18 @@ import type { Project } from '../types';
 
 import { cardGradients } from '../data/cardGradients';
 
+function formatDate(isoString: string): string {
+  try {
+    return new Intl.DateTimeFormat('zh-CN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(new Date(isoString));
+  } catch {
+    return isoString;
+  }
+}
+
 interface Props {
   project: Project;
   index: number;
@@ -98,7 +110,7 @@ export default function ProjectCard({ project, index }: Props) {
       {/* Body */}
       <div className="p-4 pb-6">
         <div className="flex items-center gap-2 mb-2">
-          <span className="text-[0.7rem] text-text-muted uppercase tracking-wider">{project.createdAt}</span>
+          <span className="text-[0.7rem] text-text-muted uppercase tracking-wider">{formatDate(project.createdAt)}</span>
         </div>
         <div className="flex items-center gap-2 mb-1.5">
           <h3 className="font-heading text-lg text-text-primary leading-tight">
@@ -107,7 +119,7 @@ export default function ProjectCard({ project, index }: Props) {
           <button
             onClick={toggleFavorite}
             disabled={toggling}
-            className={`ml-auto p-1.5 rounded-lg transition-all duration-200 ${
+            className={`ml-auto min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg transition-all duration-200 ${
               isFav
                 ? 'text-accent hover:text-accent-dim'
                 : 'text-text-muted hover:text-accent'

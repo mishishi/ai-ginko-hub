@@ -170,7 +170,7 @@ export default function HomePage() {
             </p>
 
             {/* Stats */}
-            <div className="hero-animate">
+            <div className="hero-animate" aria-live="polite" aria-atomic="true">
               <div className="inline-flex items-center gap-4 sm:gap-8 px-6 sm:px-10 py-4 sm:py-5 rounded-2xl border border-border bg-bg-card/60 backdrop-blur-sm">
                 <div className="flex flex-col items-center gap-0.5 sm:gap-1">
                   <span className="font-heading text-[1.5rem] sm:text-[1.75rem] text-accent leading-none tabular-nums">{projects.length}</span>

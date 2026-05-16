@@ -1,17 +1,18 @@
 import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth, useUser } from '@clerk/react';
 import Header from '../components/Header';
 
 export default function ProfilePage() {
+  const navigate = useNavigate();
   const { isSignedIn } = useAuth();
   const { user } = useUser();
 
   useEffect(() => {
     if (!isSignedIn) {
-      window.location.href = '/';
+      navigate('/');
     }
-  }, [isSignedIn]);
+  }, [isSignedIn, navigate]);
 
   if (!isSignedIn || !user) {
     return (

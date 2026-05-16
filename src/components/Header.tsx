@@ -33,7 +33,10 @@ export default function Header({ searchQuery = '', onSearchChange }: Props) {
           <Link to="/" className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary rounded-md transition-colors duration-200">项目</Link>
           <Link to="/about" className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary rounded-md transition-colors duration-200">关于</Link>
           {isSignedIn && (
-            <Link to="/profile" className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary rounded-md transition-colors duration-200">个人中心</Link>
+            <>
+              <Link to="/favorites" className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary rounded-md transition-colors duration-200">收藏</Link>
+              <Link to="/profile" className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary rounded-md transition-colors duration-200">个人中心</Link>
+            </>
           )}
         </nav>
 
@@ -64,7 +67,7 @@ export default function Header({ searchQuery = '', onSearchChange }: Props) {
           <UserButton />
         ) : (
           <SignInButton mode="modal">
-            <button className="flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-lg border border-border text-text-secondary hover:text-text-primary hover:border-border-hover transition-all duration-200">
+            <button className="flex items-center justify-center w-11 h-11 rounded-lg border border-border text-text-secondary hover:text-text-primary hover:border-border-hover transition-all duration-200">
               登录
             </button>
           </SignInButton>
@@ -72,7 +75,7 @@ export default function Header({ searchQuery = '', onSearchChange }: Props) {
 
         <button
           onClick={toggleTheme}
-          className="flex items-center justify-center w-9 h-9 sm:w-11 sm:h-11 rounded-lg border border-border text-text-secondary hover:text-text-primary hover:border-border-hover transition-all duration-200"
+          className="flex items-center justify-center w-11 h-11 rounded-lg border border-border text-text-secondary hover:text-text-primary hover:border-border-hover transition-all duration-200"
           aria-label={theme === 'dark' ? '切换到浅色主题' : '切换到深色主题'}
           aria-pressed={theme === 'dark'}
         >

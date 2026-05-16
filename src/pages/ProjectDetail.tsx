@@ -7,6 +7,18 @@ import type { Project } from '../types';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useFavorites } from '../hooks/useFavorites';
 
+function formatDate(isoString: string): string {
+  try {
+    return new Intl.DateTimeFormat('zh-CN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(new Date(isoString));
+  } catch {
+    return isoString;
+  }
+}
+
 function RelatedProjectCard({ project, index, onClick }: { project: Project; index: number; onClick: () => void }) {
   const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
   const [imgLoaded, setImgLoaded] = useState(false);
@@ -66,6 +78,7 @@ export default function ProjectDetail() {
   const [project, setProject] = useState<Project | null>(null);
   const [allProjects, setAllProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const { isFavorited, toggle } = useFavorites();
   const [toggling, setToggling] = useState(false);
 
@@ -78,12 +91,14 @@ export default function ProjectDetail() {
 
   useEffect(() => {
     if (!id) return;
+    setLoading(true);
+    setLoadError(null);
     Promise.all([fetchProject(id), fetchProjects()])
       .then(([p, all]) => {
         setProject(p);
         setAllProjects(all.projects);
       })
-      .catch(() => setProject(null))
+      .catch(() => setLoadError('无法加载项目，请稍后重试'))
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -148,14 +163,37 @@ export default function ProjectDetail() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen" role="status" aria-label="加载中">
         <span className="text-text-muted">Loading...</span>
       </div>
     );
   }
 
   if (!project) {
-    return null;
+    return (
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-1 flex flex-col items-center justify-center text-center px-4">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-text-muted mb-6" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          <h1 className="font-heading text-2xl text-text-primary mb-2">
+            {loadError ? '加载失败' : '项目不存在'}
+          </h1>
+          <p className="text-text-secondary mb-6">
+            {loadError ?? '您访问的项目可能已被移除或链接无效'}
+          </p>
+          <button
+            onClick={() => navigate('/')}
+            className="px-6 py-3 bg-accent text-bg-base rounded-lg font-medium hover:bg-accent-dim transition-colors"
+          >
+            返回首页
+          </button>
+        </main>
+      </div>
+    );
   }
 
   return (
@@ -192,7 +230,7 @@ export default function ProjectDetail() {
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-2">
-                      <p className="text-[0.7rem] text-text-muted uppercase tracking-wider">{project.createdAt}</p>
+                      <p className="text-[0.7rem] text-text-muted uppercase tracking-wider">{formatDate(project.createdAt)}</p>
                       <a
                         href={project.url}
                         target="_blank"
@@ -304,7 +342,7 @@ export default function ProjectDetail() {
                 待接入
               </span>
             </div>
-            <div className="bg-bg-card border border-border rounded-xl p-8 text-center">
+            <div className="bg-bg-card border border-border rounded-xl p-8 text-center" role="status" aria-label="评论功能开发中">
               <div className="flex flex-col items-center gap-3">
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-text-muted" aria-hidden="true">
                   <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
