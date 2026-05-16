@@ -63,9 +63,11 @@ export default function HomePage() {
         PAGE_SIZE,
         offset
       );
-      setProjects((prev) => [...prev, ...data]);
+      setProjects((prev) => {
+        setHasMore(prev.length + data.length < totalCount);
+        return [...prev, ...data];
+      });
       setTotal(totalCount);
-      setHasMore(projects.length + data.length < totalCount);
       setPage((p) => p + 1);
     } finally {
       setLoadingMore(false);
