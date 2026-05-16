@@ -1,75 +1,75 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../hooks/useAdminAuth';
 
 export default function LoginPage() {
   const { login } = useAdminAuth();
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-      setError(null);
-      setIsLoading(true);
-      try {
-        await login(username, password);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Login failed');
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [username, password, login],
-  );
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+    try {
+      await login(username, password);
+      navigate('/admin');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-bg-base">
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col gap-4 w-full max-w-xs p-6 bg-bg-surface border border-border rounded-lg"
-      >
-        <h1 className="text-xl font-heading text-text-primary">Admin Login</h1>
-
-        {error && (
-          <p className="text-sm text-red-400" role="alert">
-            {error}
-          </p>
-        )}
-
-        <label className="flex flex-col gap-1">
-          <span className="text-sm text-text-secondary">Username</span>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="px-3 py-2 bg-bg-elevated border border-border rounded text-text-primary focus:outline-none focus:border-accent"
-            required
-            autoComplete="username"
-          />
-        </label>
-
-        <label className="flex flex-col gap-1">
-          <span className="text-sm text-text-secondary">Password</span>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="px-3 py-2 bg-bg-elevated border border-border rounded text-text-primary focus:outline-none focus:border-accent"
-            required
-            autoComplete="current-password"
-          />
-        </label>
-
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="mt-2 px-4 py-2 bg-accent text-white rounded hover:bg-accent-dim disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          {isLoading ? 'Logging in...' : 'Login'}
-        </button>
-      </form>
+    <div className="flex min-h-screen items-center justify-center bg-bg-base">
+      <div className="w-full max-w-sm p-8 bg-bg-card border border-border rounded-xl">
+        <h1 className="font-heading text-2xl text-text-primary mb-6 text-center">
+          Ginko Admin
+        </h1>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="username" className="block text-sm text-text-secondary mb-1">
+              Username
+            </label>
+            <input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full px-3 py-2 border border-border rounded-lg bg-bg-elevated text-text-primary text-sm outline-none focus:border-accent"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="block text-sm text-text-secondary mb-1">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-2 border border-border rounded-lg bg-bg-elevated text-text-primary text-sm outline-none focus:border-accent"
+              required
+            />
+          </div>
+          {error && (
+            <p className="text-sm text-red-400">{error}</p>
+          )}
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full py-2 bg-accent hover:bg-accent-dim text-bg-base font-medium rounded-lg transition-colors disabled:opacity-50"
+          >
+            {isLoading ? 'Logging in...' : 'Login'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
