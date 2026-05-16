@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth, useUser } from '@clerk/react';
+import { useAuth } from '@clerk/react';
 import toast from 'react-hot-toast';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import type { Project } from '../types';
@@ -16,8 +16,7 @@ import { cardGradients } from '../data/cardGradients';
 export default function ProjectCard({ project, index }: Props) {
   const navigate = useNavigate();
   const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
-  const { isSignedIn } = useAuth();
-  const { getToken } = useUser();
+  const { isSignedIn, getToken } = useAuth();
   const [isFavorited, setIsFavorited] = useState(false);
   const [loading, setLoading] = useState(false);
 
