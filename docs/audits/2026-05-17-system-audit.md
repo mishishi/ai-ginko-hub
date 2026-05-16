@@ -25,7 +25,7 @@
 | # | 问题 | 严重程度 | 文件 |
 |---|------|----------|------|
 | U-1 | **ProjectCard 缩略图 alt=""**，无障碍-alt 文本缺失 → ✅ 已修复 | 高 | `src/components/ProjectCard.tsx:40` |
-| U-2 | **About 页 h1 层级不合理**，只有一个 h1 但内容结构不清晰 | 中 | `src/pages/About.tsx` |
+| U-2 | **About 页 h1 层级不合理**，只有一个 h1 但内容结构不清晰 → ✅ 已修复 | 中 | `src/pages/About.tsx` |
 | U-3 | **内联 style 色值**，如 `style={{ backgroundColor: '#f3f4f6' }}`，应使用 Tailwind 令牌 | 中 | 多个组件 |
 | U-4 | **卡片 hover 阴影过重**，在深色背景上影响可读性 | 低 | `src/components/ProjectCard.tsx` |
 | U-5 | **搜索输入框较窄**，在宽屏上显得不协调 | 低 | `src/components/Header.tsx` |
@@ -121,7 +121,7 @@
 - P-4 / P-1: 添加分页 ✅
 - C-3: 搜索逻辑统一 ✅
 - P-6: 添加 404 页面 ✅
-- U-2: About 页 heading 结构
+- U-2: About 页 heading 结构 ✅
 
 ---
 
