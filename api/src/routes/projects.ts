@@ -4,6 +4,7 @@ import { getDb, saveDb } from '../db/index.js';
 import { projects } from '../db/schema.js';
 import { eq } from 'drizzle-orm';
 import { requireAuth } from '../middleware/auth.js';
+import { createProjectSchema, updateProjectSchema } from './projects.schema.js';
 
 function generateId(): string {
   return uuidv4();
@@ -25,12 +26,13 @@ export async function projectRoutes(app: FastifyInstance) {
   // GET /api/projects - List all projects with optional filtering, sorting and pagination
   app.get('/api/projects', async (request, reply) => {
     const db = await getDb();
-    const { tag, q, limit, offset, sort } = request.query as {
+    const { tag, q, limit, offset, sort, featured } = request.query as {
       tag?: string;
       q?: string;
       limit?: string;
       offset?: string;
       sort?: string;
+      featured?: string;
     };
 
     let results = await db.select().from(projects).all();
@@ -54,6 +56,11 @@ export async function projectRoutes(app: FastifyInstance) {
           tags.some((t) => t.toLowerCase().includes(query))
         );
       });
+    }
+
+    // Filter by featured
+    if (featured === 'true') {
+      results = results.filter((p) => p.featured === true);
     }
 
     // Sort results
@@ -126,25 +133,13 @@ export async function projectRoutes(app: FastifyInstance) {
   // POST /api/projects - Create new project (auth required)
   app.post('/api/projects', { preHandler: [requireAuth] }, async (request, reply) => {
     const db = await getDb();
-    const body = request.body as {
-      id?: string;
-      name: string;
-      description: string;
-      tags: string[];
-      url: string;
-      thumbnail?: string;
-      repoUrl?: string;
-      createdAt?: string;
-      featured?: boolean;
-      ogTitle?: string;
-      ogDescription?: string;
-      ogImage?: string;
-    };
+    const parsed = createProjectSchema.safeParse(request.body);
 
-    if (!body.name || !body.description || !body.tags || !body.url) {
-      return reply.status(400).send({ error: 'name, description, tags, and url are required' });
+    if (!parsed.success) {
+      return reply.status(400).send({ error: parsed.error.message });
     }
 
+    const body = parsed.data;
     const now = Date.now();
     const id = body.id || generateId();
 
@@ -179,18 +174,13 @@ export async function projectRoutes(app: FastifyInstance) {
   app.put('/api/projects/:id', { preHandler: [requireAuth] }, async (request, reply) => {
     const db = await getDb();
     const { id } = request.params as { id: string };
-    const body = request.body as {
-      name?: string;
-      description?: string;
-      tags?: string[];
-      url?: string;
-      thumbnail?: string;
-      repoUrl?: string;
-      featured?: boolean;
-      ogTitle?: string;
-      ogDescription?: string;
-      ogImage?: string;
-    };
+
+    const parsed = updateProjectSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.status(400).send({ error: parsed.error.message });
+    }
+
+    const body = parsed.data;
 
     const existing = await db.select().from(projects).where(eq(projects.id, id)).limit(1);
 

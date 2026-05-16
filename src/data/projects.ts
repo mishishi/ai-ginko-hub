@@ -7,7 +7,8 @@ export async function fetchProjects(
   limit?: number,
   offset?: number,
   signal?: AbortSignal,
-  sort?: string
+  sort?: string,
+  featured?: boolean
 ): Promise<{ projects: Project[]; total: number }> {
   const params = new URLSearchParams();
   if (tag) params.set('tag', tag);
@@ -15,6 +16,7 @@ export async function fetchProjects(
   if (limit !== undefined) params.set('limit', String(limit));
   if (offset !== undefined) params.set('offset', String(offset));
   if (sort) params.set('sort', sort);
+  if (featured) params.set('featured', 'true');
   const url = `${API_BASE}/api/projects${params.toString() ? '?' + params.toString() : ''}`;
   const res = await fetch(url, { signal });
   if (!res.ok) throw new Error('Failed to fetch projects');

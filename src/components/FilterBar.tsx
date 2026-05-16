@@ -6,6 +6,8 @@ interface Props {
   onTagChange: (tag: string | null) => void;
   sort: SortOption;
   onSortChange: (sort: SortOption) => void;
+  featuredOnly: boolean;
+  onFeaturedChange: (featured: boolean) => void;
 }
 
 const SORT_LABELS: Record<SortOption, string> = {
@@ -16,7 +18,7 @@ const SORT_LABELS: Record<SortOption, string> = {
   featured: '精选优先',
 };
 
-export default function FilterBar({ tags, activeTag, onTagChange, sort, onSortChange }: Props) {
+export default function FilterBar({ tags, activeTag, onTagChange, sort, onSortChange, featuredOnly, onFeaturedChange }: Props) {
   return (
     <div className="flex flex-wrap gap-2 mb-6 sm:mb-8 pb-4 sm:pb-6" role="group" aria-label="标签筛选">
       {/* Sort dropdown */}
@@ -48,6 +50,23 @@ export default function FilterBar({ tags, activeTag, onTagChange, sort, onSortCh
           <polyline points="6 9 12 15 18 9" />
         </svg>
       </div>
+
+      {/* Featured toggle */}
+      <button
+        type="button"
+        onClick={() => onFeaturedChange(!featuredOnly)}
+        aria-pressed={featuredOnly}
+        className={`px-3 sm:px-4 py-1.5 sm:py-2 min-h-[44px] flex items-center gap-1.5 rounded-full border text-[11px] sm:text-xs font-medium cursor-pointer whitespace-nowrap transition-[color,border-color,background] duration-200 ease-out ${
+          featuredOnly
+            ? 'border-accent-dim text-accent bg-accent-glow'
+            : 'border-border text-text-secondary bg-transparent hover:border-border-hover hover:text-text-primary hover:bg-bg-elevated'
+        }`}
+      >
+        <svg width="12" height="12" viewBox="0 0 24 24" fill={featuredOnly ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+        精选
+      </button>
       <button
         type="button"
         className={`px-3 sm:px-4 py-1.5 sm:py-2 min-h-[44px] flex items-center rounded-full border text-[11px] sm:text-xs font-medium cursor-pointer whitespace-nowrap transition-[color,border-color,background] duration-200 ease-out ${

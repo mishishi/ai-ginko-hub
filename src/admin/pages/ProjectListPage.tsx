@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { API_BASE } from '../../lib/api';
 
 interface Project {
@@ -28,14 +29,24 @@ export default function ProjectListPage() {
   }, []);
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this project?')) return;
+    if (!confirm('确定删除此项目？')) return;
     setDeleting(id);
-    await fetch(`${API_BASE}/api/projects/${id}`, {
-      method: 'DELETE',
-      credentials: 'include',
-    });
-    setProjects((prev) => prev.filter((p) => p.id !== id));
-    setDeleting(null);
+    try {
+      const res = await fetch(`${API_BASE}/api/projects/${id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      if (res.ok) {
+        setProjects((prev) => prev.filter((p) => p.id !== id));
+        toast.success('项目已删除');
+      } else {
+        toast.error('删除失败，请重试');
+      }
+    } catch {
+      toast.error('删除失败，请检查网络连接');
+    } finally {
+      setDeleting(null);
+    }
   };
 
   if (loading) {
