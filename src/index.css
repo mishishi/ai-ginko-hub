@@ -202,3 +202,28 @@ body::after {
     scroll-behavior: auto;
   }
 }
+
+/* ---------- Light Theme ---------- */
+[data-theme="light"] {
+  --color-bg-base: #fafaf9;
+  --color-bg-surface: #f5f4f2;
+  --color-bg-elevated: #ffffff;
+  --color-bg-card: #ffffff;
+  --color-bg-card-hover: #f5f4f2;
+
+  --color-text-primary: #1c1917;
+  --color-text-secondary: #57534e;
+  --color-text-muted: #a8a29e;
+
+  --color-accent: #c97d5c;
+  --color-accent-dim: #b8704e;
+  --color-accent-glow: rgba(201, 125, 92, 0.15);
+
+  --color-sage: #7d9a8e;
+  --color-sage-dim: #637a6f;
+  --color-sage-glow: rgba(125, 154, 142, 0.15);
+
+  --color-border: #e7e5e4;
+  --color-border-hover: #d6d3d1;
+  --color-border-accent: rgba(201, 125, 92, 0.4);
+}
