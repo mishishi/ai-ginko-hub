@@ -64,7 +64,7 @@
 |---|------|----------|------|
 | C-1 | **Project 类型不完整**，缺少 viewCount、ogTitle、ogDescription、ogImage 字段 → ✅ 已修复 | 高 | `src/types/index.ts` |
 | C-2 | **About 页硬编码 allTags 数组**，24 个标签与实际数据不同步 | 高 | `src/pages/About.tsx` |
-| C-3 | **搜索前后端不一致**：HomePage 前端也筛标签但 API 只收 q 参数 | 中 | `src/data/projects.ts` vs `HomePage.tsx` |
+| C-3 | **搜索前后端不一致**：HomePage 前端也筛标签但 API 只收 q 参数 → ✅ 已修复 | 中 | `src/data/projects.ts` vs `HomePage.tsx` |
 | C-4 | **repoUrl 字段未使用**，但存在于 schema 和类型中 | 低 | `src/types/index.ts` |
 
 ---
@@ -119,7 +119,7 @@
 
 ### P2（逐步改进）
 - P-4 / P-1: 添加分页 ✅
-- C-3: 搜索逻辑统一
+- C-3: 搜索逻辑统一 ✅
 - P-6: 添加 404 页面
 - U-2: About 页 heading 结构
 
