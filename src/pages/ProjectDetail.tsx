@@ -142,13 +142,13 @@ export default function ProjectDetail() {
         <div className="mx-auto max-w-[90rem] px-4 sm:px-6 lg:px-8">
           <div className="bg-bg-card border border-border rounded-xl p-6 sm:p-8 mb-8">
             <div className="flex flex-col sm:flex-row gap-6">
-              {/* Thumbnail — left side on desktop */}
+              {/* Thumbnail — left on desktop, top on mobile */}
               {project.thumbnail && (
-                <div className="flex-shrink-0 hidden sm:block">
+                <div className="flex-shrink-0">
                   <img
                     src={project.thumbnail}
                     alt=""
-                    className="w-[120px] h-[75px] object-cover rounded-lg"
+                    className="w-full sm:w-[120px] h-[200px] sm:h-[75px] object-cover rounded-lg"
                   />
                 </div>
               )}
