@@ -70,8 +70,6 @@ function _setupStorageListener() {
 async function _handleUnauthorized(signOutFn: () => Promise<void>) {
   toast.error('登录已过期，请重新登录');
   await signOutFn();
-  // Clear localStorage on logout so next user doesn't see previous user's favorites
-  localStorage.removeItem(STORAGE_KEY);
 }
 
 export function useFavorites() {
@@ -86,6 +84,12 @@ export function useFavorites() {
     if (!isSignedIn) {
       setFavoritesSnapshot([]);
       setLoadingSnapshot(false);
+      // Reset all module-level state so next user gets a fresh session
+      _favorites = [];
+      _loading = false;
+      _fetchedForUserId = null;
+      _fetchPromise = null;
+      localStorage.removeItem(STORAGE_KEY);
       return;
     }
 
