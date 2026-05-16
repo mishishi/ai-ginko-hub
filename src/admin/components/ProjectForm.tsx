@@ -58,7 +58,6 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
     setUploading(true);
     try {
       const token = localStorage.getItem('admin_token')!;
-      // Get presigned URL
       const presignedRes = await fetch(
         `${API_BASE}/api/upload`,
         {
@@ -72,7 +71,6 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
       );
       const { presignedUrl, publicUrl } = await presignedRes.json();
 
-      // Upload to R2
       await fetch(presignedUrl, {
         method: 'PUT',
         headers: { 'Content-Type': file.type },
@@ -100,7 +98,8 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
           type="text"
           value={form.name}
           onChange={(e) => set('name', e.target.value)}
-          className="w-full px-3 py-2 border border-border rounded-lg bg-bg-elevated text-text-primary text-sm outline-none transition-colors focus:border-accent"
+          className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20"
+          placeholder="My Awesome Project"
           required
         />
       </Field>
@@ -111,7 +110,8 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
           value={form.description}
           onChange={(e) => set('description', e.target.value)}
           rows={3}
-          className="w-full px-3 py-2 border border-border rounded-lg bg-bg-elevated text-text-primary text-sm outline-none transition-colors focus:border-accent resize-none"
+          className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20 resize-none"
+          placeholder="A brief description of what this project does"
           required
         />
       </Field>
@@ -122,40 +122,49 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
           type="url"
           value={form.url}
           onChange={(e) => set('url', e.target.value)}
-          className="w-full px-3 py-2 border border-border rounded-lg bg-bg-elevated text-text-primary text-sm outline-none transition-colors focus:border-accent"
-          placeholder="https://"
+          className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20"
+          placeholder="https://github.com/username/project"
           required
         />
       </Field>
 
       {/* Tags */}
       <Field label="Tags">
-        <div className="flex flex-wrap gap-2 mb-2">
-          {form.tags.map((tag) => (
-            <span
-              key={tag}
-              className="flex items-center gap-1 px-2 py-1 bg-bg-elevated text-text-secondary text-xs rounded-full"
-            >
-              {tag}
-              <button type="button" onClick={() => removeTag(tag)} className="hover:text-accent">
-                x
-              </button>
-            </span>
-          ))}
-        </div>
+        {form.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-3">
+            {form.tags.map((tag) => (
+              <span
+                key={tag}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#1E293B] text-[#F8FAFC] text-sm font-fira-sans rounded-lg"
+              >
+                {tag}
+                <button
+                  type="button"
+                  onClick={() => removeTag(tag)}
+                  className="w-4 h-4 flex items-center justify-center text-[#94A3B8] hover:text-red-400 transition-colors cursor-pointer"
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
         <div className="flex gap-2">
           <input
             type="text"
             value={tagInput}
             onChange={(e) => setTagInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-            className="w-full px-3 py-2 border border-border rounded-lg bg-bg-elevated text-text-primary text-sm outline-none transition-colors focus:border-accent flex-1"
-            placeholder="Add tag and press Enter"
+            className="flex-1 px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20"
+            placeholder="Type a tag and press Enter"
           />
           <button
             type="button"
             onClick={addTag}
-            className="px-3 py-2 border border-border rounded-lg text-text-secondary text-sm hover:border-border-hover transition-colors"
+            className="px-4 py-3 bg-[#1E293B] border border-[#1E293B] text-[#94A3B8] font-fira-sans text-sm rounded-xl hover:border-[#22C55E]/50 hover:text-[#F8FAFC] transition-all duration-200 cursor-pointer"
           >
             Add
           </button>
@@ -165,69 +174,119 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
       {/* Thumbnail */}
       <Field label="Cover Image">
         {form.thumbnail && (
-          <img src={form.thumbnail} alt="Cover" className="w-32 h-20 object-cover rounded-lg mb-2" />
+          <div className="mb-3">
+            <img src={form.thumbnail} alt="Cover preview" className="w-40 h-25 object-cover rounded-xl border border-[#1E293B]" />
+          </div>
         )}
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => e.target.files?.[0] && handleThumbnailUpload(e.target.files[0])}
-          className="text-sm text-text-secondary"
-          disabled={uploading}
-        />
-        {uploading && <span className="text-xs text-text-muted ml-2">Uploading...</span>}
+        <div className="flex items-center gap-3">
+          <label className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#0F172A] border border-[#1E293B] text-[#94A3B8] font-fira-sans text-sm rounded-xl hover:border-[#22C55E]/50 hover:text-[#F8FAFC] transition-all duration-200 cursor-pointer">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            {uploading ? 'Uploading...' : 'Choose Image'}
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => e.target.files?.[0] && handleThumbnailUpload(e.target.files[0])}
+              className="hidden"
+              disabled={uploading}
+            />
+          </label>
+          {uploading && (
+            <span className="flex items-center gap-2 text-[#64748B] font-fira-sans text-sm">
+              <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3"/>
+                <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+              </svg>
+              Uploading...
+            </span>
+          )}
+        </div>
       </Field>
 
       {/* Featured */}
-      <Field label="">
-        <label className="flex items-center gap-2 cursor-pointer">
+      <div className="flex items-center gap-3">
+        <label className="relative inline-flex items-center cursor-pointer">
           <input
             type="checkbox"
             checked={form.featured}
             onChange={(e) => set('featured', e.target.checked)}
-            className="w-4 h-4 accent-accent"
+            className="sr-only peer"
           />
-          <span className="text-sm text-text-secondary">Featured project</span>
+          <div className="w-11 h-6 bg-[#1E293B] peer-focus:ring-2 peer-focus:ring-[#22C55E]/20 rounded-full peer transition-all duration-200 peer-checked:bg-[#22C55E]"></div>
+          <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-[#94A3B8] rounded-full transition-all duration-200 peer-checked:translate-x-5 peer-checked:bg-white"></div>
         </label>
-      </Field>
+        <span className="font-fira-sans text-sm text-[#F8FAFC]">Featured project</span>
+      </div>
 
       {/* SEO */}
-      <div className="border-t border-border pt-6">
-        <p className="text-sm font-medium text-text-primary mb-4">SEO</p>
-        <Field label="OG Title">
-          <input
-            type="text"
-            value={form.ogTitle}
-            onChange={(e) => set('ogTitle', e.target.value)}
-            className="w-full px-3 py-2 border border-border rounded-lg bg-bg-elevated text-text-primary text-sm outline-none transition-colors focus:border-accent"
-          />
-        </Field>
-        <Field label="OG Description">
-          <textarea
-            value={form.ogDescription}
-            onChange={(e) => set('ogDescription', e.target.value)}
-            rows={2}
-            className="w-full px-3 py-2 border border-border rounded-lg bg-bg-elevated text-text-primary text-sm outline-none transition-colors focus:border-accent resize-none"
-          />
-        </Field>
-        <Field label="OG Image URL">
-          <input
-            type="url"
-            value={form.ogImage}
-            onChange={(e) => set('ogImage', e.target.value)}
-            className="w-full px-3 py-2 border border-border rounded-lg bg-bg-elevated text-text-primary text-sm outline-none transition-colors focus:border-accent"
-            placeholder="https://..."
-          />
-        </Field>
+      <div className="border-t border-[#1E293B] pt-6">
+        <p className="font-fira-sans font-medium text-[#F8FAFC] mb-4 flex items-center gap-2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="2" y1="12" x2="22" y2="12"/>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+          SEO Settings
+        </p>
+        <div className="space-y-4">
+          <Field label="OG Title">
+            <input
+              type="text"
+              value={form.ogTitle}
+              onChange={(e) => set('ogTitle', e.target.value)}
+              className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20"
+              placeholder="Custom title for social sharing"
+            />
+          </Field>
+          <Field label="OG Description">
+            <textarea
+              value={form.ogDescription}
+              onChange={(e) => set('ogDescription', e.target.value)}
+              rows={2}
+              className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20 resize-none"
+              placeholder="Custom description for social sharing"
+            />
+          </Field>
+          <Field label="OG Image URL">
+            <input
+              type="url"
+              value={form.ogImage}
+              onChange={(e) => set('ogImage', e.target.value)}
+              className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20"
+              placeholder="https://example.com/og-image.png"
+            />
+          </Field>
+        </div>
       </div>
 
       {/* Submit */}
-      <button
-        type="submit"
-        disabled={isLoading}
-        className="px-6 py-2 bg-accent hover:bg-accent-dim text-bg-base font-medium rounded-lg transition-colors disabled:opacity-50"
-      >
-        {isLoading ? 'Saving...' : 'Save Project'}
-      </button>
+      <div className="flex items-center gap-3 pt-4">
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="px-6 py-3 bg-[#22C55E] hover:bg-[#16A34A] text-[#020617] font-fira-sans font-semibold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+        >
+          {isLoading ? (
+            <span className="flex items-center gap-2">
+              <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3"/>
+                <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+              </svg>
+              Saving...
+            </span>
+          ) : 'Save Project'}
+        </button>
+        <button
+          type="button"
+          onClick={() => window.history.back()}
+          className="px-6 py-3 bg-[#0F172A] border border-[#1E293B] text-[#94A3B8] font-fira-sans text-sm rounded-xl hover:border-[#475569] hover:text-[#F8FAFC] transition-all duration-200 cursor-pointer"
+        >
+          Cancel
+        </button>
+      </div>
     </form>
   );
 }
@@ -236,7 +295,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   return (
     <div>
       {label && (
-        <label className="block text-sm font-medium text-text-secondary mb-1.5">
+        <label className="block font-fira-sans text-sm text-[#94A3B8] mb-2">
           {label}
         </label>
       )}

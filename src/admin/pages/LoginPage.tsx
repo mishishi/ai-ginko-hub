@@ -16,12 +16,9 @@ export default function LoginPage() {
     setError('');
     setIsLoading(true);
     try {
-      console.log('[LoginPage] before login');
       await login(username, password);
-      console.log('[LoginPage] login succeeded, token set, navigate to /admin');
       navigate('/admin');
     } catch (err) {
-      console.error('[LoginPage] login error:', err);
       setError(err instanceof Error ? err.message : 'Login failed');
     } finally {
       setIsLoading(false);
@@ -29,49 +26,97 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-bg-base">
-      <div className="w-full max-w-sm p-8 bg-bg-card border border-border rounded-xl">
-        <h1 className="font-heading text-2xl text-text-primary mb-6 text-center">
-          Ginko Admin
-        </h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="username" className="block text-sm text-text-secondary mb-1">
-              Username
-            </label>
-            <input
-              id="username"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-3 py-2 border border-border rounded-lg bg-bg-elevated text-text-primary text-sm outline-none focus:border-accent"
-              required
-            />
+    <div className="flex min-h-screen items-center justify-center bg-[#020617]">
+      {/* Ambient glow */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[#22C55E]/5 blur-[120px]" />
+      </div>
+
+      <div className="relative w-full max-w-sm mx-4">
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[#22C55E]/10 border border-[#22C55E]/20 mb-4">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-[#22C55E]">
+              <rect x="3" y="3" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.8"/>
+              <rect x="14" y="3" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.6"/>
+              <rect x="3" y="14" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.6"/>
+              <rect x="14" y="14" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.4"/>
+            </svg>
           </div>
-          <div>
-            <label htmlFor="password" className="block text-sm text-text-secondary mb-1">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-border rounded-lg bg-bg-elevated text-text-primary text-sm outline-none focus:border-accent"
-              required
-            />
-          </div>
-          {error && (
-            <p className="text-sm text-red-400">{error}</p>
-          )}
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full py-2 bg-accent hover:bg-accent-dim text-bg-base font-medium rounded-lg transition-colors disabled:opacity-50"
-          >
-            {isLoading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
+          <h1 className="font-fira-code text-xl text-[#F8FAFC] mb-1">
+            Ginko Admin
+          </h1>
+          <p className="font-fira-sans text-sm text-[#94A3B8]">
+            Sign in to manage your projects
+          </p>
+        </div>
+
+        {/* Card */}
+        <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="username" className="block font-fira-sans text-sm text-[#94A3B8] mb-2">
+                Username
+              </label>
+              <input
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20"
+                placeholder="Enter username"
+                required
+                autoComplete="username"
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="block font-fira-sans text-sm text-[#94A3B8] mb-2">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20"
+                placeholder="Enter password"
+                required
+                autoComplete="current-password"
+              />
+            </div>
+
+            {error && (
+              <div className="flex items-center gap-2 px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-red-400 shrink-0">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                  <line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  <circle cx="12" cy="16" r="1" fill="currentColor"/>
+                </svg>
+                <span className="font-fira-sans text-sm text-red-400">{error}</span>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-3 bg-[#22C55E] hover:bg-[#16A34A] text-[#020617] font-fira-sans font-semibold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            >
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3"/>
+                    <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+                  </svg>
+                  Signing in...
+                </span>
+              ) : 'Sign In'}
+            </button>
+          </form>
+        </div>
+
+        <p className="text-center mt-6 font-fira-sans text-xs text-[#475569]">
+          Secured with JWT authentication
+        </p>
       </div>
     </div>
   );
