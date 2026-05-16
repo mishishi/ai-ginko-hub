@@ -7,6 +7,7 @@ import { authRoutes } from './routes/auth.js';
 import { projectRoutes } from './routes/projects.js';
 import { statsRoutes } from './routes/stats.js';
 import { uploadRoutes } from './routes/upload.js';
+import { favoriteRoutes } from './routes/favorites.js';
 
 export async function buildApp() {
   const app = Fastify({
@@ -35,6 +36,7 @@ export async function buildApp() {
 
   await app.register(authRoutes);
   await app.register(projectRoutes);
+  await app.register(favoriteRoutes);
   await app.register(statsRoutes);
   await app.register(uploadRoutes);
 
