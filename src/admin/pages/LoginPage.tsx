@@ -44,10 +44,10 @@ export default function LoginPage() {
             </svg>
           </div>
           <h1 className="font-fira-code text-xl text-[#F8FAFC] mb-1">
-            Ginko Admin
+            Ginko 管理后台
           </h1>
           <p className="font-fira-sans text-sm text-[#94A3B8]">
-            Sign in to manage your projects
+            登录以管理您的项目
           </p>
         </div>
 
@@ -56,7 +56,7 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="username" className="block font-fira-sans text-sm text-[#94A3B8] mb-2">
-                Username
+                用户名
               </label>
               <input
                 id="username"
@@ -64,14 +64,14 @@ export default function LoginPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20"
-                placeholder="Enter username"
+                placeholder="请输入用户名"
                 required
                 autoComplete="username"
               />
             </div>
             <div>
               <label htmlFor="password" className="block font-fira-sans text-sm text-[#94A3B8] mb-2">
-                Password
+                密码
               </label>
               <input
                 id="password"
@@ -79,7 +79,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20"
-                placeholder="Enter password"
+                placeholder="请输入密码"
                 required
                 autoComplete="current-password"
               />
@@ -107,15 +107,15 @@ export default function LoginPage() {
                     <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3"/>
                     <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
                   </svg>
-                  Signing in...
+                  登录中...
                 </span>
-              ) : 'Sign In'}
+              ) : '登 录'}
             </button>
           </form>
         </div>
 
         <p className="text-center mt-6 font-fira-sans text-xs text-[#475569]">
-          Secured with JWT authentication
+          基于 JWT 身份验证
         </p>
       </div>
     </div>

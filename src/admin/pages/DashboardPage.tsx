@@ -34,7 +34,7 @@ export default function DashboardPage() {
             <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3"/>
             <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
           </svg>
-          <span className="font-fira-sans text-sm">Loading dashboard...</span>
+          <span className="font-fira-sans text-sm">加载中...</span>
         </div>
       </div>
     );
@@ -45,8 +45,8 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="font-fira-code text-2xl text-[#F8FAFC] mb-1">Dashboard</h1>
-          <p className="font-fira-sans text-sm text-[#64748B]">Overview of your project portfolio</p>
+          <h1 className="font-fira-code text-2xl text-[#F8FAFC] mb-1">控制台</h1>
+          <p className="font-fira-sans text-sm text-[#64748B]">项目概览</p>
         </div>
         <Link
           to="/admin/projects/new"
@@ -56,14 +56,14 @@ export default function DashboardPage() {
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
-          New Project
+          新建项目
         </Link>
       </div>
 
       {/* Stats Grid - Bento style */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          label="Total Projects"
+          label="项目总数"
           value={stats?.total ?? 0}
           icon={
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -76,7 +76,7 @@ export default function DashboardPage() {
           color="#22C55E"
         />
         <StatCard
-          label="Featured"
+          label="精选项目"
           value={stats?.featured ?? 0}
           icon={
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -86,7 +86,7 @@ export default function DashboardPage() {
           color="#F59E0B"
         />
         <StatCard
-          label="Tech Stack"
+          label="技术栈"
           value={stats?.techCount ?? 0}
           icon={
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -98,7 +98,7 @@ export default function DashboardPage() {
           color="#8B5CF6"
         />
         <StatCard
-          label="Total Views"
+          label="总浏览量"
           value={stats?.totalViews ?? 0}
           icon={
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -112,7 +112,7 @@ export default function DashboardPage() {
 
       {/* Quick Actions */}
       <div className="mt-8">
-        <h2 className="font-fira-code text-sm text-[#64748B] uppercase tracking-wider mb-4">Quick Actions</h2>
+        <h2 className="font-fira-code text-sm text-[#64748B] uppercase tracking-wider mb-4">快捷操作</h2>
         <div className="flex flex-wrap gap-3">
           <Link
             to="/admin/projects/new"
@@ -122,7 +122,7 @@ export default function DashboardPage() {
               <line x1="12" y1="5" x2="12" y2="19" />
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
-            Add Project
+            添加项目
           </Link>
           <Link
             to="/admin/projects"
@@ -134,7 +134,7 @@ export default function DashboardPage() {
               <rect x="3" y="14" width="7" height="7" rx="1.5"/>
               <rect x="14" y="14" width="7" height="7" rx="1.5"/>
             </svg>
-            View All Projects
+            查看全部项目
           </Link>
         </div>
       </div>

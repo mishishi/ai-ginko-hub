@@ -50,7 +50,7 @@ export default function ProjectFormPage() {
             <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3"/>
             <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
           </svg>
-          <span className="font-fira-sans text-sm">Loading...</span>
+          <span className="font-fira-sans text-sm">加载中...</span>
         </div>
       </div>
     );
@@ -70,11 +70,11 @@ export default function ProjectFormPage() {
             </svg>
           </button>
           <h1 className="font-fira-code text-2xl text-[#F8FAFC]">
-            {isEditing ? 'Edit Project' : 'New Project'}
+            {isEditing ? '编辑项目' : '新建项目'}
           </h1>
         </div>
         <p className="font-fira-sans text-sm text-[#64748B] ml-9">
-          {isEditing ? 'Update project details and settings' : 'Add a new project to your portfolio'}
+          {isEditing ? '更新项目详情和设置' : '添加新项目到作品集'}
         </p>
       </div>
 

@@ -93,31 +93,31 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
       {/* Name */}
-      <Field label="Project Name">
+      <Field label="项目名称">
         <input
           type="text"
           value={form.name}
           onChange={(e) => set('name', e.target.value)}
           className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20"
-          placeholder="My Awesome Project"
+          placeholder="项目名称"
           required
         />
       </Field>
 
       {/* Description */}
-      <Field label="Description">
+      <Field label="描述">
         <textarea
           value={form.description}
           onChange={(e) => set('description', e.target.value)}
           rows={3}
           className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20 resize-none"
-          placeholder="A brief description of what this project does"
+          placeholder="简短描述您的项目"
           required
         />
       </Field>
 
       {/* URL */}
-      <Field label="Project URL">
+      <Field label="项目链接">
         <input
           type="url"
           value={form.url}
@@ -129,7 +129,7 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
       </Field>
 
       {/* Tags */}
-      <Field label="Tags">
+      <Field label="标签">
         {form.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
             {form.tags.map((tag) => (
@@ -159,23 +159,23 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
             onChange={(e) => setTagInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
             className="flex-1 px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20"
-            placeholder="Type a tag and press Enter"
+            placeholder="输入标签后按回车添加"
           />
           <button
             type="button"
             onClick={addTag}
             className="px-4 py-3 bg-[#1E293B] border border-[#1E293B] text-[#94A3B8] font-fira-sans text-sm rounded-xl hover:border-[#22C55E]/50 hover:text-[#F8FAFC] transition-all duration-200 cursor-pointer"
           >
-            Add
+            添加
           </button>
         </div>
       </Field>
 
       {/* Thumbnail */}
-      <Field label="Cover Image">
+      <Field label="封面图">
         {form.thumbnail && (
           <div className="mb-3">
-            <img src={form.thumbnail} alt="Cover preview" className="w-40 h-25 object-cover rounded-xl border border-[#1E293B]" />
+            <img src={form.thumbnail} alt="封面预览" className="w-40 h-25 object-cover rounded-xl border border-[#1E293B]" />
           </div>
         )}
         <div className="flex items-center gap-3">
@@ -185,7 +185,7 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
               <circle cx="8.5" cy="8.5" r="1.5"/>
               <polyline points="21 15 16 10 5 21"/>
             </svg>
-            {uploading ? 'Uploading...' : 'Choose Image'}
+            {uploading ? '上传中...' : '选择图片'}
             <input
               type="file"
               accept="image/*"
@@ -200,7 +200,7 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
                 <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3"/>
                 <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
               </svg>
-              Uploading...
+              上传中...
             </span>
           )}
         </div>
@@ -218,7 +218,7 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
           <div className="w-11 h-6 bg-[#1E293B] peer-focus:ring-2 peer-focus:ring-[#22C55E]/20 rounded-full peer transition-all duration-200 peer-checked:bg-[#22C55E]"></div>
           <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-[#94A3B8] rounded-full transition-all duration-200 peer-checked:translate-x-5 peer-checked:bg-white"></div>
         </label>
-        <span className="font-fira-sans text-sm text-[#F8FAFC]">Featured project</span>
+        <span className="font-fira-sans text-sm text-[#F8FAFC]">精选项目</span>
       </div>
 
       {/* SEO */}
@@ -229,28 +229,28 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
             <line x1="2" y1="12" x2="22" y2="12"/>
             <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
           </svg>
-          SEO Settings
+          SEO 设置
         </p>
         <div className="space-y-4">
-          <Field label="OG Title">
+          <Field label="OG 标题">
             <input
               type="text"
               value={form.ogTitle}
               onChange={(e) => set('ogTitle', e.target.value)}
               className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20"
-              placeholder="Custom title for social sharing"
+              placeholder="社交分享自定义标题"
             />
           </Field>
-          <Field label="OG Description">
+          <Field label="OG 描述">
             <textarea
               value={form.ogDescription}
               onChange={(e) => set('ogDescription', e.target.value)}
               rows={2}
               className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20 resize-none"
-              placeholder="Custom description for social sharing"
+              placeholder="社交分享自定义描述"
             />
           </Field>
-          <Field label="OG Image URL">
+          <Field label="OG 图片链接">
             <input
               type="url"
               value={form.ogImage}
@@ -275,16 +275,16 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
                 <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3"/>
                 <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
               </svg>
-              Saving...
+              保存中...
             </span>
-          ) : 'Save Project'}
+          ) : '保存项目'}
         </button>
         <button
           type="button"
           onClick={() => window.history.back()}
           className="px-6 py-3 bg-[#0F172A] border border-[#1E293B] text-[#94A3B8] font-fira-sans text-sm rounded-xl hover:border-[#475569] hover:text-[#F8FAFC] transition-all duration-200 cursor-pointer"
         >
-          Cancel
+          取消
         </button>
       </div>
     </form>

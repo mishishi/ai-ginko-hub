@@ -50,7 +50,7 @@ export default function ProjectListPage() {
             <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3"/>
             <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
           </svg>
-          <span className="font-fira-sans text-sm">Loading projects...</span>
+          <span className="font-fira-sans text-sm">加载中...</span>
         </div>
       </div>
     );
@@ -61,8 +61,8 @@ export default function ProjectListPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-fira-code text-2xl text-[#F8FAFC] mb-1">Projects</h1>
-          <p className="font-fira-sans text-sm text-[#64748B]">{projects.length} total projects</p>
+          <h1 className="font-fira-code text-2xl text-[#F8FAFC] mb-1">项目管理</h1>
+          <p className="font-fira-sans text-sm text-[#64748B]">共 {projects.length} 个项目</p>
         </div>
         <Link
           to="/admin/projects/new"
@@ -72,7 +72,7 @@ export default function ProjectListPage() {
             <line x1="12" y1="5" x2="12" y2="19" />
             <line x1="5" y1="12" x2="19" y2="12" />
           </svg>
-          New Project
+          新建项目
         </Link>
       </div>
 
@@ -86,23 +86,23 @@ export default function ProjectListPage() {
               <rect x="3" y="14" width="7" height="7" rx="1.5"/>
               <rect x="14" y="14" width="7" height="7" rx="1.5"/>
             </svg>
-            <p className="font-fira-sans text-[#64748B] mb-4">No projects yet</p>
+            <p className="font-fira-sans text-[#64748B] mb-4">暂无项目</p>
             <Link
               to="/admin/projects/new"
               className="inline-flex items-center gap-2 px-4 py-2 bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E] font-fira-sans text-sm rounded-xl hover:bg-[#22C55E]/20 transition-all duration-200 cursor-pointer"
             >
-              Create your first project
+              创建您的第一个项目
             </Link>
           </div>
         ) : (
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[#1E293B]">
-                <th className="px-5 py-4 text-left font-fira-sans font-medium text-[#64748B] text-xs uppercase tracking-wider">Project</th>
-                <th className="px-5 py-4 text-left font-fira-sans font-medium text-[#64748B] text-xs uppercase tracking-wider">Tags</th>
-                <th className="px-5 py-4 text-left font-fira-sans font-medium text-[#64748B] text-xs uppercase tracking-wider">Featured</th>
-                <th className="px-5 py-4 text-left font-fira-sans font-medium text-[#64748B] text-xs uppercase tracking-wider">Views</th>
-                <th className="px-5 py-4 text-right font-fira-sans font-medium text-[#64748B] text-xs uppercase tracking-wider">Actions</th>
+                <th className="px-5 py-4 text-left font-fira-sans font-medium text-[#64748B] text-xs uppercase tracking-wider">项目</th>
+                <th className="px-5 py-4 text-left font-fira-sans font-medium text-[#64748B] text-xs uppercase tracking-wider">标签</th>
+                <th className="px-5 py-4 text-left font-fira-sans font-medium text-[#64748B] text-xs uppercase tracking-wider">精选</th>
+                <th className="px-5 py-4 text-left font-fira-sans font-medium text-[#64748B] text-xs uppercase tracking-wider">浏览</th>
+                <th className="px-5 py-4 text-right font-fira-sans font-medium text-[#64748B] text-xs uppercase tracking-wider">操作</th>
               </tr>
             </thead>
             <tbody>
@@ -138,10 +138,10 @@ export default function ProjectListPage() {
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                         </svg>
-                        Yes
+                        是
                       </span>
                     ) : (
-                      <span className="text-[#475569] text-xs font-fira-sans">No</span>
+                      <span className="text-[#475569] text-xs font-fira-sans">否</span>
                     )}
                   </td>
                   <td className="px-5 py-4">
@@ -157,7 +157,7 @@ export default function ProjectListPage() {
                           <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                           <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                         </svg>
-                        Edit
+                        编辑
                       </Link>
                       <button
                         onClick={() => handleDelete(project.id)}
@@ -170,7 +170,7 @@ export default function ProjectListPage() {
                               <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3"/>
                               <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
                             </svg>
-                            Deleting...
+                            删除中...
                           </>
                         ) : (
                           <>
@@ -178,7 +178,7 @@ export default function ProjectListPage() {
                               <polyline points="3 6 5 6 21 6"/>
                               <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
                             </svg>
-                            Delete
+                            删除
                           </>
                         )}
                       </button>
