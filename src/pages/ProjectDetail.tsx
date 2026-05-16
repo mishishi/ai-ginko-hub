@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchProject } from '../data/projects';
+import { fetchProject, fetchProjects } from '../data/projects';
 import { cardGradients } from '../data/cardGradients';
 import { tagColors } from '../data/tagColors';
 import Header from '../components/Header';
@@ -57,12 +57,16 @@ export default function ProjectDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [project, setProject] = useState<Project | null>(null);
+  const [allProjects, setAllProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!id) return;
-    fetchProject(id)
-      .then(setProject)
+    Promise.all([fetchProject(id), fetchProjects()])
+      .then(([p, all]) => {
+        setProject(p);
+        setAllProjects(all);
+      })
       .catch(() => setProject(null))
       .finally(() => setLoading(false));
   }, [id]);
@@ -104,12 +108,12 @@ export default function ProjectDetail() {
   const relatedProjects = useMemo(() => {
     if (!project) return [];
     return shuffle(
-      projects.filter((p) => {
+      allProjects.filter((p) => {
         if (p.id === project.id) return false;
         return p.tags.some((tag) => project.tags.includes(tag));
       })
     ).slice(0, 3);
-  }, [project]);
+  }, [project, allProjects]);
 
   if (loading) {
     return (
