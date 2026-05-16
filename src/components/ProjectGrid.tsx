@@ -48,9 +48,12 @@ export default function ProjectGrid({ projects, loading, hasMore, loadingMore, o
       {!loading && hasMore && (
         <div className="col-span-full flex justify-center pt-8">
           <button
+            type="button"
             onClick={onLoadMore}
             disabled={loadingMore}
-            className="px-6 py-2.5 bg-bg-elevated border border-border rounded-xl text-sm text-text-secondary hover:text-text-primary hover:border-border-hover transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="加载更多项目"
+            aria-busy={loadingMore}
+            className="px-6 py-2.5 bg-bg-elevated border border-border rounded-xl text-sm text-text-secondary hover:text-text-primary hover:border-border-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loadingMore ? '加载中...' : '加载更多'}
           </button>
