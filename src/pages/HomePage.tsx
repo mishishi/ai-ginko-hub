@@ -146,30 +146,46 @@ export default function HomePage() {
       <main id="main-content" className="flex-1">
         <div className="mx-auto max-w-[90rem] px-4 sm:px-6 lg:px-8">
           {/* Hero */}
-          <section className="text-center pt-16 sm:pt-24 pb-10 sm:pb-16">
+          <section className="relative text-center pt-16 sm:pt-24 pb-10 sm:pb-16">
+            {/* Ambient glow */}
+            <div aria-hidden="true" className="absolute inset-0 pointer-events-none overflow-hidden">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] sm:w-[800px] h-[300px] opacity-[0.07]" style={{ background: 'radial-gradient(ellipse at center, #c97d5c 0%, transparent 70%)' }} />
+            </div>
+
             <h1 className="hero-animate font-heading text-[clamp(2rem,5vw,4rem)] font-medium tracking-tight text-text-primary mb-3 sm:mb-4">
               AI <span className="text-accent italic">项目集</span>
             </h1>
             <p className="hero-animate max-w-lg mx-auto mb-6 sm:mb-10 text-sm sm:text-base leading-relaxed text-text-muted">
               通过 AI 辅助开发的 Web 项目合集 &mdash; 从概念到部署，每一次迭代都是探索。
             </p>
-            <div className="hero-animate flex items-center justify-center gap-4 sm:gap-8">
-              <div className="flex flex-col items-center gap-0.5 sm:gap-1">
-                <span className="font-heading text-[1.5rem] sm:text-[1.75rem] text-text-primary leading-none">{projects.length}</span>
-                <span className="text-[10px] sm:text-xs text-text-muted uppercase tracking-widest">总项目</span>
+
+            {/* Stats */}
+            <div className="hero-animate">
+              <div className="inline-flex items-center gap-4 sm:gap-8 px-6 sm:px-10 py-4 sm:py-5 rounded-2xl border border-border bg-bg-card/60 backdrop-blur-sm">
+                <div className="flex flex-col items-center gap-0.5 sm:gap-1">
+                  <span className="font-heading text-[1.5rem] sm:text-[1.75rem] text-accent leading-none tabular-nums">{projects.length}</span>
+                  <span className="text-[10px] sm:text-xs text-text-muted uppercase tracking-widest">总项目</span>
+                </div>
+                <div className="w-px h-8 sm:h-11 bg-border" />
+                <div className="flex flex-col items-center gap-0.5 sm:gap-1">
+                  <span className="font-heading text-[1.5rem] sm:text-[1.75rem] text-accent leading-none tabular-nums">{featuredCount}</span>
+                  <span className="text-[10px] sm:text-xs text-text-muted uppercase tracking-widest">精选项目</span>
+                </div>
+                <div className="w-px h-8 sm:h-11 bg-border" />
+                <div className="flex flex-col items-center gap-0.5 sm:gap-1">
+                  <span className="font-heading text-[1.5rem] sm:text-[1.75rem] text-accent leading-none tabular-nums">
+                    {new Set(projects.flatMap((p) => p.tags)).size}
+                  </span>
+                  <span className="text-[10px] sm:text-xs text-text-muted uppercase tracking-widest">技术栈</span>
+                </div>
               </div>
-              <div className="w-px h-6 sm:h-10 bg-border" />
-              <div className="flex flex-col items-center gap-0.5 sm:gap-1">
-                <span className="font-heading text-[1.5rem] sm:text-[1.75rem] text-text-primary leading-none">{featuredCount}</span>
-                <span className="text-[10px] sm:text-xs text-text-muted uppercase tracking-widest">精选项目</span>
-              </div>
-              <div className="w-px h-6 sm:h-10 bg-border" />
-              <div className="flex flex-col items-center gap-0.5 sm:gap-1">
-                <span className="font-heading text-[1.5rem] sm:text-[1.75rem] text-text-primary leading-none">
-                  {new Set(projects.flatMap((p) => p.tags)).size}
-                </span>
-                <span className="text-[10px] sm:text-xs text-text-muted uppercase tracking-widest">技术栈</span>
-              </div>
+            </div>
+
+            {/* Decorative divider */}
+            <div aria-hidden="true" className="mt-10 sm:mt-12 flex items-center justify-center gap-3">
+              <div className="h-px flex-1 max-w-[120px] bg-gradient-to-r from-transparent to-border" />
+              <div className="w-1.5 h-1.5 rounded-full bg-accent opacity-60" />
+              <div className="h-px flex-1 max-w-[120px] bg-gradient-to-l from-transparent to-border" />
             </div>
           </section>
 
