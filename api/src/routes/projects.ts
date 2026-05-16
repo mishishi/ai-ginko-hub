@@ -70,7 +70,7 @@ export async function projectRoutes(app: FastifyInstance) {
     const project = results[0];
 
     // Increment viewCount
-    db.update(projects)
+    await db.update(projects)
       .set({ viewCount: (project.viewCount || 0) + 1 })
       .where(eq(projects.id, id))
       .run();

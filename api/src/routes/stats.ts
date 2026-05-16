@@ -19,4 +19,14 @@ export async function statsRoutes(app: FastifyInstance) {
 
     return { total, featured, techCount: allTags.size, totalViews };
   });
+
+  app.get('/api/tags', async () => {
+    const db = await getDb();
+    const all = db.select().from(projects).all();
+    const allTags = new Set<string>();
+    all.forEach((p: typeof projects.$inferSelect) => {
+      JSON.parse(p.tags).forEach((t: string) => allTags.add(t));
+    });
+    return { tags: Array.from(allTags).sort() };
+  });
 }
