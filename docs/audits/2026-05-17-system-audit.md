@@ -39,7 +39,7 @@
 | # | 问题 | 严重程度 | 文件 |
 |---|------|----------|------|
 | L-1 | **Hero 区域平淡**，数据展示与首页分离，视觉冲击不足 | 低 | `src/pages/HomePage.tsx` |
-| L-2 | **详情页缩略图布局不合理**，左侧大图右侧信息不符合移动端习惯 | 中 | `src/pages/ProjectDetail.tsx` |
+| L-2 | **详情页缩略图布局不合理**，左侧大图右侧信息不符合移动端习惯 → ✅ 已修复 | 中 | `src/pages/ProjectDetail.tsx` |
 | L-3 | **搜索框和 FilterBar 区域重叠**，两者同时存在时视觉混乱 | 低 | `src/pages/HomePage.tsx` |
 | L-4 | **Footer 内容单薄**，仅有版权信息 | 低 | `src/App.tsx` |
 
