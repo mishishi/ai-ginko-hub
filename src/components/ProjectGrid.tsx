@@ -14,7 +14,25 @@ export default function ProjectGrid({ projects, loading, hasMore, loadingMore, o
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {[...Array(6)].map((_, i) => (
-          <div key={i} className="bg-bg-card border border-border rounded-xl h-48 animate-pulse" />
+          <div key={i} className="bg-bg-card border border-border rounded-xl overflow-hidden animate-pulse">
+            {/* Thumbnail */}
+            <div className="aspect-[16/10] bg-bg-elevated" />
+            {/* Body */}
+            <div className="p-4 pb-6 space-y-3">
+              <div className="h-2 w-16 rounded bg-bg-elevated" />
+              <div className="flex items-center gap-2">
+                <div className="h-5 w-32 rounded bg-bg-elevated" />
+              </div>
+              <div className="space-y-1.5">
+                <div className="h-3 w-full rounded bg-bg-elevated" />
+                <div className="h-3 w-3/4 rounded bg-bg-elevated" />
+              </div>
+              <div className="flex gap-2">
+                <div className="h-5 w-16 rounded-full bg-bg-elevated" />
+                <div className="h-5 w-12 rounded-full bg-bg-elevated" />
+              </div>
+            </div>
+          </div>
         ))}
       </div>
     );

@@ -11,7 +11,7 @@ function generateId(): string {
 
 export async function favoriteRoutes(app: FastifyInstance) {
   // GET /api/favorites - 获取当前用户所有收藏
-  app.get('/api/favorites', { preHandler: requireClerkAuth }, async (request, reply) => {
+  app.get('/api/favorites', { preHandler: requireClerkAuth }, async (request, _reply) => {
     const userId = request.clerkUser!.userId;
 
     const db = await getDb();

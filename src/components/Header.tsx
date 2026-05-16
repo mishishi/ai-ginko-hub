@@ -32,6 +32,9 @@ export default function Header({ searchQuery = '', onSearchChange }: Props) {
         <nav aria-label="主导航" className="hidden sm:flex items-center gap-1">
           <Link to="/" className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary rounded-md transition-colors duration-200">项目</Link>
           <Link to="/about" className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary rounded-md transition-colors duration-200">关于</Link>
+          {isSignedIn && (
+            <Link to="/profile" className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary rounded-md transition-colors duration-200">个人中心</Link>
+          )}
         </nav>
 
         {onSearchChange && (

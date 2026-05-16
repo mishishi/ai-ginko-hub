@@ -7,6 +7,7 @@ export const projects = sqliteTable('projects', {
   tags: text('tags').notNull(), // JSON array string
   url: text('url').notNull(),
   thumbnail: text('thumbnail'), // R2 URL
+  repoUrl: text('repo_url'),
   createdAt: text('created_at').notNull(), // ISO date string
   featured: integer('featured', { mode: 'boolean' }).default(false),
   ogTitle: text('og_title'),

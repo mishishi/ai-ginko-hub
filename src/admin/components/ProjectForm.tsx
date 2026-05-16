@@ -13,6 +13,7 @@ export interface ProjectFormData {
   description: string;
   tags: string[];
   url: string;
+  repoUrl: string;
   thumbnail: string;
   featured: boolean;
   ogTitle: string;
@@ -25,6 +26,7 @@ const EMPTY: ProjectFormData = {
   description: '',
   tags: [],
   url: '',
+  repoUrl: '',
   thumbnail: '',
   featured: false,
   ogTitle: '',
@@ -120,6 +122,17 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
           className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20"
           placeholder="https://github.com/username/project"
           required
+        />
+      </Field>
+
+      {/* Repo URL */}
+      <Field label="源码链接">
+        <input
+          type="url"
+          value={form.repoUrl}
+          onChange={(e) => set('repoUrl', e.target.value)}
+          className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20"
+          placeholder="https://github.com/username/repo"
         />
       </Field>
 

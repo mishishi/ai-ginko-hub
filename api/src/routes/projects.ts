@@ -22,14 +22,15 @@ function serializeTags(tags: string[]): string {
 }
 
 export async function projectRoutes(app: FastifyInstance) {
-  // GET /api/projects - List all projects with optional filtering and pagination
+  // GET /api/projects - List all projects with optional filtering, sorting and pagination
   app.get('/api/projects', async (request, reply) => {
     const db = await getDb();
-    const { tag, q, limit, offset } = request.query as {
+    const { tag, q, limit, offset, sort } = request.query as {
       tag?: string;
       q?: string;
       limit?: string;
       offset?: string;
+      sort?: string;
     };
 
     let results = await db.select().from(projects).all();
@@ -55,13 +56,35 @@ export async function projectRoutes(app: FastifyInstance) {
       });
     }
 
+    // Sort results
+    switch (sort) {
+      case 'name':
+        results.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case 'date':
+        results.sort((a, b) => (b.createdAtTs ?? 0) - (a.createdAtTs ?? 0));
+        break;
+      case 'views':
+        results.sort((a, b) => (b.viewCount ?? 0) - (a.viewCount ?? 0));
+        break;
+      case 'featured':
+        results.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+        break;
+      default:
+        // default: sort by featured first, then by createdAtTs desc
+        results.sort((a, b) => {
+          if (a.featured !== b.featured) return a.featured ? -1 : 1;
+          return (b.createdAtTs ?? 0) - (a.createdAtTs ?? 0);
+        });
+    }
+
     const total = results.length;
 
     // Apply pagination
-    const parsedLimit = parseInt(limit, 10);
+    const parsedLimit = parseInt(limit ?? '', 10);
     const limitNum = Number.isNaN(parsedLimit) ? 12 : Math.min(parsedLimit, 100);
 
-    const parsedOffset = parseInt(offset, 10);
+    const parsedOffset = parseInt(offset ?? '', 10);
     const offsetNum = Number.isNaN(parsedOffset) ? 0 : Math.max(0, parsedOffset);
     const paginatedResults = results.slice(offsetNum, offsetNum + limitNum);
 
@@ -110,6 +133,7 @@ export async function projectRoutes(app: FastifyInstance) {
       tags: string[];
       url: string;
       thumbnail?: string;
+      repoUrl?: string;
       createdAt?: string;
       featured?: boolean;
       ogTitle?: string;
@@ -131,6 +155,7 @@ export async function projectRoutes(app: FastifyInstance) {
       tags: serializeTags(body.tags),
       url: body.url,
       thumbnail: body.thumbnail || null,
+      repoUrl: body.repoUrl || null,
       createdAt: body.createdAt || new Date().toISOString(),
       featured: body.featured || false,
       ogTitle: body.ogTitle || null,
@@ -160,6 +185,7 @@ export async function projectRoutes(app: FastifyInstance) {
       tags?: string[];
       url?: string;
       thumbnail?: string;
+      repoUrl?: string;
       featured?: boolean;
       ogTitle?: string;
       ogDescription?: string;
@@ -180,6 +206,7 @@ export async function projectRoutes(app: FastifyInstance) {
       tags: body.tags !== undefined ? serializeTags(body.tags) : current.tags,
       url: body.url ?? current.url,
       thumbnail: body.thumbnail !== undefined ? body.thumbnail : current.thumbnail,
+      repoUrl: body.repoUrl !== undefined ? body.repoUrl : current.repoUrl,
       featured: body.featured !== undefined ? body.featured : current.featured,
       ogTitle: body.ogTitle !== undefined ? body.ogTitle : current.ogTitle,
       ogDescription: body.ogDescription !== undefined ? body.ogDescription : current.ogDescription,

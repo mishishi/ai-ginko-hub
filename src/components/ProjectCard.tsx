@@ -16,6 +16,7 @@ export default function ProjectCard({ project, index }: Props) {
   const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
   const { isFavorited, toggle } = useFavorites();
   const [toggling, setToggling] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   const gradient = cardGradients[index % cardGradients.length];
   const isFav = isFavorited(project.id);
@@ -58,7 +59,9 @@ export default function ProjectCard({ project, index }: Props) {
             src={project.thumbnail}
             alt={project.name}
             loading="lazy"
-            className="absolute inset-0 w-full h-full object-cover"
+            fetchPriority={index < 3 ? 'high' : 'low'}
+            onLoad={() => setImgLoaded(true)}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
           />
         )}
         <div aria-hidden="true" className="absolute inset-0 bg-black/50 flex items-center justify-center gap-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100">

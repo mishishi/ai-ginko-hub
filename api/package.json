@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 tsx watch src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "test": "vitest",
+    "test:run": "vitest run"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.750.0",
@@ -29,6 +31,7 @@
     "@types/uuid": "^10.0.0",
     "drizzle-kit": "^0.30.5",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vitest": "^3.2.4"
   }
 }

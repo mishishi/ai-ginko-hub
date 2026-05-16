@@ -32,7 +32,6 @@ export async function requireClerkAuth(
   try {
     const result = await verifyToken(sessionToken, {
       secretKey: process.env.CLERK_SECRET_KEY,
-      issuer: process.env.CLERK_ISSUER,
       audience: process.env.CLERK_AUDIENCE,
     });
 

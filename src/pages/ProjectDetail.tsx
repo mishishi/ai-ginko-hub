@@ -1,13 +1,15 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchProject, fetchProjects } from '../data/projects';
 import { cardGradients } from '../data/cardGradients';
 import Header from '../components/Header';
 import type { Project } from '../types';
 import { useScrollReveal } from '../hooks/useScrollReveal';
+import { useFavorites } from '../hooks/useFavorites';
 
 function RelatedProjectCard({ project, index, onClick }: { project: Project; index: number; onClick: () => void }) {
   const { ref, isVisible } = useScrollReveal<HTMLDivElement>();
+  const [imgLoaded, setImgLoaded] = useState(false);
   const gradient = cardGradients[index % cardGradients.length];
 
   return (
@@ -28,7 +30,13 @@ function RelatedProjectCard({ project, index, onClick }: { project: Project; ind
     >
       <div className="relative w-full aspect-[16/10] overflow-hidden" style={{ background: gradient }}>
         {project.thumbnail && (
-          <img src={project.thumbnail} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+          <img
+            src={project.thumbnail}
+            alt=""
+            loading="lazy"
+            onLoad={() => setImgLoaded(true)}
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
+          />
         )}
         <div aria-hidden="true" className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
           <span className="flex items-center gap-2 px-5 py-3 min-h-[44px] border border-white/30 rounded-lg text-white text-sm font-medium backdrop-blur-[4px] translate-y-2 transition-all duration-200 group-hover:bg-white/10 group-hover:border-white/50">
@@ -58,6 +66,15 @@ export default function ProjectDetail() {
   const [project, setProject] = useState<Project | null>(null);
   const [allProjects, setAllProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const { isFavorited, toggle } = useFavorites();
+  const [toggling, setToggling] = useState(false);
+
+  const handleToggleFavorite = useCallback(async () => {
+    if (!project) return;
+    setToggling(true);
+    await toggle(project.id);
+    setToggling(false);
+  }, [project, toggle]);
 
   useEffect(() => {
     if (!id) return;
@@ -114,25 +131,19 @@ export default function ProjectDetail() {
     };
   }, [project]);
 
-  // Related projects: filter by shared tags, shuffle, take 2-3
-  function shuffle<T>(arr: T[]): T[] {
-    const a = [...arr];
-    for (let i = a.length - 1; i > 0; i--) {
-      // eslint-disable-next-line react-hooks/purity
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  }
-
+  // Related projects: filter by shared tags, sort deterministically by project.id, take 2-3
   const relatedProjects = useMemo(() => {
     if (!project) return [];
-    return shuffle(
-      allProjects.filter((p) => {
+    return allProjects
+      .filter((p) => {
         if (p.id === project.id) return false;
         return p.tags.some((tag) => project.tags.includes(tag));
       })
-    ).slice(0, 3);
+      .sort((a, b) => {
+        // Deterministic sort: compare by id string to avoid ref-dependent ordering
+        return a.id.localeCompare(b.id);
+      })
+      .slice(0, 3);
   }, [project, allProjects]);
 
   if (loading) {
@@ -170,6 +181,7 @@ export default function ProjectDetail() {
                     src={project.thumbnail}
                     alt=""
                     loading="lazy"
+                    fetchPriority="high"
                     className="w-full sm:w-[120px] h-[200px] sm:h-[75px] object-cover rounded-lg"
                   />
                 </div>
@@ -208,6 +220,21 @@ export default function ProjectDetail() {
                           源码
                         </a>
                       )}
+                      <button
+                        onClick={handleToggleFavorite}
+                        disabled={toggling}
+                        className={`flex items-center gap-1.5 text-sm transition-colors duration-200 ${
+                          isFavorited(project.id)
+                            ? 'text-accent hover:text-accent-dim'
+                            : 'text-text-muted hover:text-accent'
+                        }`}
+                        aria-label={isFavorited(project.id) ? '取消收藏' : '添加收藏'}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill={isFavorited(project.id) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                        </svg>
+                        {isFavorited(project.id) ? '已收藏' : '收藏'}
+                      </button>
                     </div>
                     <h1 className="font-heading text-3xl sm:text-4xl text-text-primary mb-3 leading-tight">
                       {project.name}
