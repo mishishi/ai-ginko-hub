@@ -22,10 +22,12 @@ export default function HomePage() {
     () => new URLSearchParams(window.location.search).get('tag') || null
   );
   const isPopStateRef = useRef(false);
+  const isInitialMount = useRef(true);
 
   // Initial load — fetch first page only
   useEffect(() => {
-    fetchProjects(undefined, undefined, PAGE_SIZE, 0)
+    const controller = new AbortController();
+    fetchProjects(undefined, undefined, PAGE_SIZE, 0, controller.signal)
       .then(({ projects: data, total: totalCount }) => {
         setProjects(data);
         setTotal(totalCount);
@@ -34,14 +36,21 @@ export default function HomePage() {
       })
       .catch(() => setProjects([]))
       .finally(() => setLoading(false));
+    return () => controller.abort();
   }, []);
 
   // Reload when filter/search changes — reset pagination
   useEffect(() => {
+    // Skip fetch on initial mount; the initial-load effect handles it.
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    const controller = new AbortController();
     setLoading(true);
     setPage(0);
     setHasMore(true);
-    fetchProjects(activeTag || undefined, searchQuery || undefined, PAGE_SIZE, 0)
+    fetchProjects(activeTag || undefined, searchQuery || undefined, PAGE_SIZE, 0, controller.signal)
       .then(({ projects: data, total: totalCount }) => {
         setProjects(data);
         setTotal(totalCount);
@@ -50,10 +59,13 @@ export default function HomePage() {
       })
       .catch(() => setProjects([]))
       .finally(() => setLoading(false));
+    return () => controller.abort();
   }, [activeTag, searchQuery]);
 
   const loadMore = useCallback(async () => {
-    if (loadingMore || !hasMore) return;
+    const currentLoadingMore = loadingMore;
+    const currentHasMore = hasMore;
+    if (currentLoadingMore || !currentHasMore) return;
     setLoadingMore(true);
     const offset = page * PAGE_SIZE;
     try {
@@ -72,7 +84,7 @@ export default function HomePage() {
     } finally {
       setLoadingMore(false);
     }
-  }, [page, activeTag, searchQuery, projects.length, hasMore, loadingMore]);
+  }, [page, activeTag, searchQuery]);
 
   // Sync filter state to URL — pushState so back/forward navigation works
   useEffect(() => {
