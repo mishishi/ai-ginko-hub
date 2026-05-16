@@ -2,6 +2,9 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAdminAuth } from './hooks/useAdminAuth';
 import LoginPage from './pages/LoginPage';
 import AdminLayout from './components/AdminLayout';
+import DashboardPage from './pages/DashboardPage';
+import ProjectListPage from './pages/ProjectListPage';
+import ProjectFormPage from './pages/ProjectFormPage';
 
 export default function AdminApp() {
   const { token, isLoading } = useAdminAuth();
@@ -26,7 +29,10 @@ export default function AdminApp() {
   return (
     <Routes>
       <Route path="/" element={<AdminLayout />}>
-        {/* Routes added in Task 9 */}
+        <Route index element={<DashboardPage />} />
+        <Route path="projects" element={<ProjectListPage />} />
+        <Route path="projects/new" element={<ProjectFormPage />} />
+        <Route path="projects/:id/edit" element={<ProjectFormPage />} />
       </Route>
     </Routes>
   );
