@@ -9,37 +9,47 @@ interface AuthState {
   isLoading: boolean;
 }
 
+function getInitialAuthState(): AuthState {
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (!token) {
+    return { token: null, username: null, isLoading: false };
+  }
+  return { token, username: null, isLoading: true };
+}
+
 export function useAdminAuth() {
-  const [auth, setAuth] = useState<AuthState>(() => ({
-    token: localStorage.getItem(TOKEN_KEY),
-    username: null,
-    isLoading: true,
-  }));
+  const [auth, setAuth] = useState<AuthState>(getInitialAuthState);
 
   // Verify token on mount
   useEffect(() => {
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (!token) {
-      setAuth({ token: null, username: null, isLoading: false });
+    if (!auth.token) {
       return;
     }
 
+    let cancelled = false;
+
     fetch(`${API_BASE}/api/auth/me`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${auth.token}` },
     })
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
+        if (cancelled) return;
         setAuth({
-          token,
+          token: auth.token,
           username: data?.username || null,
           isLoading: false,
         });
       })
       .catch(() => {
+        if (cancelled) return;
         localStorage.removeItem(TOKEN_KEY);
         setAuth({ token: null, username: null, isLoading: false });
       });
-  }, []);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [auth.token]);
 
   const login = useCallback(async (username: string, password: string) => {
     const res = await fetch(`${API_BASE}/api/auth/login`, {

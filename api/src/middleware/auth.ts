@@ -29,7 +29,10 @@ export async function requireAuth(
 
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET);
-    request.user = payload as AuthUser;
+    request.user = {
+      sub: Number(payload.sub),
+      username: (payload as { username?: string }).username ?? '',
+    };
   } catch {
     reply.status(401).send({ error: 'Invalid token' });
   }

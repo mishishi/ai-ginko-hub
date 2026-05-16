@@ -30,7 +30,7 @@ export async function authRoutes(app: FastifyInstance) {
       return reply.status(401).send({ error: 'Invalid credentials' });
     }
 
-    const token = await new SignJWT({ sub: user.id, username: user.username })
+    const token = await new SignJWT({ sub: String(user.id), username: user.username })
       .setProtectedHeader({ alg: 'HS256' })
       .setExpirationTime('7d')
       .sign(JWT_SECRET);

@@ -22,7 +22,7 @@ function serializeTags(tags: string[]): string {
 
 export async function projectRoutes(app: FastifyInstance) {
   // GET /api/projects - List all projects with optional filtering
-  app.get('/api/projects', async (request, reply) => {
+  app.get('/api/projects', async (request) => {
     const db = await getDb();
     const { tag, q } = request.query as { tag?: string; q?: string };
 

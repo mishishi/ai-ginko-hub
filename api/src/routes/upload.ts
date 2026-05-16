@@ -24,7 +24,19 @@ export async function uploadRoutes(app: FastifyInstance) {
       return reply.status(400).send({ error: 'filename and contentType required' });
     }
 
-    const key = `uploads/${Date.now()}-${filename}`;
+    // Sanitize filename: strip path components and reject path traversal
+    const safeName = filename.replace(/^.*[/\\]/, '').replace(/\.\./g, '');
+    if (!safeName || safeName !== filename.replace(/^.*[/\\]/, '')) {
+      return reply.status(400).send({ error: 'invalid filename' });
+    }
+
+    // Validate content-type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
+    if (!allowedTypes.includes(contentType)) {
+      return reply.status(400).send({ error: 'unsupported content type' });
+    }
+
+    const key = `uploads/${Date.now()}-${safeName}`;
     const client = getR2Client();
     const command = new PutObjectCommand({
       Bucket: process.env.CLOUDFLARE_BUCKET!,
