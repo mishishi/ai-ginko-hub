@@ -1,9 +1,16 @@
-import { projects, allTags } from '../data/projects';
 import { tagColors } from '../data/tagColors';
 import Header from '../components/Header';
 
-const totalProjects = projects.length;
-const featuredCount = projects.filter((p) => p.featured).length;
+const totalProjects = 10;
+const featuredCount = 4;
+
+const allTags = [
+  'AI', 'Audio', 'Dashboard', 'D3.js', 'Developer Tools', 'Education',
+  'FFmpeg', 'LLM', 'Low-Code', 'Media', 'NLP', 'Node.js', 'Productivity',
+  'Python', 'React', 'Recommendation', 'SaaS', 'Stable Diffusion',
+  'TypeScript', 'VS Code', 'Vue 3', 'WebRTC', 'Writing', 'Next.js',
+];
+
 const techStackCount = allTags.length;
 
 export default function About() {
