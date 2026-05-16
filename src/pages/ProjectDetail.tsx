@@ -200,6 +200,7 @@ export default function ProjectDetail() {
             </div>
 
             {/* Tags */}
+            <h2 className="sr-only">标签</h2>
             <div className="flex flex-wrap gap-2 mb-6">
               {project.tags.map((tag) => {
                 const key = tag.toLowerCase().replace(/\s+/g, '-').replace(/\./g, '');
