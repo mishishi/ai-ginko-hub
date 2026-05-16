@@ -2,6 +2,7 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import cookie from '@fastify/cookie';
 import rateLimit from '@fastify/rate-limit';
+import { clerkPlugin } from '@clerk/fastify';
 import { authRoutes } from './routes/auth.js';
 import { projectRoutes } from './routes/projects.js';
 import { statsRoutes } from './routes/stats.js';
@@ -18,6 +19,11 @@ export async function buildApp() {
   });
 
   await app.register(cookie);
+
+  await app.register(clerkPlugin, {
+    publishableKey: process.env.CLERK_PUBLISHABLE_KEY,
+    secretKey: process.env.CLERK_SECRET_KEY,
+  });
 
   // Global rate limit: 100 req/min per IP
   await app.register(rateLimit, {
