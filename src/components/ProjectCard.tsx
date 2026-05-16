@@ -42,7 +42,7 @@ export default function ProjectCard({ project, index }: Props) {
         {project.thumbnail && (
           <img
             src={project.thumbnail}
-            alt=""
+            alt={project.name}
             className="absolute inset-0 w-full h-full object-cover"
           />
         )}

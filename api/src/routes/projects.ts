@@ -1,11 +1,12 @@
 import type { FastifyInstance } from 'fastify';
+import { v4 as uuidv4 } from 'uuid';
 import { getDb, saveDb } from '../db/index.js';
 import { projects } from '../db/schema.js';
 import { eq } from 'drizzle-orm';
 import { requireAuth } from '../middleware/auth.js';
 
 function generateId(): string {
-  return Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 10);
+  return uuidv4();
 }
 
 function parseTags(tagsJson: string): string[] {

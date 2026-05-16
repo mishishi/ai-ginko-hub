@@ -8,4 +8,8 @@ export interface Project {
   repoUrl?: string;
   createdAt: string;
   featured?: boolean;
+  viewCount?: number;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
 }
