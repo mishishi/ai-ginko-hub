@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#0f3460"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#c97d5c"/>
+      <stop offset="100%" stop-color="#e8a87c"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <!-- React atom orbits -->
+  <ellipse cx="400" cy="250" rx="160" ry="60" fill="none" stroke="#c97d5c" stroke-width="1.5" opacity="0.3" transform="rotate(-30 400 250)"/>
+  <ellipse cx="400" cy="250" rx="160" ry="60" fill="none" stroke="#c97d5c" stroke-width="1.5" opacity="0.3" transform="rotate(30 400 250)"/>
+  <ellipse cx="400" cy="250" rx="160" ry="60" fill="none" stroke="#c97d5c" stroke-width="1.5" opacity="0.3" transform="rotate(90 400 250)"/>
+  <!-- React core -->
+  <circle cx="400" cy="250" r="28" fill="#c97d5c" opacity="0.9"/>
+  <circle cx="400" cy="250" r="18" fill="#1a1a2e"/>
+  <!-- Component blocks -->
+  <rect x="120" y="160" width="180" height="100" rx="12" fill="#1a2a4a" stroke="url(#accent)" stroke-width="2"/>
+  <rect x="135" y="175" width="80" height="12" rx="4" fill="#c97d5c" opacity="0.8"/>
+  <rect x="135" y="195" width="120" height="8" rx="3" fill="#3a4a6a" opacity="0.6"/>
+  <rect x="135" y="210" width="100" height="8" rx="3" fill="#3a4a6a" opacity="0.6"/>
+  <rect x="135" y="225" width="140" height="8" rx="3" fill="#3a4a6a" opacity="0.6"/>
+  <rect x="135" y="240" width="60" height="8" rx="3" fill="#7d9a8e" opacity="0.5"/>
+  <!-- Second block -->
+  <rect x="500" y="200" width="180" height="120" rx="12" fill="#1a2a4a" stroke="url(#accent)" stroke-width="2"/>
+  <rect x="515" y="215" width="100" height="12" rx="4" fill="#c97d5c" opacity="0.8"/>
+  <rect x="515" y="235" width="150" height="8" rx="3" fill="#3a4a6a" opacity="0.6"/>
+  <rect x="515" y="250" width="120" height="8" rx="3" fill="#3a4a6a" opacity="0.6"/>
+  <rect x="515" y="265" width="80" height="8" rx="3" fill="#3a4a6a" opacity="0.6"/>
+  <rect x="515" y="280" width="140" height="8" rx="3" fill="#7d9a8e" opacity="0.5"/>
+  <!-- Connection lines -->
+  <line x1="300" y1="210" x2="500" y2="240" stroke="#c97d5c" stroke-width="1.5" opacity="0.4" stroke-dasharray="6 4"/>
+  <!-- Bottom decoration -->
+  <rect x="320" y="380" width="160" height="60" rx="10" fill="#1a2a4a" stroke="#3a4a6a" stroke-width="1.5"/>
+  <rect x="335" y="395" width="60" height="10" rx="3" fill="#c97d5c" opacity="0.7"/>
+  <rect x="335" y="412" width="130" height="6" rx="2" fill="#3a4a6a" opacity="0.5"/>
+  <rect x="335" y="424" width="90" height="6" rx="2" fill="#3a4a6a" opacity="0.5"/>
+</svg>
