@@ -33,7 +33,7 @@ export default function Header({ searchQuery = '', onSearchChange }: Props) {
         </nav>
 
         {onSearchChange && (
-          <div className="relative flex-1 max-w-48 sm:max-w-80">
+          <div className="relative flex-1 max-w-48 sm:max-w-xl">
             <svg
               className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
               width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
