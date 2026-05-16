@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import FilterBar from '../components/FilterBar';
 import ProjectGrid from '../components/ProjectGrid';
-import { projects as staticProjects } from '../data/projects';
+import { fetchProjects } from '../data/projects';
 import type { Project } from '../types';
 
 export default function HomePage() {
@@ -18,9 +18,10 @@ export default function HomePage() {
   const isPopStateRef = useRef(false);
 
   useEffect(() => {
-    // Use static data directly for portfolio site
-    setProjects(staticProjects);
-    setLoading(false);
+    fetchProjects()
+      .then(setProjects)
+      .catch(() => setProjects([]))
+      .finally(() => setLoading(false));
   }, []);
 
   // Sync filter state to URL — pushState so back/forward navigation works

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { projects } from '../data/projects';
+import { fetchProject } from '../data/projects';
 import { cardGradients } from '../data/cardGradients';
 import { tagColors } from '../data/tagColors';
 import Header from '../components/Header';
@@ -61,10 +61,10 @@ export default function ProjectDetail() {
 
   useEffect(() => {
     if (!id) return;
-    // Use static data directly for portfolio site
-    const staticProject = projects.find((p) => p.id === id);
-    setProject(staticProject || null);
-    setLoading(false);
+    fetchProject(id)
+      .then(setProject)
+      .catch(() => setProject(null))
+      .finally(() => setLoading(false));
   }, [id]);
 
   useEffect(() => {
