@@ -12,6 +12,9 @@ export interface FavoriteItem {
 // Module-level singleton — shared across all hook instances
 let _favorites: FavoriteItem[] = [];
 let _loading = false;
+let _fetchLock = true; // Start locked — only first caller unlocks after fetch
+let _fetchedForUserId: string | null = null; // Track which user we've fetched for
+let _fetchPromise: Promise<void> | null = null; // In-flight fetch to share across instances
 let _listeners: Array<(favs: FavoriteItem[]) => void> = [];
 let _loadingListeners: Array<(loading: boolean) => void> = [];
 
@@ -27,6 +30,9 @@ export function useFavorites() {
   const { isSignedIn, getToken } = useAuth();
   const [favoritesSnapshot, setFavoritesSnapshot] = useState<FavoriteItem[]>(_favorites);
   const [loadingSnapshot, setLoadingSnapshot] = useState(_loading);
+
+  // Stabilize getToken — Clerk's hook returns an unstable reference
+  const stableGetToken = useCallback(() => getToken(), [getToken]);
 
   useEffect(() => {
     if (!isSignedIn) {
@@ -44,35 +50,61 @@ export function useFavorites() {
     setLoadingSnapshot(_loading);
 
     return () => {
-      _listeners = _listeners.filter((l) => l !== favListener);
-      _loadingListeners = _loadingListeners.filter((l) => l !== loadingListener);
+      _listeners.splice(_listeners.indexOf(favListener), 1);
+      _loadingListeners.splice(_loadingListeners.indexOf(loadingListener), 1);
     };
   }, [isSignedIn]);
 
-  // Fetch favorites once (module-level guard)
+  // Fetch favorites once — join in-flight fetch if one exists, avoid duplicate requests
   useEffect(() => {
-    if (!isSignedIn || _loading) return;
+    if (!isSignedIn) return;
 
-    _loading = true;
-    _notifyLoading();
-    getToken()
-      .then((token) =>
-        fetch(`${API_BASE}/api/favorites`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }).then((r) => r.json())
-      )
-      .then((data: FavoriteItem[]) => {
-        if (Array.isArray(data)) {
-          _favorites = data;
-          _notify();
-        }
-      })
-      .catch(() => toast.error('加载收藏失败'))
-      .finally(() => {
+    // If already fetched for this user, notify with cached data and done
+    if (_fetchedForUserId) {
+      _notify();
+      _notifyLoading();
+      return;
+    }
+
+    // If a fetch is already in-flight, wait for it instead of starting another
+    if (_fetchPromise) {
+      _loading = true;
+      _notifyLoading();
+      _fetchPromise.then(() => {
         _loading = false;
         _notifyLoading();
       });
-  }, [isSignedIn, getToken]);
+      return;
+    }
+
+    // First caller — acquire lock and start fetch
+    _fetchLock = false; // allow other callers to fall through above
+    _loading = true;
+    _notifyLoading();
+
+    _fetchPromise = stableGetToken().then((token) => {
+      if (_fetchedForUserId === token) return;
+
+      return fetch(`${API_BASE}/api/favorites`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((r) => r.json())
+        .then((data: FavoriteItem[]) => {
+          if (Array.isArray(data)) {
+            _favorites = data;
+            _fetchedForUserId = token;
+            _notify();
+          }
+        })
+        .catch(() => toast.error('加载收藏失败'))
+        .finally(() => {
+          _loading = false;
+          _fetchLock = true; // reset lock
+          _fetchPromise = null;
+          _notifyLoading();
+        });
+    });
+  }, [isSignedIn, stableGetToken]);
 
   const toggle = useCallback(
     async (projectId: string) => {
@@ -82,7 +114,7 @@ export function useFavorites() {
       }
 
       const isFav = _favorites.some((f) => f.projectId === projectId);
-      const token = await getToken();
+      const token = await stableGetToken();
 
       // Optimistic update
       if (isFav) {
@@ -135,7 +167,7 @@ export function useFavorites() {
         toast.error('操作失败，请重试');
       }
     },
-    [isSignedIn, getToken]
+    [isSignedIn, stableGetToken]
   );
 
   const isFavorited = useCallback(

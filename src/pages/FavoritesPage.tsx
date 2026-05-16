@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@clerk/react';
 import Header from '../components/Header';
 import ProjectGrid from '../components/ProjectGrid';
@@ -11,7 +11,6 @@ export default function FavoritesPage() {
   const { favorites, loading: favoritesLoading } = useFavorites();
   const [projects, setProjects] = useState<Project[]>([]);
   const [projectsLoading, setProjectsLoading] = useState(true);
-  const initialFetchDone = useRef(false);
 
   // Redirect if not signed in
   useEffect(() => {
@@ -22,8 +21,7 @@ export default function FavoritesPage() {
 
   // Fetch project details once when favorites are loaded
   useEffect(() => {
-    if (favoritesLoading || initialFetchDone.current) return;
-    initialFetchDone.current = true;
+    if (favoritesLoading) return;
 
     if (favorites.length === 0) {
       setProjects([]);
@@ -31,6 +29,7 @@ export default function FavoritesPage() {
       return;
     }
 
+    setProjectsLoading(true);
     const projectIds = favorites.map((f) => f.projectId);
     Promise.all(
       projectIds.map((id) =>
@@ -41,6 +40,9 @@ export default function FavoritesPage() {
     ).then((results) => {
       const valid = results.filter((p): p is Project => p != null && p.id != null);
       setProjects(valid);
+    }).catch(() => {
+      setProjects([]);
+    }).finally(() => {
       setProjectsLoading(false);
     });
   }, [favorites, favoritesLoading]);
