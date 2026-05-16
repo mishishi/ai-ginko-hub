@@ -9,13 +9,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dbPath = path.resolve(__dirname, '../../data.db');
 
 let db: ReturnType<typeof drizzle> | null = null;
+let rawDb: Database | null = null;
 
 export async function getDb() {
   if (db) return db;
 
   const SQL = await initSqlJs();
-
-  let rawDb: Database;
 
   // Load existing data if file exists
   try {
@@ -32,6 +31,15 @@ export async function getDb() {
 
   db = drizzle(rawDb, { schema });
   return db;
+}
+
+export async function saveDb() {
+  if (rawDb) {
+    const data = rawDb.export();
+    const buffer = Buffer.from(data);
+    const fs = await import('fs');
+    fs.writeFileSync(dbPath, buffer);
+  }
 }
 
 export { schema };

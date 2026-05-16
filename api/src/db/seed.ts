@@ -1,4 +1,4 @@
-import { getDb, schema } from './index.js';
+import { getDb, saveDb, schema } from './index.js';
 import { hashPassword } from '../utils/password.js';
 import 'dotenv/config';
 
@@ -9,11 +9,11 @@ async function seed() {
   const db = await getDb();
   const passwordHash = hashPassword(ADMIN_PASSWORD);
 
-  db.insert(schema.admin)
+  await db.insert(schema.admin)
     .values({ username: ADMIN_USERNAME, passwordHash })
-    .onConflictDoNothing()
-    .run();
+    .onConflictDoNothing();
 
+  await saveDb();
   console.log(`Admin seeded: ${ADMIN_USERNAME}`);
 }
 
