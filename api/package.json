@@ -12,6 +12,7 @@
     "@aws-sdk/s3-request-presigner": "^3.1048.0",
     "@fastify/cookie": "^11.0.2",
     "@fastify/cors": "^10.0.2",
+    "@fastify/rate-limit": "^10.3.0",
     "@libsql/client": "^0.17.3",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.7",

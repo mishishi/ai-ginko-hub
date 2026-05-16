@@ -9,7 +9,11 @@ import { requireAuth } from '../middleware/auth.js';
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
 export async function authRoutes(app: FastifyInstance) {
-  app.post('/api/auth/login', async (request, reply) => {
+  app.post('/api/auth/login', {
+    config: {
+      rateLimit: { max: 10, timeWindow: '1 minute' },
+    },
+  }, async (request, reply) => {
     const { username, password } = request.body as { username?: string; password?: string };
 
     if (!username || !password) {
