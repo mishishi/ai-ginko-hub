@@ -90,3 +90,21 @@ export const projects: Project[] = [
 export const allTags = Array.from(
   new Set(projects.flatMap((p) => p.tags))
 ).sort();
+
+export async function fetchProjects(tag?: string, q?: string): Promise<Project[]> {
+  const params = new URLSearchParams();
+  if (tag) params.set('tag', tag);
+  if (q) params.set('q', q);
+  const url = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/projects${params.toString() ? '?' + params.toString() : ''}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to fetch projects');
+  return res.json();
+}
+
+export async function fetchProject(id: string): Promise<Project> {
+  const res = await fetch(
+    `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/projects/${id}`
+  );
+  if (!res.ok) throw new Error('Project not found');
+  return res.json();
+}
