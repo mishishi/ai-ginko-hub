@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import FilterBar from '../components/FilterBar';
@@ -6,9 +6,15 @@ import ProjectGrid from '../components/ProjectGrid';
 import { fetchProjects } from '../data/projects';
 import type { Project } from '../types';
 
+const PAGE_SIZE = 12;
+
 export default function HomePage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [total, setTotal] = useState(0);
   const [searchQuery, setSearchQuery] = useState(
     () => new URLSearchParams(window.location.search).get('q') || ''
   );
@@ -17,12 +23,54 @@ export default function HomePage() {
   );
   const isPopStateRef = useRef(false);
 
+  // Initial load — fetch first page only
   useEffect(() => {
-    fetchProjects()
-      .then(setProjects)
+    fetchProjects(undefined, undefined, PAGE_SIZE, 0)
+      .then(({ projects: data, total: totalCount }) => {
+        setProjects(data);
+        setTotal(totalCount);
+        setHasMore(data.length < totalCount);
+        setPage(1);
+      })
       .catch(() => setProjects([]))
       .finally(() => setLoading(false));
   }, []);
+
+  // Reload when filter/search changes — reset pagination
+  useEffect(() => {
+    setLoading(true);
+    setPage(0);
+    setHasMore(true);
+    fetchProjects(activeTag || undefined, searchQuery || undefined, PAGE_SIZE, 0)
+      .then(({ projects: data, total: totalCount }) => {
+        setProjects(data);
+        setTotal(totalCount);
+        setHasMore(data.length < totalCount);
+        setPage(1);
+      })
+      .catch(() => setProjects([]))
+      .finally(() => setLoading(false));
+  }, [activeTag, searchQuery]);
+
+  const loadMore = useCallback(async () => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    const offset = page * PAGE_SIZE;
+    try {
+      const { projects: data, total: totalCount } = await fetchProjects(
+        activeTag || undefined,
+        searchQuery || undefined,
+        PAGE_SIZE,
+        offset
+      );
+      setProjects((prev) => [...prev, ...data]);
+      setTotal(totalCount);
+      setHasMore(projects.length + data.length < totalCount);
+      setPage((p) => p + 1);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [page, activeTag, searchQuery, projects.length, hasMore, loadingMore]);
 
   // Sync filter state to URL — pushState so back/forward navigation works
   useEffect(() => {
@@ -138,7 +186,13 @@ export default function HomePage() {
           </div>
 
           {/* Project Grid */}
-          <ProjectGrid projects={filtered} loading={loading} />
+          <ProjectGrid
+            projects={filtered}
+            loading={loading}
+            hasMore={hasMore}
+            loadingMore={loadingMore}
+            onLoadMore={loadMore}
+          />
         </div>
       </main>
 
