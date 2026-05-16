@@ -14,10 +14,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('admin_token');
-    fetch(`${API_BASE}/api/stats`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch(`${API_BASE}/api/stats`, { credentials: 'include' })
       .then((r) => r.json())
       .then((data) => {
         setStats(data);

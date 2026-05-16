@@ -18,10 +18,7 @@ export default function ProjectListPage() {
   const [deleting, setDeleting] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('admin_token');
-    fetch(`${API_BASE}/api/projects`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch(`${API_BASE}/api/projects`, { credentials: 'include' })
       .then((r) => r.json())
       .then((data) => {
         setProjects(data);
@@ -33,11 +30,10 @@ export default function ProjectListPage() {
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this project?')) return;
     setDeleting(id);
-    const token = localStorage.getItem('admin_token')!;
-    await fetch(
-      `${API_BASE}/api/projects/${id}`,
-      { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } }
-    );
+    await fetch(`${API_BASE}/api/projects/${id}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    });
     setProjects((prev) => prev.filter((p) => p.id !== id));
     setDeleting(null);
   };

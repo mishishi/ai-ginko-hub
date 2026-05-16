@@ -12,11 +12,7 @@ export default function ProjectFormPage() {
 
   useEffect(() => {
     if (!isEditing) return;
-    const token = localStorage.getItem('admin_token')!;
-    fetch(
-      `${API_BASE}/api/projects/${id}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    )
+    fetch(`${API_BASE}/api/projects/${id}`, { credentials: 'include' })
       .then((r) => r.json())
       .then((data) => {
         setInitialData(data);
@@ -25,17 +21,14 @@ export default function ProjectFormPage() {
   }, [id, isEditing]);
 
   const handleSubmit = async (data: ProjectFormData) => {
-    const token = localStorage.getItem('admin_token')!;
     const url = isEditing
-      ? `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/projects/${id}`
+      ? `${API_BASE}/api/projects/${id}`
       : `${API_BASE}/api/projects`;
 
     await fetch(url, {
       method: isEditing ? 'PUT' : 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify(data),
     });
 

@@ -1,5 +1,6 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import cookie from '@fastify/cookie';
 import { authRoutes } from './routes/auth.js';
 import { projectRoutes } from './routes/projects.js';
 import { statsRoutes } from './routes/stats.js';
@@ -14,6 +15,8 @@ export async function buildApp() {
     origin: ['http://localhost:4000', 'http://localhost:4173'],
     credentials: true,
   });
+
+  await app.register(cookie);
 
   app.get('/health', async () => ({ status: 'ok' }));
 

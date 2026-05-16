@@ -7,8 +7,7 @@ import ProjectListPage from './pages/ProjectListPage';
 import ProjectFormPage from './pages/ProjectFormPage';
 
 function AdminRoutes() {
-  const { token, isLoading } = useAdminAuth();
-  console.log('[AdminRoutes] render', { token: !!token, isLoading, path: window.location.pathname });
+  const { username, isLoading } = useAdminAuth();
 
   if (isLoading) {
     return (
@@ -18,7 +17,7 @@ function AdminRoutes() {
     );
   }
 
-  if (!token) {
+  if (!username) {
     return (
       <Routes>
         <Route path="login" element={<LoginPage />} />

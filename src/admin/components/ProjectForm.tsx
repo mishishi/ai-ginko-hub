@@ -57,18 +57,12 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
   const handleThumbnailUpload = async (file: File) => {
     setUploading(true);
     try {
-      const token = localStorage.getItem('admin_token')!;
-      const presignedRes = await fetch(
-        `${API_BASE}/api/upload`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ filename: file.name, contentType: file.type }),
-        }
-      );
+      const presignedRes = await fetch(`${API_BASE}/api/upload`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ filename: file.name, contentType: file.type }),
+      });
       const { presignedUrl, publicUrl } = await presignedRes.json();
 
       await fetch(presignedUrl, {

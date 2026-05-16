@@ -35,10 +35,24 @@ export async function authRoutes(app: FastifyInstance) {
       .setExpirationTime('7d')
       .sign(JWT_SECRET);
 
-    return { token, username: user.username };
+    const isProd = process.env.NODE_ENV === 'production';
+    reply.setCookie('admin_token', token, {
+      httpOnly: true,
+      sameSite: isProd ? 'strict' : 'lax',
+      secure: isProd,
+      path: '/',
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+    });
+
+    return { username: user.username };
   });
 
   app.get('/api/auth/me', { preHandler: [requireAuth] }, async (request) => {
     return { username: request.user?.username };
+  });
+
+  app.post('/api/auth/logout', async (_request, reply) => {
+    reply.clearCookie('admin_token', { path: '/' });
+    return { ok: true };
   });
 }

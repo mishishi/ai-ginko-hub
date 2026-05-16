@@ -19,13 +19,14 @@ export async function requireAuth(
   reply: FastifyReply
 ): Promise<void> {
   const authHeader = request.headers.authorization;
+  const cookieToken = request.cookies.admin_token;
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : cookieToken;
+
+  if (!token) {
     reply.status(401).send({ error: 'Unauthorized' });
     return;
   }
-
-  const token = authHeader.slice(7);
 
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET);

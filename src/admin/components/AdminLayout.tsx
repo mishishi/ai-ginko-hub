@@ -3,15 +3,15 @@ import { useAdminAuth } from '../contexts/AdminAuthContext';
 import { useEffect } from 'react';
 
 export default function AdminLayout() {
-  const { username, logout, token } = useAdminAuth();
+  const { username, logout } = useAdminAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    if (!token) {
+    if (!username) {
       navigate('/admin/login', { replace: true });
     }
-  }, [token, navigate]);
+  }, [username, navigate]);
 
   const handleLogout = () => {
     logout();
