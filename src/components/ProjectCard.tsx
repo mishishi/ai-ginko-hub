@@ -42,6 +42,7 @@ export default function ProjectCard({ project, index }: Props) {
           <img
             src={project.thumbnail}
             alt={project.name}
+            loading="lazy"
             className="absolute inset-0 w-full h-full object-cover"
           />
         )}

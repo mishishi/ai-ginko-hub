@@ -28,7 +28,7 @@ function RelatedProjectCard({ project, index, onClick }: { project: Project; ind
     >
       <div className="relative w-full aspect-[16/10] overflow-hidden" style={{ background: gradient }}>
         {project.thumbnail && (
-          <img src={project.thumbnail} alt="" className="absolute inset-0 w-full h-full object-cover" />
+          <img src={project.thumbnail} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
         )}
         <div aria-hidden="true" className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
           <span className="flex items-center gap-2 px-5 py-3 min-h-[44px] border border-white/30 rounded-lg text-white text-sm font-medium backdrop-blur-[4px] translate-y-2 transition-all duration-200 group-hover:bg-white/10 group-hover:border-white/50">
@@ -148,6 +148,7 @@ export default function ProjectDetail() {
                   <img
                     src={project.thumbnail}
                     alt=""
+                    loading="lazy"
                     className="w-full sm:w-[120px] h-[200px] sm:h-[75px] object-cover rounded-lg"
                   />
                 </div>
