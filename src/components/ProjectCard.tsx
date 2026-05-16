@@ -29,7 +29,7 @@ export default function ProjectCard({ project, index }: Props) {
   return (
     <div
       ref={ref}
-      className={`reveal ${isVisible ? 'visible' : ''} group bg-bg-card border border-border rounded-xl overflow-hidden transition-all duration-300 ease-out hover:z-10 hover:-translate-y-1.5 hover:border-border-accent hover:bg-bg-card-hover hover:shadow-[0_12px_40px_rgba(0,0,0,0.5),0_0_60px_rgba(201,125,92,0.05)] cursor-pointer active:scale-[0.98]`}
+      className={`reveal ${isVisible ? 'visible' : ''} group bg-bg-card border border-border rounded-xl overflow-hidden transition-all duration-300 ease-out hover:z-10 hover:-translate-y-1.5 hover:border-border-accent hover:bg-bg-card-hover hover:shadow-[0_8px_24px_rgba(0,0,0,0.4),0_0_40px_rgba(201,125,92,0.04)] cursor-pointer active:scale-[0.98]`}
       style={{ transitionDelay: `${Math.min(index, 5) * 80}ms` }}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
