@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { projects, fetchProject } from '../data/projects';
+import { projects } from '../data/projects';
 import { cardGradients } from '../data/cardGradients';
 import { tagColors } from '../data/tagColors';
+import Header from '../components/Header';
 import type { Project } from '../types';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
@@ -27,6 +28,9 @@ function RelatedProjectCard({ project, index, onClick }: { project: Project; ind
       aria-label={`查看项目 ${project.name}`}
     >
       <div className="relative w-full aspect-[16/10] overflow-hidden" style={{ background: gradient }}>
+        {project.thumbnail && (
+          <img src={project.thumbnail} alt="" className="absolute inset-0 w-full h-full object-cover" />
+        )}
         <div aria-hidden="true" className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
           <span className="flex items-center gap-2 px-5 py-3 min-h-[44px] border border-white/30 rounded-lg text-white text-sm font-medium backdrop-blur-[4px] translate-y-2 transition-all duration-200 group-hover:bg-white/10 group-hover:border-white/50">
             查看详情
@@ -57,17 +61,10 @@ export default function ProjectDetail() {
 
   useEffect(() => {
     if (!id) return;
-    fetchProject(id)
-      .then((p) => {
-        setProject(p);
-        setLoading(false);
-      })
-      .catch(() => {
-        // Fallback to static data
-        const staticProject = projects.find((p) => p.id === id);
-        setProject(staticProject || null);
-        setLoading(false);
-      });
+    // Use static data directly for portfolio site
+    const staticProject = projects.find((p) => p.id === id);
+    setProject(staticProject || null);
+    setLoading(false);
   }, [id]);
 
   useEffect(() => {
@@ -126,8 +123,6 @@ export default function ProjectDetail() {
     return null;
   }
 
-  const isPlaceholder = project.url.includes('.example.com');
-
   return (
     <div className="flex flex-col min-h-screen">
       {/* Skip to content */}
@@ -138,57 +133,52 @@ export default function ProjectDetail() {
         跳转到内容
       </a>
 
-      <main id="main-content" className="flex-1">
-        {/* Hero Cover Image */}
-        <div className="relative w-full aspect-[16/10] overflow-hidden" style={{ background: cardGradients[0] }}>
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-bg-base/80" />
-          {/* Back button */}
-          <button
-            onClick={() => navigate('/')}
-            className="absolute top-4 left-4 flex items-center gap-2 px-4 py-2 min-h-[44px] bg-bg-base/80 backdrop-blur-[8px] border border-border rounded-lg text-text-secondary text-sm font-medium transition-all duration-200 hover:bg-bg-elevated hover:text-text-primary hover:border-border-hover"
-            aria-label="返回项目列表"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <line x1="19" y1="12" x2="5" y2="12" />
-              <polyline points="12 19 5 12 12 5" />
-            </svg>
-            返回
-          </button>
-        </div>
+      <Header />
 
-        {/* Project Info */}
-        <div className="mx-auto max-w-[90rem] px-4 sm:px-6 lg:px-8 -mt-16 relative z-10">
+      <main id="main-content" className="relative flex-1">
+        <div className="mx-auto max-w-[90rem] px-4 sm:px-6 lg:px-8">
           <div className="bg-bg-card border border-border rounded-xl p-6 sm:p-8 mb-8">
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
-              <div className="flex-1">
-                <p className="text-[0.7rem] text-text-muted uppercase tracking-wider mb-2">{project.createdAt}</p>
-                <h1 className="font-heading text-3xl sm:text-4xl text-text-primary mb-3 leading-tight">
-                  {project.name}
-                </h1>
-                <p className="text-base sm:text-lg text-text-secondary leading-relaxed max-w-2xl">
-                  {project.description}
-                </p>
+            <div className="flex flex-col sm:flex-row gap-6">
+              {/* Thumbnail — left side on desktop */}
+              {project.thumbnail && (
+                <div className="flex-shrink-0 hidden sm:block">
+                  <img
+                    src={project.thumbnail}
+                    alt=""
+                    className="w-[120px] h-[75px] object-cover rounded-lg"
+                  />
+                </div>
+              )}
+
+              {/* Info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-2">
+                      <p className="text-[0.7rem] text-text-muted uppercase tracking-wider">{project.createdAt}</p>
+                      <a
+                        href={project.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 text-sm text-accent transition-colors duration-200 hover:text-accent-dim cursor-pointer"
+                        aria-label={`打开项目 ${project.name}`}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <line x1="7" y1="17" x2="17" y2="7" />
+                          <polyline points="7 7 17 7 17 17" />
+                        </svg>
+                        打开
+                      </a>
+                    </div>
+                    <h1 className="font-heading text-3xl sm:text-4xl text-text-primary mb-3 leading-tight">
+                      {project.name}
+                    </h1>
+                    <p className="text-base sm:text-lg text-text-secondary leading-relaxed max-w-2xl">
+                      {project.description}
+                    </p>
+                  </div>
+                </div>
               </div>
-              {/* External Link Button */}
-              <a
-                href={project.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 px-6 py-3 min-h-[44px] bg-accent hover:bg-accent-dim text-bg-base font-medium rounded-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(201,125,92,0.3)] active:scale-[0.98]"
-                aria-label={isPlaceholder ? `${project.name} 即将上线` : `打开项目 ${project.name}`}
-              >
-                {isPlaceholder ? (
-                  <>即将上线</>
-                ) : (
-                  <>
-                    打开项目
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                      <line x1="7" y1="17" x2="17" y2="7" />
-                      <polyline points="7 7 17 7 17 17" />
-                    </svg>
-                  </>
-                )}
-              </a>
             </div>
 
             {/* Tags */}
