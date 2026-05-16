@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import Header from '../components/Header';
 import FilterBar from '../components/FilterBar';
 import ProjectGrid from '../components/ProjectGrid';
@@ -32,7 +33,10 @@ export default function HomePage() {
         setHasMore(data.length < totalCount);
         setPage(1);
       })
-      .catch(() => setProjects([]))
+      .catch(() => {
+        setProjects([]);
+        toast.error('加载项目失败，请稍后重试');
+      })
       .finally(() => setLoading(false));
     return () => controller.abort();
   }, []);
@@ -54,7 +58,10 @@ export default function HomePage() {
         setHasMore(data.length < totalCount);
         setPage(1);
       })
-      .catch(() => setProjects([]))
+      .catch(() => {
+        setProjects([]);
+        toast.error('加载失败，请稍后重试');
+      })
       .finally(() => setLoading(false));
     return () => controller.abort();
   }, [activeTag, searchQuery]);
@@ -77,6 +84,8 @@ export default function HomePage() {
         return [...prev, ...data];
       });
       setPage((p) => p + 1);
+    } catch {
+      toast.error('加载更多失败');
     } finally {
       setLoadingMore(false);
     }

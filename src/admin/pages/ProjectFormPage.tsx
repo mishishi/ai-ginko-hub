@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import ProjectForm, { type ProjectFormData } from '../components/ProjectForm';
 import { API_BASE } from '../../lib/api';
 
@@ -25,13 +26,20 @@ export default function ProjectFormPage() {
       ? `${API_BASE}/api/projects/${id}`
       : `${API_BASE}/api/projects`;
 
-    await fetch(url, {
+    const res = await fetch(url, {
       method: isEditing ? 'PUT' : 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify(data),
     });
 
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      toast.error(err.error || '保存失败，请稍后重试');
+      return;
+    }
+
+    toast.success(isEditing ? '项目已更新' : '项目已创建');
     navigate('/admin/projects');
   };
 

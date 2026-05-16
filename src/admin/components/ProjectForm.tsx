@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import toast from 'react-hot-toast';
 import { API_BASE } from '../../lib/api';
 
 interface ProjectFormProps {
@@ -73,7 +74,7 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
 
       set('thumbnail', publicUrl);
     } catch (err) {
-      alert('Upload failed: ' + (err instanceof Error ? err.message : String(err)));
+      toast.error('封面上传失败，请重试');
     } finally {
       setUploading(false);
     }
