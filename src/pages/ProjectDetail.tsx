@@ -85,7 +85,7 @@ export default function ProjectDetail() {
     // Dynamic OG image
     const ogImage = document.querySelector('meta[property="og:image"]');
     if (ogImage) {
-      ogImage.setAttribute('content', project.thumbnail || `${window.location.origin}/og-default.png`);
+      ogImage.setAttribute('content', project.thumbnail || `${window.location.origin}/og-image.svg`);
     }
 
     return () => {
