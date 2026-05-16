@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getDb, saveDb } from '../db/index.js';
 import { favorites } from '../db/schema.js';
 import { eq, and } from 'drizzle-orm';
+import { requireClerkAuth } from '../middleware/clerk.js';
 
 function generateId(): string {
   return uuidv4();
@@ -10,11 +11,8 @@ function generateId(): string {
 
 export async function favoriteRoutes(app: FastifyInstance) {
   // GET /api/favorites - 获取当前用户所有收藏
-  app.get('/api/favorites', async (request, reply) => {
-    const userId = request.clerkUser?.userId;
-    if (!userId) {
-      return reply.status(401).send({ error: 'Unauthorized' });
-    }
+  app.get('/api/favorites', { preHandler: requireClerkAuth }, async (request, reply) => {
+    const userId = request.clerkUser!.userId;
 
     const db = await getDb();
     const results = await db
@@ -31,11 +29,8 @@ export async function favoriteRoutes(app: FastifyInstance) {
   });
 
   // POST /api/favorites - 添加收藏
-  app.post('/api/favorites', async (request, reply) => {
-    const userId = request.clerkUser?.userId;
-    if (!userId) {
-      return reply.status(401).send({ error: 'Unauthorized' });
-    }
+  app.post('/api/favorites', { preHandler: requireClerkAuth }, async (request, reply) => {
+    const userId = request.clerkUser!.userId;
 
     const { projectId } = request.body as { projectId?: string };
     if (!projectId) {
@@ -65,11 +60,8 @@ export async function favoriteRoutes(app: FastifyInstance) {
   });
 
   // DELETE /api/favorites/:projectId - 取消收藏
-  app.delete('/api/favorites/:projectId', async (request, reply) => {
-    const userId = request.clerkUser?.userId;
-    if (!userId) {
-      return reply.status(401).send({ error: 'Unauthorized' });
-    }
+  app.delete('/api/favorites/:projectId', { preHandler: requireClerkAuth }, async (request, reply) => {
+    const userId = request.clerkUser!.userId;
 
     const { projectId } = request.params as { projectId: string };
 
