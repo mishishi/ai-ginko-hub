@@ -9,6 +9,8 @@ export interface FavoriteItem {
   createdAt: number;
 }
 
+const STORAGE_KEY = 'ginko_favorites';
+
 // Module-level singleton — shared across all hook instances
 let _favorites: FavoriteItem[] = [];
 let _loading = false;
@@ -17,8 +19,30 @@ let _fetchPromise: Promise<unknown> | null = null; // In-flight fetch to share a
 let _listeners: Array<(favs: FavoriteItem[]) => void> = [];
 let _loadingListeners: Array<(loading: boolean) => void> = [];
 let _toggleInflight = new Set<string>(); // Prevent rapid toggles for same projectId
+let _storageListenerActive = false;
+
+// Initialize _favorites from localStorage at module load
+_favorites = _loadFromStorage();
+
+function _loadFromStorage(): FavoriteItem[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as FavoriteItem[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function _saveToStorage(favs: FavoriteItem[]) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(favs));
+  } catch {
+    // localStorage may be unavailable (private browsing, quota exceeded)
+  }
+}
 
 function _notify() {
+  _saveToStorage(_favorites);
   for (const cb of _listeners) cb([..._favorites]);
 }
 
@@ -26,9 +50,28 @@ function _notifyLoading() {
   for (const cb of _loadingListeners) cb(_loading);
 }
 
+// Set up cross-tab storage listener once globally
+function _setupStorageListener() {
+  if (_storageListenerActive) return;
+  _storageListenerActive = true;
+  window.addEventListener('storage', (e: StorageEvent) => {
+    if (e.key !== STORAGE_KEY || e.newValue === null) return;
+    try {
+      const incoming = JSON.parse(e.newValue) as FavoriteItem[];
+      if (!Array.isArray(incoming)) return;
+      _favorites = incoming;
+      _notify();
+    } catch {
+      // ignore parse errors
+    }
+  });
+}
+
 async function _handleUnauthorized(signOutFn: () => Promise<void>) {
   toast.error('登录已过期，请重新登录');
   await signOutFn();
+  // Clear localStorage on logout so next user doesn't see previous user's favorites
+  localStorage.removeItem(STORAGE_KEY);
 }
 
 export function useFavorites() {
@@ -45,6 +88,9 @@ export function useFavorites() {
       setLoadingSnapshot(false);
       return;
     }
+
+    // Set up cross-tab sync listener once
+    _setupStorageListener();
 
     // Register listeners for updates
     const favListener = (favs: FavoriteItem[]) => setFavoritesSnapshot([...favs]);
