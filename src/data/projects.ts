@@ -6,13 +6,15 @@ export async function fetchProjects(
   q?: string,
   limit?: number,
   offset?: number,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  sort?: string
 ): Promise<{ projects: Project[]; total: number }> {
   const params = new URLSearchParams();
   if (tag) params.set('tag', tag);
   if (q) params.set('q', q);
   if (limit !== undefined) params.set('limit', String(limit));
   if (offset !== undefined) params.set('offset', String(offset));
+  if (sort) params.set('sort', sort);
   const url = `${API_BASE}/api/projects${params.toString() ? '?' + params.toString() : ''}`;
   const res = await fetch(url, { signal });
   if (!res.ok) throw new Error('Failed to fetch projects');

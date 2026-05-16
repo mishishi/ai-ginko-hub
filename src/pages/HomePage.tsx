@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Header from '../components/Header';
-import FilterBar from '../components/FilterBar';
+import FilterBar, { type SortOption } from '../components/FilterBar';
 import ProjectGrid from '../components/ProjectGrid';
 import { fetchProjects } from '../data/projects';
 import type { Project } from '../types';
@@ -21,13 +21,16 @@ export default function HomePage() {
   const [activeTag, setActiveTag] = useState<string | null>(
     () => new URLSearchParams(window.location.search).get('tag') || null
   );
+  const [sort, setSort] = useState<SortOption>(
+    () => (new URLSearchParams(window.location.search).get('sort') as SortOption) || 'default'
+  );
   const isPopStateRef = useRef(false);
   const isInitialMount = useRef(true);
 
   // Initial load — fetch first page only
   useEffect(() => {
     const controller = new AbortController();
-    fetchProjects(undefined, undefined, PAGE_SIZE, 0, controller.signal)
+    fetchProjects(undefined, undefined, PAGE_SIZE, 0, controller.signal, sort)
       .then(({ projects: data, total: totalCount }) => {
         setProjects(data);
         setHasMore(data.length < totalCount);
@@ -53,7 +56,7 @@ export default function HomePage() {
     setLoading(true);
     setPage(0);
     setHasMore(true);
-    fetchProjects(activeTag || undefined, searchQuery || undefined, PAGE_SIZE, 0, controller.signal)
+    fetchProjects(activeTag || undefined, searchQuery || undefined, PAGE_SIZE, 0, controller.signal, sort)
       .then(({ projects: data, total: totalCount }) => {
         setProjects(data);
         setHasMore(data.length < totalCount);
@@ -65,7 +68,7 @@ export default function HomePage() {
       })
       .finally(() => setLoading(false));
     return () => controller.abort();
-  }, [activeTag, searchQuery]);
+  }, [activeTag, searchQuery, sort]);
 
   const loadMore = useCallback(async () => {
     const currentLoadingMore = loadingMore;
@@ -101,11 +104,12 @@ export default function HomePage() {
     const params = new URLSearchParams();
     if (searchQuery) params.set('q', searchQuery);
     if (activeTag) params.set('tag', activeTag);
+    if (sort && sort !== 'default') params.set('sort', sort);
     const url = params.toString()
       ? `${window.location.pathname}?${params.toString()}`
       : window.location.pathname;
     window.history.pushState(null, '', url);
-  }, [searchQuery, activeTag]);
+  }, [searchQuery, activeTag, sort]);
 
   // Restore filter state on browser back/forward
   useEffect(() => {
@@ -114,6 +118,7 @@ export default function HomePage() {
       const params = new URLSearchParams(window.location.search);
       setSearchQuery(params.get('q') || '');
       setActiveTag(params.get('tag') || null);
+      setSort((params.get('sort') as SortOption) || 'default');
     };
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
@@ -204,6 +209,8 @@ export default function HomePage() {
             tags={allTags}
             activeTag={activeTag}
             onTagChange={setActiveTag}
+            sort={sort}
+            onSortChange={setSort}
           />
 
           {/* Section Header */}
@@ -260,12 +267,6 @@ export default function HomePage() {
                 className="text-xs text-text-muted hover:text-accent transition-colors duration-200"
               >
                 GitHub
-              </a>
-              <a
-                href="https://ginko-hub.example.com/sitemap.xml"
-                className="text-xs text-text-muted hover:text-accent transition-colors duration-200"
-              >
-                Sitemap
               </a>
             </nav>
           </div>

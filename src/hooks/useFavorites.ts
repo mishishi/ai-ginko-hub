@@ -12,9 +12,8 @@ export interface FavoriteItem {
 // Module-level singleton — shared across all hook instances
 let _favorites: FavoriteItem[] = [];
 let _loading = false;
-let _fetchLock = true; // Start locked — only first caller unlocks after fetch
 let _fetchedForUserId: string | null = null; // Track which user we've fetched for
-let _fetchPromise: Promise<void> | null = null; // In-flight fetch to share across instances
+let _fetchPromise: Promise<unknown> | null = null; // In-flight fetch to share across instances
 let _listeners: Array<(favs: FavoriteItem[]) => void> = [];
 let _loadingListeners: Array<(loading: boolean) => void> = [];
 
@@ -26,8 +25,13 @@ function _notifyLoading() {
   for (const cb of _loadingListeners) cb(_loading);
 }
 
+async function _handleUnauthorized(signOutFn: () => Promise<void>) {
+  toast.error('登录已过期，请重新登录');
+  await signOutFn();
+}
+
 export function useFavorites() {
-  const { isSignedIn, getToken } = useAuth();
+  const { isSignedIn, getToken, signOut } = useAuth();
   const [favoritesSnapshot, setFavoritesSnapshot] = useState<FavoriteItem[]>(_favorites);
   const [loadingSnapshot, setLoadingSnapshot] = useState(_loading);
 
@@ -77,8 +81,7 @@ export function useFavorites() {
       return;
     }
 
-    // First caller — acquire lock and start fetch
-    _fetchLock = false; // allow other callers to fall through above
+    // First caller — start fetch
     _loading = true;
     _notifyLoading();
 
@@ -88,7 +91,13 @@ export function useFavorites() {
       return fetch(`${API_BASE}/api/favorites`, {
         headers: { Authorization: `Bearer ${token}` },
       })
-        .then((r) => r.json())
+        .then(async (r) => {
+          if (r.status === 401) {
+            await _handleUnauthorized(signOut);
+            return [];
+          }
+          return r.json();
+        })
         .then((data: FavoriteItem[]) => {
           if (Array.isArray(data)) {
             _favorites = data;
@@ -99,7 +108,6 @@ export function useFavorites() {
         .catch(() => toast.error('加载收藏失败'))
         .finally(() => {
           _loading = false;
-          _fetchLock = true; // reset lock
           _fetchPromise = null;
           _notifyLoading();
         });
@@ -129,10 +137,14 @@ export function useFavorites() {
 
       try {
         if (isFav) {
-          await fetch(`${API_BASE}/api/favorites/${projectId}`, {
+          const res = await fetch(`${API_BASE}/api/favorites/${projectId}`, {
             method: 'DELETE',
             headers: { Authorization: `Bearer ${token}` },
           });
+          if (res.status === 401) {
+            await _handleUnauthorized(signOut);
+            return;
+          }
           toast.success('已取消收藏');
         } else {
           const res = await fetch(`${API_BASE}/api/favorites`, {
@@ -140,6 +152,10 @@ export function useFavorites() {
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
             body: JSON.stringify({ projectId }),
           });
+          if (res.status === 401) {
+            await _handleUnauthorized(signOut);
+            return;
+          }
           const newFav = await res.json();
           // Replace temp entry with real one
           _favorites = _favorites.map((f) =>
@@ -152,9 +168,14 @@ export function useFavorites() {
         }
       } catch {
         // Revert on failure — re-fetch
-        const data = await fetch(`${API_BASE}/api/favorites`, {
+        const revertRes = await fetch(`${API_BASE}/api/favorites`, {
           headers: { Authorization: `Bearer ${token}` },
-        }).then((r) => r.json());
+        });
+        if (revertRes.status === 401) {
+          await _handleUnauthorized(signOut);
+          return;
+        }
+        const data = await revertRes.json();
         if (Array.isArray(data)) {
           _favorites = data;
         } else {

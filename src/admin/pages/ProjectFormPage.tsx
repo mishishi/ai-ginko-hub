@@ -10,6 +10,7 @@ export default function ProjectFormPage() {
   const isEditing = Boolean(id);
   const [initialData, setInitialData] = useState<Partial<ProjectFormData> | null>(null);
   const [isLoading, setIsLoading] = useState(isEditing);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (!isEditing) return;
@@ -22,6 +23,8 @@ export default function ProjectFormPage() {
   }, [id, isEditing]);
 
   const handleSubmit = async (data: ProjectFormData) => {
+    if (submitting) return;
+    setSubmitting(true);
     const url = isEditing
       ? `${API_BASE}/api/projects/${id}`
       : `${API_BASE}/api/projects`;
@@ -32,6 +35,8 @@ export default function ProjectFormPage() {
       credentials: 'include',
       body: JSON.stringify(data),
     });
+
+    setSubmitting(false);
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
@@ -80,7 +85,7 @@ export default function ProjectFormPage() {
       </div>
 
       <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-6 lg:p-8">
-        <ProjectForm initialData={initialData || undefined} onSubmit={handleSubmit} isLoading={false} />
+        <ProjectForm initialData={initialData || undefined} onSubmit={handleSubmit} isLoading={submitting} />
       </div>
     </div>
   );
