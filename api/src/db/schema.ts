@@ -23,5 +23,14 @@ export const admin = sqliteTable('admin', {
   passwordHash: text('password_hash').notNull(),
 });
 
+export const favorites = sqliteTable('favorites', {
+  id: text('id').primaryKey(), // UUID
+  projectId: text('project_id').notNull().references(() => projects.id),
+  userId: text('user_id').notNull(), // Clerk user.id
+  createdAt: integer('created_at_ts').notNull(), // Unix timestamp
+});
+
 export type Project = typeof projects.$inferSelect;
 export type NewProject = typeof projects.$inferInsert;
+export type Favorite = typeof favorites.$inferSelect;
+export type NewFavorite = typeof favorites.$inferInsert;
