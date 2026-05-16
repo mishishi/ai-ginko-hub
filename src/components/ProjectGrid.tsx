@@ -4,9 +4,12 @@ import ProjectCard from './ProjectCard';
 interface Props {
   projects: Project[];
   loading?: boolean;
+  hasMore?: boolean;
+  loadingMore?: boolean;
+  onLoadMore?: () => void;
 }
 
-export default function ProjectGrid({ projects, loading }: Props) {
+export default function ProjectGrid({ projects, loading, hasMore, loadingMore, onLoadMore }: Props) {
   if (loading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -40,6 +43,21 @@ export default function ProjectGrid({ projects, loading }: Props) {
           index={index}
         />
       ))}
-    </div>
+
+      {/* Load More Button */}
+      {!loading && hasMore && (
+        <div className="col-span-full flex justify-center pt-8">
+          <button
+            onClick={onLoadMore}
+            disabled={loadingMore}
+            className="px-6 py-2.5 bg-bg-elevated border border-border rounded-xl text-sm text-text-secondary hover:text-text-primary hover:border-border-hover transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loadingMore ? '加载中...' : '加载更多'}
+          </button>
+        </div>
+      )}
+
+      {/* Grid closing tag */}
+      </div>
   );
 }
