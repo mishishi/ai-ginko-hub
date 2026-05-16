@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { API_BASE } from '../lib/api';
-import { tagColors } from '../data/tagColors';
 import Header from '../components/Header';
 
 interface AboutStats {
@@ -94,15 +93,16 @@ export default function About() {
             <h2 className="font-heading text-xl text-text-primary mb-4">技术栈</h2>
             <div className="flex flex-wrap gap-2">
               {allTags.map((tag) => {
-                const color = tagColors[tag] ?? '#c97d5c';
+                const key = tag.toLowerCase().replace(/\s+/g, '-').replace(/\./g, '');
                 return (
                   <span
                     key={tag}
+                    data-tag={key}
                     className="px-3 py-1 rounded-full text-xs font-medium border transition-colors duration-200"
                     style={{
-                      color,
-                      borderColor: `${color}40`,
-                      backgroundColor: `${color}10`,
+                      color: `var(--color-tag-${key})`,
+                      borderColor: `var(--color-tag-${key}-border)`,
+                      backgroundColor: `var(--color-tag-${key}-bg)`,
                     }}
                   >
                     {tag}

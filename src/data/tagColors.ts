@@ -1,3 +1,4 @@
+/** @deprecated Use CSS custom properties (--color-tag-*) defined in index.css instead. */
 export const tagColors: Record<string, string> = {
   'React': '#61dafb',
   'TypeScript': '#3178c6',

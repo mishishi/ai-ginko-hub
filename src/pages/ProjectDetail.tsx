@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchProject, fetchProjects } from '../data/projects';
 import { cardGradients } from '../data/cardGradients';
-import { tagColors } from '../data/tagColors';
 import Header from '../components/Header';
 import type { Project } from '../types';
 import { useScrollReveal } from '../hooks/useScrollReveal';
@@ -65,7 +64,7 @@ export default function ProjectDetail() {
     Promise.all([fetchProject(id), fetchProjects()])
       .then(([p, all]) => {
         setProject(p);
-        setAllProjects(all);
+        setAllProjects(all.projects);
       })
       .catch(() => setProject(null))
       .finally(() => setLoading(false));
@@ -188,21 +187,16 @@ export default function ProjectDetail() {
             {/* Tags */}
             <div className="flex flex-wrap gap-2 mb-6">
               {project.tags.map((tag) => {
-                const color = tagColors[tag] || '#c97d5c';
+                const key = tag.toLowerCase().replace(/\s+/g, '-').replace(/\./g, '');
                 return (
                   <span
                     key={tag}
+                    data-tag={key}
                     className="px-3 py-1 rounded-full border text-[0.75rem] font-medium tracking-wide transition-all duration-200"
                     style={{
-                      color,
-                      borderColor: `${color}40`,
-                      backgroundColor: `${color}10`,
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLSpanElement).style.backgroundColor = `${color}20`;
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLSpanElement).style.backgroundColor = `${color}10`;
+                      color: `var(--color-tag-${key})`,
+                      borderColor: `var(--color-tag-${key}-border)`,
+                      backgroundColor: `var(--color-tag-${key}-bg)`,
                     }}
                   >
                     {tag}

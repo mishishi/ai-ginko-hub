@@ -14,7 +14,6 @@ export default function HomePage() {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [total, setTotal] = useState(0);
   const [searchQuery, setSearchQuery] = useState(
     () => new URLSearchParams(window.location.search).get('q') || ''
   );
@@ -30,7 +29,6 @@ export default function HomePage() {
     fetchProjects(undefined, undefined, PAGE_SIZE, 0, controller.signal)
       .then(({ projects: data, total: totalCount }) => {
         setProjects(data);
-        setTotal(totalCount);
         setHasMore(data.length < totalCount);
         setPage(1);
       })
@@ -53,7 +51,6 @@ export default function HomePage() {
     fetchProjects(activeTag || undefined, searchQuery || undefined, PAGE_SIZE, 0, controller.signal)
       .then(({ projects: data, total: totalCount }) => {
         setProjects(data);
-        setTotal(totalCount);
         setHasMore(data.length < totalCount);
         setPage(1);
       })
@@ -79,7 +76,6 @@ export default function HomePage() {
         setHasMore(prev.length + data.length < totalCount);
         return [...prev, ...data];
       });
-      setTotal(totalCount);
       setPage((p) => p + 1);
     } finally {
       setLoadingMore(false);

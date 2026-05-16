@@ -8,7 +8,6 @@ interface Props {
 }
 
 import { cardGradients } from '../data/cardGradients';
-import { tagColors } from '../data/tagColors';
 
 export default function ProjectCard({ project, index }: Props) {
   const navigate = useNavigate();
@@ -75,21 +74,16 @@ export default function ProjectCard({ project, index }: Props) {
         </p>
         <div className="flex flex-wrap gap-2">
           {project.tags.map((tag) => {
-            const color = tagColors[tag] || '#c97d5c';
+            const key = tag.toLowerCase().replace(/\s+/g, '-').replace(/\./g, '');
             return (
               <span
                 key={tag}
+                data-tag={key}
                 className="px-2.5 py-0.5 rounded-full border text-[0.6875rem] font-medium tracking-wide transition-all duration-200"
                 style={{
-                  color,
-                  borderColor: `${color}40`,
-                  backgroundColor: `${color}10`,
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLSpanElement).style.backgroundColor = `${color}20`;
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLSpanElement).style.backgroundColor = `${color}10`;
+                  color: `var(--color-tag-${key})`,
+                  borderColor: `var(--color-tag-${key}-border)`,
+                  backgroundColor: `var(--color-tag-${key}-bg)`,
                 }}
               >
                 {tag}
