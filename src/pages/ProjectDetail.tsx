@@ -88,8 +88,29 @@ export default function ProjectDetail() {
       ogImage.setAttribute('content', project.thumbnail || `${window.location.origin}/og-image.svg`);
     }
 
+    // JSON-LD: SoftwareApplication schema
+    const existingLd = document.querySelector('script[data-type="jsonld-project"]');
+    if (existingLd) existingLd.remove();
+    const ldScript = document.createElement('script');
+    ldScript.type = 'application/ld+json';
+    ldScript.setAttribute('data-type', 'jsonld-project');
+    ldScript.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      'name': project.name,
+      'description': project.description,
+      'url': project.url,
+      'applicationCategory': 'WebApplication',
+      'operatingSystem': 'Any',
+      'offers': { '@type': 'Offer', 'price': '0', 'priceCurrency': 'USD' },
+      ...(project.thumbnail ? { 'image': project.thumbnail } : {}),
+    });
+    document.head.appendChild(ldScript);
+
     return () => {
       document.title = 'Ginko Hub — AI 项目展示站';
+      const ld = document.querySelector('script[data-type="jsonld-project"]');
+      if (ld) ld.remove();
     };
   }, [project]);
 
