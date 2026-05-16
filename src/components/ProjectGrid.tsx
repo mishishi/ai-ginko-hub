@@ -3,9 +3,20 @@ import ProjectCard from './ProjectCard';
 
 interface Props {
   projects: Project[];
+  loading?: boolean;
 }
 
-export default function ProjectGrid({ projects }: Props) {
+export default function ProjectGrid({ projects, loading }: Props) {
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="bg-bg-card border border-border rounded-xl h-48 animate-pulse" />
+        ))}
+      </div>
+    );
+  }
+
   if (projects.length === 0) {
     return (
       <div className="col-span-full flex flex-col items-center justify-center py-12 sm:py-20 text-center text-text-muted">

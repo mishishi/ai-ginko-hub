@@ -1,10 +1,15 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import FilterBar from '../components/FilterBar';
 import ProjectGrid from '../components/ProjectGrid';
-import { projects, allTags } from '../data/projects';
+import { projects as staticProjects } from '../data/projects';
+import { fetchProjects } from '../data/projects';
+import type { Project } from '../types';
 
 export default function HomePage() {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState(
     () => new URLSearchParams(window.location.search).get('q') || ''
   );
@@ -12,6 +17,18 @@ export default function HomePage() {
     () => new URLSearchParams(window.location.search).get('tag') || null
   );
   const isPopStateRef = useRef(false);
+
+  useEffect(() => {
+    fetchProjects()
+      .then((data) => {
+        setProjects(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setProjects(staticProjects);
+        setLoading(false);
+      });
+  }, []);
 
   // Sync filter state to URL — pushState so back/forward navigation works
   useEffect(() => {
@@ -58,9 +75,10 @@ export default function HomePage() {
     }
 
     return result;
-  }, [searchQuery, activeTag]);
+  }, [projects, searchQuery, activeTag]);
 
   const featuredCount = projects.filter((p) => p.featured).length;
+  const allTags = Array.from(new Set(projects.flatMap((p) => p.tags)));
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -126,7 +144,7 @@ export default function HomePage() {
           </div>
 
           {/* Project Grid */}
-          <ProjectGrid projects={filtered} />
+          <ProjectGrid projects={filtered} loading={loading} />
         </div>
       </main>
 
@@ -143,7 +161,7 @@ export default function HomePage() {
               <span className="font-heading text-sm text-text-secondary">Ginko Hub</span>
             </div>
             {/* Social links */}
-            <nav aria-label="社交链接">
+            <nav aria-label="页脚链接">
               <div className="flex items-center gap-4">
                 <a
                   href="https://github.com"
@@ -157,6 +175,9 @@ export default function HomePage() {
                 </svg>
                 GitHub
               </a>
+                <Link to="/about" className="flex items-center gap-1.5 text-xs text-text-muted hover:text-accent transition-colors duration-200">
+                  关于
+                </Link>
               </div>
             </nav>
           </div>
