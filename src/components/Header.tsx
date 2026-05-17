@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { SignInButton, UserButton, useAuth } from '@clerk/react';
 import { useTheme } from '../hooks/useTheme';
@@ -106,13 +106,13 @@ export default function Header({ searchQuery = '', onSearchChange }: Props) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleResultClick = (url: string) => {
+  const handleResultClick = useCallback((url: string) => {
     navigate(url);
     setQuery('');
     setResults([]);
     setShowResults(false);
     if (onSearchChange) onSearchChange('');
-  };
+  }, [navigate, setQuery, setResults, setShowResults, onSearchChange]);
 
   return (
     <header className="sticky top-0 z-50 bg-bg-base/85 backdrop-blur-[16px] saturate-[1.2] border-b border-border">

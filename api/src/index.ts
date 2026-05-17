@@ -1,8 +1,3 @@
-// Disable TLS certificate verification for Clerk API calls behind corporate proxy
-// Only apply in development; production must never set this
-if (process.env.NODE_ENV !== 'production') {
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-}
 import 'dotenv/config';
 import { buildApp } from './app.js';
 import { getDb } from './db/index.js';

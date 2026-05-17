@@ -50,8 +50,8 @@ export default function ProjectFormPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="flex items-center gap-3 text-[#94A3B8]">
+      <div className="flex items-center justify-center h-64 admin-body">
+        <div className="flex items-center gap-3 text-[var(--admin-text-muted)]">
           <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none">
             <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3"/>
             <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
@@ -63,28 +63,28 @@ export default function ProjectFormPage() {
   }
 
   return (
-    <div className="p-6 lg:p-8 max-w-3xl">
+    <div className="p-6 lg:p-8 max-w-3xl admin-body">
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
           <button
             onClick={() => navigate('/admin/projects')}
-            className="p-1.5 -ml-1.5 text-[#64748B] hover:text-[#F8FAFC] transition-colors cursor-pointer"
+            className="p-1.5 -ml-1.5 text-[var(--admin-text-dim)] hover:text-[var(--admin-text)] transition-colors cursor-pointer"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="15 18 9 12 15 6" />
             </svg>
           </button>
-          <h1 className="font-fira-code text-2xl text-[#F8FAFC]">
+          <h1 className="font-fira-code text-2xl text-[var(--admin-text)]">
             {isEditing ? '编辑项目' : '新建项目'}
           </h1>
         </div>
-        <p className="font-fira-sans text-sm text-[#64748B] ml-9">
+        <p className="font-fira-sans text-sm text-[var(--admin-text-dim)] ml-9">
           {isEditing ? '更新项目详情和设置' : '添加新项目到作品集'}
         </p>
       </div>
 
-      <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-6 lg:p-8">
+      <div className="bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-2xl p-6 lg:p-8">
         <ProjectForm initialData={initialData || undefined} onSubmit={handleSubmit} isLoading={submitting} />
       </div>
     </div>

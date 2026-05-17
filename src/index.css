@@ -242,6 +242,19 @@ body::after {
   .font-fira-sans {
     font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   }
+
+  /* Admin dark theme — centralized color tokens */
+  .admin-body {
+    --admin-bg: #020617;
+    --admin-surface: #0F172A;
+    --admin-border: #1E293B;
+    --admin-text: #F8FAFC;
+    --admin-text-muted: #94A3B8;
+    --admin-text-dim: #64748B;
+    --admin-text-dimmer: #475569;
+    --admin-accent: #22C55E;
+    --admin-accent-hover: #16A34A;
+  }
 }
 
 /* ---------- Light Theme ---------- */

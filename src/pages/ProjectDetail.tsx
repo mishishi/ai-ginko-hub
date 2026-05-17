@@ -314,7 +314,7 @@ export default function ProjectDetail() {
                 <div className="flex-shrink-0">
                   <img
                     src={project.thumbnail}
-                    alt=""
+                    alt={project.name}
                     loading="lazy"
                     fetchPriority="high"
                     className="w-full sm:w-[120px] h-[200px] sm:h-[75px] object-cover rounded-lg"

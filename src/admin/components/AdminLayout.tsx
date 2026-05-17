@@ -23,22 +23,22 @@ export default function AdminLayout() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#020617]">
+    <div className="flex min-h-screen admin-body bg-[var(--admin-bg)]">
       {/* Sidebar */}
-      <aside className="w-64 shrink-0 bg-[#0F172A] border-r border-[#1E293B] flex flex-col">
+      <aside className="w-64 shrink-0 bg-[var(--admin-surface)] border-r border-[var(--admin-border)] flex flex-col">
         {/* Logo */}
-        <div className="p-5 border-b border-[#1E293B]">
+        <div className="p-5 border-b border-[var(--admin-border)]">
           <Link to="/admin" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 rounded-xl bg-[#22C55E]/10 border border-[#22C55E]/20 flex items-center justify-center group-hover:bg-[#22C55E]/20 transition-colors">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="text-[#22C55E]">
+            <div className="w-9 h-9 rounded-xl bg-[var(--admin-accent)]/10 border border-[var(--admin-accent)]/20 flex items-center justify-center group-hover:bg-[var(--admin-accent)]/20 transition-colors">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="text-[var(--admin-accent)]">
                 <rect x="3" y="3" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.8"/>
                 <rect x="14" y="3" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.6"/>
                 <rect x="3" y="14" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.6"/>
                 <rect x="14" y="14" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.4"/>
               </svg>
             </div>
-            <span className="font-fira-code text-base text-[#F8FAFC]">
-              Ginko <span className="text-[#22C55E]">Admin</span>
+            <span className="font-fira-code text-base text-[var(--admin-text)]">
+              Ginko <span className="text-[var(--admin-accent)]">Admin</span>
             </span>
           </Link>
         </div>
@@ -49,8 +49,8 @@ export default function AdminLayout() {
             to="/admin"
             className={`flex items-center px-3 py-2.5 text-sm font-fira-sans rounded-xl transition-all duration-200 cursor-pointer ${
               location.pathname === '/admin'
-                ? 'bg-[#1E293B] text-[#F8FAFC]'
-                : 'text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#1E293B]/50'
+                ? 'bg-[var(--admin-border)] text-[var(--admin-text)]'
+                : 'text-[var(--admin-text-muted)] hover:text-[var(--admin-text)] hover:bg-[var(--admin-border)]/50'
             }`}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="mr-2.5">
@@ -65,8 +65,8 @@ export default function AdminLayout() {
             to="/admin/projects"
             className={`flex items-center px-3 py-2.5 text-sm font-fira-sans rounded-xl transition-all duration-200 cursor-pointer ${
               isActive('/admin/projects')
-                ? 'bg-[#1E293B] text-[#F8FAFC]'
-                : 'text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#1E293B]/50'
+                ? 'bg-[var(--admin-border)] text-[var(--admin-text)]'
+                : 'text-[var(--admin-text-muted)] hover:text-[var(--admin-text)] hover:bg-[var(--admin-border)]/50'
             }`}
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="mr-2.5">
@@ -79,17 +79,17 @@ export default function AdminLayout() {
         </nav>
 
         {/* User */}
-        <div className="p-4 border-t border-[#1E293B]">
+        <div className="p-4 border-t border-[var(--admin-border)]">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[#1E293B] flex items-center justify-center">
-                <span className="font-fira-code text-xs text-[#94A3B8]">{username?.[0]?.toUpperCase()}</span>
+              <div className="w-8 h-8 rounded-lg bg-[var(--admin-border)] flex items-center justify-center">
+                <span className="font-fira-code text-xs text-[var(--admin-text-muted)]">{username?.[0]?.toUpperCase()}</span>
               </div>
-              <span className="font-fira-sans text-sm text-[#94A3B8] truncate max-w-[100px]">{username}</span>
+              <span className="font-fira-sans text-sm text-[var(--admin-text-muted)] truncate max-w-[100px]">{username}</span>
             </div>
             <button
               onClick={handleLogout}
-              className="p-1.5 text-[#64748B] hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all duration-200 cursor-pointer"
+              className="p-1.5 text-[var(--admin-text-dim)] hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all duration-200 cursor-pointer"
               title="Logout"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

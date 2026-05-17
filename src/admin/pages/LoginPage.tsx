@@ -26,36 +26,36 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#020617]">
+    <div className="flex min-h-screen items-center justify-center admin-body bg-[var(--admin-bg)]">
       {/* Ambient glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[#22C55E]/5 blur-[120px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[var(--admin-accent)]/5 blur-[120px]" />
       </div>
 
       <div className="relative w-full max-w-sm mx-4">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[#22C55E]/10 border border-[#22C55E]/20 mb-4">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-[#22C55E]">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[var(--admin-accent)]/10 border border-[var(--admin-accent)]/20 mb-4">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-[var(--admin-accent)]">
               <rect x="3" y="3" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.8"/>
               <rect x="14" y="3" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.6"/>
               <rect x="3" y="14" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.6"/>
               <rect x="14" y="14" width="7" height="7" rx="1.5" fill="currentColor" opacity="0.4"/>
             </svg>
           </div>
-          <h1 className="font-fira-code text-xl text-[#F8FAFC] mb-1">
+          <h1 className="font-fira-code text-xl text-[var(--admin-text)] mb-1">
             Ginko 管理后台
           </h1>
-          <p className="font-fira-sans text-sm text-[#94A3B8]">
+          <p className="font-fira-sans text-sm text-[var(--admin-text-muted)]">
             登录以管理您的项目
           </p>
         </div>
 
         {/* Card */}
-        <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-6">
+        <div className="bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-2xl p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="username" className="block font-fira-sans text-sm text-[#94A3B8] mb-2">
+              <label htmlFor="username" className="block font-fira-sans text-sm text-[var(--admin-text-muted)] mb-2">
                 用户名
               </label>
               <input
@@ -63,14 +63,14 @@ export default function LoginPage() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20"
+                className="w-full px-4 py-3 bg-[var(--admin-bg)] border border-[var(--admin-border)] rounded-xl text-[var(--admin-text)] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[var(--admin-accent)] focus:ring-1 focus:ring-[var(--admin-accent)]/20"
                 placeholder="请输入用户名"
                 required
                 autoComplete="username"
               />
             </div>
             <div>
-              <label htmlFor="password" className="block font-fira-sans text-sm text-[#94A3B8] mb-2">
+              <label htmlFor="password" className="block font-fira-sans text-sm text-[var(--admin-text-muted)] mb-2">
                 密码
               </label>
               <input
@@ -78,7 +78,7 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20"
+                className="w-full px-4 py-3 bg-[var(--admin-bg)] border border-[var(--admin-border)] rounded-xl text-[var(--admin-text)] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[var(--admin-accent)] focus:ring-1 focus:ring-[var(--admin-accent)]/20"
                 placeholder="请输入密码"
                 required
                 autoComplete="current-password"
@@ -99,7 +99,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 bg-[#22C55E] hover:bg-[#16A34A] text-[#020617] font-fira-sans font-semibold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="w-full py-3 bg-[var(--admin-accent)] hover:bg-[var(--admin-accent-hover)] text-[var(--admin-bg)] font-fira-sans font-semibold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -114,7 +114,7 @@ export default function LoginPage() {
           </form>
         </div>
 
-        <p className="text-center mt-6 font-fira-sans text-xs text-[#475569]">
+        <p className="text-center mt-6 font-fira-sans text-xs text-[var(--admin-text-dimmer)]">
           基于 JWT 身份验证
         </p>
       </div>

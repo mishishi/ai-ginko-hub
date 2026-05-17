@@ -56,7 +56,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="flex items-center gap-3 text-[#94A3B8]">
+        <div className="flex items-center gap-3 text-[var(--admin-text-muted)]">
           <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none">
             <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3"/>
             <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
@@ -68,16 +68,16 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="p-6 lg:p-8 max-w-6xl">
+    <div className="p-6 lg:p-8 max-w-6xl admin-body">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="font-fira-code text-2xl text-[#F8FAFC] mb-1">控制台</h1>
-          <p className="font-fira-sans text-sm text-[#64748B]">项目概览</p>
+          <h1 className="font-fira-code text-2xl text-[var(--admin-text)] mb-1">控制台</h1>
+          <p className="font-fira-sans text-sm text-[var(--admin-text-dim)]">项目概览</p>
         </div>
         <Link
           to="/admin/projects/new"
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#22C55E] hover:bg-[#16A34A] text-[#020617] font-fira-sans font-semibold text-sm rounded-xl transition-all duration-200 cursor-pointer"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--admin-accent)] hover:bg-[var(--admin-accent-hover)] text-[var(--admin-bg)] font-fira-sans font-semibold text-sm rounded-xl transition-all duration-200 cursor-pointer"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <line x1="12" y1="5" x2="12" y2="19" />
@@ -88,15 +88,15 @@ export default function DashboardPage() {
       </div>
 
       {/* Time Range Selector */}
-      <div className="flex items-center gap-1 mb-6 p-1 bg-[#1E293B] rounded-xl w-fit">
+      <div className="flex items-center gap-1 mb-6 p-1 bg-[var(--admin-border)] rounded-xl w-fit">
         {([7, 30, 90] as const).map((d) => (
           <button
             key={d}
             onClick={() => setRange(d)}
             className={`px-4 py-1.5 rounded-lg font-fira-sans text-sm transition-all duration-200 ${
               range === d
-                ? 'bg-[#22C55E] text-[#020617] font-semibold'
-                : 'text-[#94A3B8] hover:text-[#F8FAFC]'
+                ? 'bg-[var(--admin-accent)] text-[var(--admin-bg)] font-semibold'
+                : 'text-[var(--admin-text-muted)] hover:text-[var(--admin-text)]'
             }`}
           >
             {d}天
@@ -156,11 +156,11 @@ export default function DashboardPage() {
 
       {/* Quick Actions */}
       <div className="mt-8">
-        <h2 className="font-fira-code text-sm text-[#64748B] uppercase tracking-wider mb-4">快捷操作</h2>
+        <h2 className="font-fira-code text-sm text-[var(--admin-text-dim)] uppercase tracking-wider mb-4">快捷操作</h2>
         <div className="flex flex-wrap gap-3">
           <Link
             to="/admin/projects/new"
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#0F172A] border border-[#1E293B] hover:border-[#22C55E]/50 text-[#F8FAFC] font-fira-sans text-sm rounded-xl transition-all duration-200 cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--admin-surface)] border border-[var(--admin-border)] hover:border-[var(--admin-accent)]/50 text-[var(--admin-text)] font-fira-sans text-sm rounded-xl transition-all duration-200 cursor-pointer"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="12" y1="5" x2="12" y2="19" />
@@ -170,7 +170,7 @@ export default function DashboardPage() {
           </Link>
           <Link
             to="/admin/projects"
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#0F172A] border border-[#1E293B] hover:border-[#22C55E]/50 text-[#F8FAFC] font-fira-sans text-sm rounded-xl transition-all duration-200 cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--admin-surface)] border border-[var(--admin-border)] hover:border-[var(--admin-accent)]/50 text-[var(--admin-text)] font-fira-sans text-sm rounded-xl transition-all duration-200 cursor-pointer"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="3" y="3" width="7" height="7" rx="1.5"/>
@@ -185,7 +185,7 @@ export default function DashboardPage() {
 
       {/* Analytics Summary */}
       <div className="mt-8">
-        <h2 className="font-fira-code text-sm text-[#64748B] uppercase tracking-wider mb-4">访客分析 (近30天)</h2>
+        <h2 className="font-fira-code text-sm text-[var(--admin-text-dim)] uppercase tracking-wider mb-4">访客分析 (近30天)</h2>
 
         {/* PV & UV Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -218,8 +218,8 @@ export default function DashboardPage() {
         {/* Charts Row */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
           {/* Daily PV Area Chart */}
-          <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 lg:col-span-2">
-            <h3 className="font-fira-sans text-sm text-[#94A3B8] mb-4">每日浏览量 (近14天)</h3>
+          <div className="bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-2xl p-5 lg:col-span-2">
+            <h3 className="font-fira-sans text-sm text-[var(--admin-text-muted)] mb-4">每日浏览量 (近14天)</h3>
             {analytics?.dailyPV && analytics.dailyPV.length > 0 ? (
               <ResponsiveContainer width="100%" height={180}>
                 <AreaChart data={analytics.dailyPV} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
@@ -265,13 +265,13 @@ export default function DashboardPage() {
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <p className="text-sm text-[#64748B] h-[180px] flex items-center justify-center">暂无数据</p>
+              <p className="text-sm text-[var(--admin-text-dim)] h-[180px] flex items-center justify-center">暂无数据</p>
             )}
           </div>
 
           {/* Top Projects Bar Chart */}
-          <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5">
-            <h3 className="font-fira-sans text-sm text-[#94A3B8] mb-3">热门项目 Top 5</h3>
+          <div className="bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-2xl p-5">
+            <h3 className="font-fira-sans text-sm text-[var(--admin-text-muted)] mb-3">热门项目 Top 5</h3>
             {analytics?.topProjects && analytics.topProjects.length > 0 ? (
               <ResponsiveContainer width="100%" height={180}>
                 <BarChart
@@ -307,7 +307,7 @@ export default function DashboardPage() {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <p className="text-sm text-[#64748B] h-[180px] flex items-center justify-center">暂无数据</p>
+              <p className="text-sm text-[var(--admin-text-dim)] h-[180px] flex items-center justify-center">暂无数据</p>
             )}
           </div>
         </div>
@@ -315,8 +315,8 @@ export default function DashboardPage() {
         {/* Second Charts Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Top Tags Bar Chart */}
-          <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5">
-            <h3 className="font-fira-sans text-sm text-[#94A3B8] mb-3">热门标签 Top 5</h3>
+          <div className="bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-2xl p-5">
+            <h3 className="font-fira-sans text-sm text-[var(--admin-text-muted)] mb-3">热门标签 Top 5</h3>
             {analytics?.topTags && analytics.topTags.length > 0 ? (
               <ResponsiveContainer width="100%" height={180}>
                 <BarChart
@@ -352,13 +352,13 @@ export default function DashboardPage() {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <p className="text-sm text-[#64748B] h-[180px] flex items-center justify-center">暂无数据</p>
+              <p className="text-sm text-[var(--admin-text-dim)] h-[180px] flex items-center justify-center">暂无数据</p>
             )}
           </div>
 
           {/* Top Searches Bar Chart */}
-          <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5">
-            <h3 className="font-fira-sans text-sm text-[#94A3B8] mb-3">热门搜索 Top 5</h3>
+          <div className="bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-2xl p-5">
+            <h3 className="font-fira-sans text-sm text-[var(--admin-text-muted)] mb-3">热门搜索 Top 5</h3>
             {analytics?.topSearches && analytics.topSearches.length > 0 ? (
               <ResponsiveContainer width="100%" height={180}>
                 <BarChart
@@ -394,7 +394,7 @@ export default function DashboardPage() {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <p className="text-sm text-[#64748B] h-[180px] flex items-center justify-center">暂无数据</p>
+              <p className="text-sm text-[var(--admin-text-dim)] h-[180px] flex items-center justify-center">暂无数据</p>
             )}
           </div>
         </div>
@@ -438,8 +438,8 @@ export default function DashboardPage() {
         {/* External Links & Failed Searches Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Top External Link Clicks */}
-          <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5">
-            <h3 className="font-fira-sans text-sm text-[#94A3B8] mb-3">外链点击 Top 5</h3>
+          <div className="bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-2xl p-5">
+            <h3 className="font-fira-sans text-sm text-[var(--admin-text-muted)] mb-3">外链点击 Top 5</h3>
             {analytics?.topExternalLinks && analytics.topExternalLinks.length > 0 ? (
               <ResponsiveContainer width="100%" height={180}>
                 <BarChart
@@ -478,13 +478,13 @@ export default function DashboardPage() {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <p className="text-sm text-[#64748B] h-[180px] flex items-center justify-center">暂无数据</p>
+              <p className="text-sm text-[var(--admin-text-dim)] h-[180px] flex items-center justify-center">暂无数据</p>
             )}
           </div>
 
           {/* Top Failed Searches */}
-          <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5">
-            <h3 className="font-fira-sans text-sm text-[#94A3B8] mb-3">无结果搜索 Top 5</h3>
+          <div className="bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-2xl p-5">
+            <h3 className="font-fira-sans text-sm text-[var(--admin-text-muted)] mb-3">无结果搜索 Top 5</h3>
             {analytics?.topFailedSearches && analytics.topFailedSearches.length > 0 ? (
               <ResponsiveContainer width="100%" height={180}>
                 <BarChart
@@ -520,7 +520,7 @@ export default function DashboardPage() {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <p className="text-sm text-[#64748B] h-[180px] flex items-center justify-center">暂无数据</p>
+              <p className="text-sm text-[var(--admin-text-dim)] h-[180px] flex items-center justify-center">暂无数据</p>
             )}
           </div>
         </div>
@@ -531,7 +531,7 @@ export default function DashboardPage() {
 
 function StatCard({ label, value, icon, color }: { label: string; value: number; icon: React.ReactNode; color: string }) {
   return (
-    <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 hover:border-[#1E293B]/80 transition-all duration-200 group">
+    <div className="bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-2xl p-5 hover:border-[var(--admin-border)]/80 transition-all duration-200 group">
       <div className="flex items-start justify-between mb-4">
         <div
           className="p-2.5 rounded-xl"
@@ -540,8 +540,8 @@ function StatCard({ label, value, icon, color }: { label: string; value: number;
           {icon}
         </div>
       </div>
-      <p className="font-fira-code text-3xl text-[#F8FAFC] mb-1">{value.toLocaleString()}</p>
-      <p className="font-fira-sans text-sm text-[#64748B]">{label}</p>
+      <p className="font-fira-code text-3xl text-[var(--admin-text)] mb-1">{value.toLocaleString()}</p>
+      <p className="font-fira-sans text-sm text-[var(--admin-text-dim)]">{label}</p>
     </div>
   );
 }

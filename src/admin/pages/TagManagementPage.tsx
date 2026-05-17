@@ -121,8 +121,8 @@ export default function TagManagementPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="flex items-center gap-3 text-[#94A3B8]">
+      <div className="flex items-center justify-center h-64 admin-body">
+        <div className="flex items-center gap-3 text-[var(--admin-text-muted)]">
           <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none">
             <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3" />
             <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
@@ -134,18 +134,18 @@ export default function TagManagementPage() {
   }
 
   return (
-    <div className="p-6 lg:p-8 max-w-5xl">
+    <div className="p-6 lg:p-8 max-w-5xl admin-body">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="font-fira-code text-2xl text-[#F8FAFC] mb-1">标签管理</h1>
-        <p className="font-fira-sans text-sm text-[#64748B]">编辑项目标签</p>
+        <h1 className="font-fira-code text-2xl text-[var(--admin-text)] mb-1">标签管理</h1>
+        <p className="font-fira-sans text-sm text-[var(--admin-text-dim)]">编辑项目标签</p>
       </div>
 
       {/* Search */}
       <div className="mb-6">
         <div className="relative">
           <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#64748B]"
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--admin-text-dim)]"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -159,13 +159,13 @@ export default function TagManagementPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="搜索项目..."
-            className="w-full pl-10 pr-4 py-2.5 bg-[#0F172A] border border-[#1E293B] rounded-xl text-[#F8FAFC] placeholder-[#64748B] font-fira-sans text-sm focus:outline-none focus:border-[#22C55E] transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-xl text-[var(--admin-text)] placeholder-[var(--admin-text-dim)] font-fira-sans text-sm focus:outline-none focus:border-[var(--admin-accent)] transition-colors"
           />
         </div>
       </div>
 
       {/* Project List */}
-      <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl overflow-hidden">
+      <div className="bg-[var(--admin-surface)] border border-[var(--admin-border)] rounded-2xl overflow-hidden">
         {filteredProjects.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16">
             <svg
@@ -180,21 +180,21 @@ export default function TagManagementPage() {
               <rect x="3" y="14" width="7" height="7" rx="1.5" />
               <rect x="14" y="14" width="7" height="7" rx="1.5" />
             </svg>
-            <p className="font-fira-sans text-[#64748B]">
+            <p className="font-fira-sans text-[var(--admin-text-dim)]">
               {search ? '未找到匹配的项目' : '暂无项目'}
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-[#1E293B]/50">
+          <div className="divide-y divide-[var(--admin-border)]/50">
             {filteredProjects.map((project) => {
               const tags = parseTags(project.tags);
               return (
                 <div
                   key={project.id}
-                  className="px-5 py-4 hover:bg-[#1E293B]/20 transition-colors duration-150"
+                  className="px-5 py-4 hover:bg-[var(--admin-border)]/20 transition-colors duration-150"
                 >
                   <div className="flex items-start gap-4">
-                    <span className="font-fira-sans font-medium text-[#F8FAFC] min-w-[160px] pt-1">
+                    <span className="font-fira-sans font-medium text-[var(--admin-text)] min-w-[160px] pt-1">
                       {project.name}
                     </span>
                     <div className="flex flex-wrap gap-2 flex-1">
@@ -204,7 +204,7 @@ export default function TagManagementPage() {
                           editingTag?.tagIndex === index ? (
                             <input
                               autoFocus
-                              className="px-2 py-1 bg-[#1E293B] border border-[#22C55E] rounded-md text-[#F8FAFC] font-fira-sans text-sm w-28 focus:outline-none"
+                              className="px-2 py-1 bg-[var(--admin-border)] border border-[var(--admin-accent)] rounded-md text-[var(--admin-text)] font-fira-sans text-sm w-28 focus:outline-none"
                               defaultValue={tag}
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
@@ -226,7 +226,7 @@ export default function TagManagementPage() {
                               onClick={() =>
                                 setEditingTag({ projectId: project.id, tagIndex: index, value: tag })
                               }
-                              className="inline-flex items-center gap-1 px-2 py-1 bg-[#1E293B] hover:bg-[#334155] text-[#F8FAFC] font-fira-sans text-sm rounded-md transition-colors"
+                              className="inline-flex items-center gap-1 px-2 py-1 bg-[var(--admin-border)] hover:bg-[var(--admin-border-hover)] text-[var(--admin-text)] font-fira-sans text-sm rounded-md transition-colors"
                             >
                               {tag}
                               <button
@@ -234,7 +234,7 @@ export default function TagManagementPage() {
                                   e.stopPropagation();
                                   handleRemoveTag(project.id, index);
                                 }}
-                                className="opacity-0 group-hover:opacity-100 ml-1 text-[#94A3B8] hover:text-red-400 transition-opacity"
+                                className="opacity-0 group-hover:opacity-100 ml-1 text-[var(--admin-text-muted)] hover:text-red-400 transition-opacity"
                                 aria-label={`Remove ${tag}`}
                               >
                                 <svg
@@ -258,7 +258,7 @@ export default function TagManagementPage() {
                       {addingTagTo === project.id ? (
                         <input
                           autoFocus
-                          className="px-2 py-1 bg-[#1E293B] border border-[#22C55E] rounded-md text-[#F8FAFC] font-fira-sans text-sm w-28 focus:outline-none"
+                          className="px-2 py-1 bg-[var(--admin-border)] border border-[var(--admin-accent)] rounded-md text-[var(--admin-text)] font-fira-sans text-sm w-28 focus:outline-none"
                           value={newTagInput}
                           onChange={(e) => setNewTagInput(e.target.value)}
                           onKeyDown={(e) => {
@@ -282,7 +282,7 @@ export default function TagManagementPage() {
                       ) : (
                         <button
                           onClick={() => setAddingTagTo(project.id)}
-                          className="inline-flex items-center justify-center w-8 h-8 bg-[#1E293B] hover:bg-[#22C55E]/20 border border-dashed border-[#334155] hover:border-[#22C55E] text-[#64748B] hover:text-[#22C55E] rounded-md transition-colors"
+                          className="inline-flex items-center justify-center w-8 h-8 bg-[var(--admin-border)] hover:bg-[var(--admin-accent)]/20 border border-dashed border-[#334155] hover:border-[var(--admin-accent)] text-[var(--admin-text-dim)] hover:text-[var(--admin-accent)] rounded-md transition-colors"
                           aria-label="Add tag"
                         >
                           <svg

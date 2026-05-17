@@ -120,7 +120,7 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
           type="text"
           value={form.name}
           onChange={(e) => set('name', e.target.value)}
-          className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20"
+          className="w-full px-4 py-3 bg-[var(--admin-bg)] border border-[var(--admin-border)] rounded-xl text-[var(--admin-text)] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[var(--admin-accent)] focus:ring-1 focus:ring-[var(--admin-accent)]/20"
           placeholder="项目名称"
           required
         />
@@ -144,7 +144,7 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
           type="url"
           value={form.url}
           onChange={(e) => set('url', e.target.value)}
-          className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20"
+          className="w-full px-4 py-3 bg-[var(--admin-bg)] border border-[var(--admin-border)] rounded-xl text-[var(--admin-text)] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[var(--admin-accent)] focus:ring-1 focus:ring-[var(--admin-accent)]/20"
           placeholder="https://github.com/username/project"
           required
           pattern="https?://.+"
@@ -158,7 +158,7 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
           type="url"
           value={form.repoUrl}
           onChange={(e) => set('repoUrl', e.target.value)}
-          className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20"
+          className="w-full px-4 py-3 bg-[var(--admin-bg)] border border-[var(--admin-border)] rounded-xl text-[var(--admin-text)] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[var(--admin-accent)] focus:ring-1 focus:ring-[var(--admin-accent)]/20"
           placeholder="https://github.com/username/repo"
           pattern="https?://.+"
           title="请输入有效的 URL（以 http:// 或 https:// 开头）"
@@ -172,13 +172,13 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
             {form.tags.map((tag) => (
               <span
                 key={tag}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#1E293B] text-[#F8FAFC] text-sm font-fira-sans rounded-lg"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[var(--admin-border)] text-[var(--admin-text)] text-sm font-fira-sans rounded-lg"
               >
                 {tag}
                 <button
                   type="button"
                   onClick={() => removeTag(tag)}
-                  className="w-4 h-4 flex items-center justify-center text-[#94A3B8] hover:text-red-400 transition-colors cursor-pointer"
+                  className="w-4 h-4 flex items-center justify-center text-[var(--admin-text-muted)] hover:text-red-400 transition-colors cursor-pointer"
                 >
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <line x1="18" y1="6" x2="6" y2="18" />
@@ -195,13 +195,13 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
             value={tagInput}
             onChange={(e) => setTagInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-            className="flex-1 px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20"
+            className="flex-1 px-4 py-3 bg-[var(--admin-bg)] border border-[var(--admin-border)] rounded-xl text-[var(--admin-text)] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[var(--admin-accent)] focus:ring-1 focus:ring-[var(--admin-accent)]/20"
             placeholder="输入标签后按回车添加"
           />
           <button
             type="button"
             onClick={addTag}
-            className="px-4 py-3 bg-[#1E293B] border border-[#1E293B] text-[#94A3B8] font-fira-sans text-sm rounded-xl hover:border-[#22C55E]/50 hover:text-[#F8FAFC] transition-all duration-200 cursor-pointer"
+            className="px-4 py-3 bg-[var(--admin-border)] border border-[var(--admin-border)] text-[var(--admin-text-muted)] font-fira-sans text-sm rounded-xl hover:border-[var(--admin-accent)]/50 hover:text-[var(--admin-text)] transition-all duration-200 cursor-pointer"
           >
             添加
           </button>
@@ -212,7 +212,7 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
       <Field label="封面图">
         {form.thumbnail && (
           <div className="mb-3 flex items-center gap-3">
-            <img src={form.thumbnail} alt="封面预览" className="w-40 h-25 object-cover rounded-xl border border-[#1E293B]" />
+            <img src={form.thumbnail} alt="封面预览" className="w-40 h-25 object-cover rounded-xl border border-[var(--admin-border)]" />
             <button
               type="button"
               onClick={async () => {
@@ -227,7 +227,7 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
                 setThumbnailKey(null);
                 set('thumbnail', '');
               }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#0F172A] border border-[#1E293B] text-[#94A3B8] font-fira-sans text-sm rounded-lg hover:border-red-500/50 hover:text-red-400 transition-all duration-200 cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[var(--admin-surface)] border border-[var(--admin-border)] text-[var(--admin-text-muted)] font-fira-sans text-sm rounded-lg hover:border-red-500/50 hover:text-red-400 transition-all duration-200 cursor-pointer"
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <polyline points="3 6 5 6 21 6"/>
@@ -240,7 +240,7 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
           </div>
         )}
         <div className="flex items-center gap-3">
-          <label className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#0F172A] border border-[#1E293B] text-[#94A3B8] font-fira-sans text-sm rounded-xl hover:border-[#22C55E]/50 hover:text-[#F8FAFC] transition-all duration-200 cursor-pointer">
+          <label className="inline-flex items-center gap-2 px-4 py-2.5 bg-[var(--admin-surface)] border border-[var(--admin-border)] text-[var(--admin-text-muted)] font-fira-sans text-sm rounded-xl hover:border-[var(--admin-accent)]/50 hover:text-[var(--admin-text)] transition-all duration-200 cursor-pointer">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
               <circle cx="8.5" cy="8.5" r="1.5"/>
@@ -256,7 +256,7 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
             />
           </label>
           {uploading && (
-            <span className="flex items-center gap-2 text-[#64748B] font-fira-sans text-sm">
+            <span className="flex items-center gap-2 text-[var(--admin-text-dim)] font-fira-sans text-sm">
               <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
                 <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" opacity="0.3"/>
                 <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
@@ -265,7 +265,7 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
             </span>
           )}
         </div>
-        <p className="mt-2 text-xs text-[#64748B] font-fira-sans">推荐使用 WebP 格式，可获得更好的压缩率和画质</p>
+        <p className="mt-2 text-xs text-[var(--admin-text-dim)] font-fira-sans">推荐使用 WebP 格式，可获得更好的压缩率和画质</p>
       </Field>
 
       {/* Featured */}
@@ -277,15 +277,15 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
             onChange={(e) => set('featured', e.target.checked)}
             className="sr-only peer"
           />
-          <div className="w-11 h-6 bg-[#1E293B] peer-focus:ring-2 peer-focus:ring-[#22C55E]/20 rounded-full peer transition-all duration-200 peer-checked:bg-[#22C55E]"></div>
-          <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-[#94A3B8] rounded-full transition-all duration-200 peer-checked:translate-x-5 peer-checked:bg-white"></div>
+          <div className="w-11 h-6 bg-[var(--admin-border)] peer-focus:ring-2 peer-focus:ring-[var(--admin-accent)]/20 rounded-full peer transition-all duration-200 peer-checked:bg-[var(--admin-accent)]"></div>
+          <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-[var(--admin-text-muted)] rounded-full transition-all duration-200 peer-checked:translate-x-5 peer-checked:bg-white"></div>
         </label>
-        <span className="font-fira-sans text-sm text-[#F8FAFC]">精选项目</span>
+        <span className="font-fira-sans text-sm text-[var(--admin-text)]">精选项目</span>
       </div>
 
       {/* SEO */}
-      <div className="border-t border-[#1E293B] pt-6">
-        <p className="font-fira-sans font-medium text-[#F8FAFC] mb-4 flex items-center gap-2">
+      <div className="border-t border-[var(--admin-border)] pt-6">
+        <p className="font-fira-sans font-medium text-[var(--admin-text)] mb-4 flex items-center gap-2">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="12" cy="12" r="10"/>
             <line x1="2" y1="12" x2="22" y2="12"/>
@@ -299,7 +299,7 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
               type="text"
               value={form.ogTitle}
               onChange={(e) => set('ogTitle', e.target.value)}
-              className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20"
+              className="w-full px-4 py-3 bg-[var(--admin-bg)] border border-[var(--admin-border)] rounded-xl text-[var(--admin-text)] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[var(--admin-accent)] focus:ring-1 focus:ring-[var(--admin-accent)]/20"
               placeholder="社交分享自定义标题"
             />
           </Field>
@@ -317,7 +317,7 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
               type="url"
               value={form.ogImage}
               onChange={(e) => set('ogImage', e.target.value)}
-              className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20"
+              className="w-full px-4 py-3 bg-[var(--admin-bg)] border border-[var(--admin-border)] rounded-xl text-[var(--admin-text)] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[var(--admin-accent)] focus:ring-1 focus:ring-[var(--admin-accent)]/20"
               placeholder="https://example.com/og-image.png"
             />
           </Field>
@@ -329,7 +329,7 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
         <button
           type="submit"
           disabled={isLoading}
-          className="px-6 py-3 bg-[#22C55E] hover:bg-[#16A34A] text-[#020617] font-fira-sans font-semibold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          className="px-6 py-3 bg-[var(--admin-accent)] hover:bg-[var(--admin-accent-hover)] text-[#020617] font-fira-sans font-semibold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           {isLoading ? (
             <span className="flex items-center gap-2">
@@ -344,7 +344,7 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
         <button
           type="button"
           onClick={() => window.history.back()}
-          className="px-6 py-3 bg-[#0F172A] border border-[#1E293B] text-[#94A3B8] font-fira-sans text-sm rounded-xl hover:border-[#475569] hover:text-[#F8FAFC] transition-all duration-200 cursor-pointer"
+          className="px-6 py-3 bg-[var(--admin-surface)] border border-[var(--admin-border)] text-[var(--admin-text-muted)] font-fira-sans text-sm rounded-xl hover:border-[var(--admin-text-dimmer)] hover:text-[var(--admin-text)] transition-all duration-200 cursor-pointer"
         >
           取消
         </button>
@@ -357,7 +357,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   return (
     <div>
       {label && (
-        <label className="block font-fira-sans text-sm text-[#94A3B8] mb-2">
+        <label className="block font-fira-sans text-sm text-[var(--admin-text-muted)] mb-2">
           {label}
         </label>
       )}

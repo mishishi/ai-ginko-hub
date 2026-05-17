@@ -36,9 +36,9 @@ export default function ProjectCard({ project, index }: Props) {
   const gradient = cardGradients[index % cardGradients.length];
   const isFav = isFavorited(project.id);
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     navigate(`/project/${project.id}`);
-  };
+  }, [navigate, project.id]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {

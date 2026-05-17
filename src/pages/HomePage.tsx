@@ -215,7 +215,7 @@ export default function HomePage() {
           <section className="relative text-center pt-16 sm:pt-24 pb-10 sm:pb-16">
             {/* Ambient glow */}
             <div aria-hidden="true" className="absolute inset-0 pointer-events-none overflow-hidden">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] sm:w-[800px] h-[300px] opacity-[0.07]" style={{ background: 'radial-gradient(ellipse at center, #c97d5c 0%, transparent 70%)' }} />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] sm:w-[800px] h-[300px] opacity-[0.07]" style={{ background: 'radial-gradient(ellipse at center, var(--color-accent) 0%, transparent 70%)' }} />
             </div>
 
             <h1 className="hero-animate font-heading text-[clamp(2rem,5vw,4rem)] font-medium tracking-tight text-text-primary mb-3 sm:mb-4">
