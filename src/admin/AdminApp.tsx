@@ -5,6 +5,7 @@ import AdminLayout from './components/AdminLayout';
 import DashboardPage from './pages/DashboardPage';
 import ProjectListPage from './pages/ProjectListPage';
 import ProjectFormPage from './pages/ProjectFormPage';
+import TagManagementPage from './pages/TagManagementPage';
 
 function AdminRoutes() {
   const { username, isLoading } = useAdminAuth();
@@ -34,6 +35,7 @@ function AdminRoutes() {
         <Route path="projects" element={<ProjectListPage />} />
         <Route path="projects/new" element={<ProjectFormPage />} />
         <Route path="projects/:id/edit" element={<ProjectFormPage />} />
+        <Route path="tags" element={<TagManagementPage />} />
       </Route>
     </Routes>
   );
