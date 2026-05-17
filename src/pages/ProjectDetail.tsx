@@ -8,6 +8,7 @@ import CommentsSection from '../components/CommentsSection';
 import type { Project } from '../types';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useFavorites } from '../hooks/useFavorites';
+import { useAnalytics } from '../hooks/useAnalytics';
 
 function formatDate(isoString: string): string {
   try {
@@ -84,6 +85,7 @@ export default function ProjectDetail() {
   const { isSignedIn } = useAuth();
   const { isFavorited, toggle } = useFavorites();
   const [toggling, setToggling] = useState(false);
+  const { track } = useAnalytics();
 
   const handleToggleFavorite = useCallback(async () => {
     if (!project) return;
@@ -168,6 +170,13 @@ export default function ProjectDetail() {
       if (ld) ld.remove();
     };
   }, [project]);
+
+  // Track pageview when project loads
+  useEffect(() => {
+    if (project?.id) {
+      track({ eventType: 'pageview', projectId: project.id });
+    }
+  }, [project?.id, track]);
 
   // Related projects: filter by shared tags, sort deterministically by project.id, take 2-3
   const relatedProjects = useMemo(() => {

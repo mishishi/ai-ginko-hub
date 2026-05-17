@@ -7,6 +7,7 @@ import ProjectGrid from '../components/ProjectGrid';
 import { fetchProjects } from '../data/projects';
 import { API_BASE } from '../lib/api';
 import type { Project } from '../types';
+import { useAnalytics } from '../hooks/useAnalytics';
 
 const PAGE_SIZE = 12;
 
@@ -32,6 +33,25 @@ export default function HomePage() {
   const [statsError, setStatsError] = useState(false);
   const isPopStateRef = useRef(false);
   const isInitialMount = useRef(true);
+  const prevSearchQueryRef = useRef(searchQuery);
+  const prevActiveTagRef = useRef(activeTag);
+  const { track } = useAnalytics();
+
+  // Track search queries (only when query changes to a non-empty value)
+  useEffect(() => {
+    if (searchQuery && searchQuery !== prevSearchQueryRef.current) {
+      track({ eventType: 'search', query: searchQuery });
+    }
+    prevSearchQueryRef.current = searchQuery;
+  }, [searchQuery, track]);
+
+  // Track tag filter changes (only when tag changes to a non-null value)
+  useEffect(() => {
+    if (activeTag && activeTag !== prevActiveTagRef.current) {
+      track({ eventType: 'filter', tag: activeTag });
+    }
+    prevActiveTagRef.current = activeTag;
+  }, [activeTag, track]);
 
   // Dynamic meta
   useEffect(() => {
