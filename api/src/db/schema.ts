@@ -32,7 +32,20 @@ export const favorites = pgTable('favorites', {
   createdAt: integer('created_at_ts').notNull(), // Unix timestamp
 });
 
+export const analyticsEvents = pgTable('analytics_events', {
+  id: serial('id').primaryKey(),
+  eventType: text('event_type').notNull(), // 'pageview' | 'search' | 'filter'
+  projectId: text('project_id'),
+  tag: text('tag'),
+  query: text('query'),
+  referrer: text('referrer'),
+  ip: text('ip'),
+  userAgent: text('user_agent'),
+  createdAt: integer('created_at').notNull(), // Unix timestamp in milliseconds
+});
+
 export type Project = typeof projects.$inferSelect;
 export type NewProject = typeof projects.$inferInsert;
 export type Favorite = typeof favorites.$inferSelect;
 export type NewFavorite = typeof favorites.$inferInsert;
+export type AnalyticsEvent = typeof analyticsEvents.$inferSelect;
