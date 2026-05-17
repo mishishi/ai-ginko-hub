@@ -70,7 +70,7 @@ export async function projectRoutes(app: FastifyInstance) {
         orderBy = desc(sql`${projects.createdAtTs}`);
         break;
       case 'views':
-        orderBy = desc(sql`${projects.viewCount}`);
+        orderBy = desc(sql`${projects.discoveryScore}`);
         break;
       case 'featured':
         orderBy = desc(projects.featured);
@@ -129,9 +129,12 @@ export async function projectRoutes(app: FastifyInstance) {
 
     const project = results[0];
 
-    // Increment viewCount atomically to avoid race condition
+    // Increment viewCount and discoveryScore atomically to avoid race condition
     await db.update(projects)
-      .set({ viewCount: sql`${projects.viewCount} + 1` })
+      .set({
+        viewCount: sql`${projects.viewCount} + 1`,
+        discoveryScore: sql`${projects.discoveryScore} + 1`,
+      })
       .where(eq(projects.id, id));
 
     return reply.header('Cache-Control', 'public, max-age=60, stale-while-revalidate=300').send({

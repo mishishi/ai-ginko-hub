@@ -197,8 +197,50 @@ export default function ProjectDetail() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen" role="status" aria-label="加载中">
-        <span className="text-text-muted">加载中...</span>
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-1 mx-auto max-w-[90rem] px-4 sm:px-6 lg:px-8 py-8 w-full">
+          {/* Breadcrumb skeleton */}
+          <div className="flex items-center gap-2 mb-8">
+            <div className="h-4 w-12 bg-bg-elevated rounded animate-pulse" />
+            <div className="h-4 w-4 bg-bg-elevated rounded animate-pulse" />
+            <div className="h-4 w-20 bg-bg-elevated rounded animate-pulse" />
+            <div className="h-4 w-4 bg-bg-elevated rounded animate-pulse" />
+            <div className="h-4 w-32 bg-bg-elevated rounded animate-pulse" />
+          </div>
+          {/* Main card skeleton */}
+          <div className="bg-bg-card border border-border rounded-xl p-6 sm:p-8 mb-8">
+            <div className="flex flex-col sm:flex-row gap-6">
+              <div className="w-full sm:w-[120px] h-[200px] sm:h-[75px] bg-bg-elevated rounded-lg animate-pulse flex-shrink-0" />
+              <div className="flex-1 space-y-4">
+                <div className="h-4 w-48 bg-bg-elevated rounded animate-pulse" />
+                <div className="h-8 w-3/4 bg-bg-elevated rounded animate-pulse" />
+                <div className="h-4 w-full bg-bg-elevated rounded animate-pulse" />
+                <div className="h-4 w-5/6 bg-bg-elevated rounded animate-pulse" />
+              </div>
+            </div>
+            <div className="flex gap-2 mt-6">
+              <div className="h-6 w-16 bg-bg-elevated rounded-full animate-pulse" />
+              <div className="h-6 w-20 bg-bg-elevated rounded-full animate-pulse" />
+              <div className="h-6 w-14 bg-bg-elevated rounded-full animate-pulse" />
+            </div>
+          </div>
+          {/* Related section skeleton */}
+          <div className="pb-4 border-b border-border mb-6">
+            <div className="h-6 w-24 bg-bg-elevated rounded animate-pulse" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="bg-bg-card border border-border rounded-xl overflow-hidden">
+                <div className="w-full aspect-[16/10] bg-bg-elevated animate-pulse" />
+                <div className="p-4 space-y-2">
+                  <div className="h-4 w-3/4 bg-bg-elevated rounded animate-pulse" />
+                  <div className="h-3 w-full bg-bg-elevated rounded animate-pulse" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </main>
       </div>
     );
   }

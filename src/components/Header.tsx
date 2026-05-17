@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { SignInButton, UserButton, useAuth } from '@clerk/react';
 import { useTheme } from '../hooks/useTheme';
+import { API_BASE } from '../lib/api';
 
 interface Props {
   searchQuery?: string;
@@ -24,19 +25,38 @@ export default function Header({ searchQuery = '', onSearchChange }: Props) {
     setQuery(searchQuery);
   }, [searchQuery]);
 
-  // Pagefind search logic
+  // Pagefind search logic — falls back to API in dev or when Pagefind is unavailable
   useEffect(() => {
     if (!query.trim()) {
       setResults([]);
       return;
     }
-    // pagefind 索引只在生产构建后存在，dev 时静默跳过
-    if (import.meta.env.DEV) {
-      setSearching(false);
-      return;
-    }
     let cancelled = false;
     setSearching(true);
+
+    if (import.meta.env.DEV) {
+      // DEV: use API search as fallback
+      fetch(`${API_BASE}/api/projects?q=${encodeURIComponent(query)}&limit=5`)
+        .then((r) => r.json())
+        .then((data) => {
+          if (cancelled) return;
+          const mapped = (data.projects ?? []).map((p: any) => ({
+            url: `/project/${p.id}`,
+            meta: { title: p.name },
+            excerpt: p.description,
+          }));
+          setResults(mapped);
+          setShowResults(true);
+        })
+        .catch(() => {
+          if (cancelled) return;
+          setResults([]);
+        })
+        .finally(() => {
+          if (!cancelled) setSearching(false);
+        });
+      return;
+    }
 
     const pfUrl = '/pagefind/pagefind.js';
     import(/* @vite-ignore */ pfUrl)
@@ -51,7 +71,23 @@ export default function Header({ searchQuery = '', onSearchChange }: Props) {
         }
       })
       .catch(() => {
-        if (!cancelled) setSearching(false);
+        // Pagefind unavailable — fall back to API
+        if (cancelled) return;
+        fetch(`${API_BASE}/api/projects?q=${encodeURIComponent(query)}&limit=5`)
+          .then((r) => r.json())
+          .then((data) => {
+            if (cancelled) return;
+            const mapped = (data.projects ?? []).map((p: any) => ({
+              url: `/project/${p.id}`,
+              meta: { title: p.name },
+              excerpt: p.description,
+            }));
+            setResults(mapped);
+            setShowResults(true);
+          })
+          .finally(() => {
+            if (!cancelled) setSearching(false);
+          });
       });
 
     return () => {
@@ -100,11 +136,19 @@ export default function Header({ searchQuery = '', onSearchChange }: Props) {
         <nav aria-label="主导航" className="hidden sm:flex items-center gap-1">
           <Link to="/" className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary rounded-md transition-colors duration-200">项目</Link>
           <Link to="/about" className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary rounded-md transition-colors duration-200">关于</Link>
-          {isSignedIn && (
+          {isSignedIn ? (
             <>
               <Link to="/favorites" className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary rounded-md transition-colors duration-200">收藏</Link>
               <Link to="/profile" className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary rounded-md transition-colors duration-200">个人中心</Link>
             </>
+          ) : (
+            <button
+              onClick={() => navigate('/admin/login')}
+              title="登录后使用收藏功能"
+              className="px-3 py-1.5 text-sm text-text-muted hover:text-accent rounded-md transition-colors duration-200 cursor-help"
+            >
+              收藏
+            </button>
           )}
         </nav>
 

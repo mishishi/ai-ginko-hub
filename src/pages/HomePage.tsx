@@ -232,10 +232,15 @@ export default function HomePage() {
                   <span className="text-[10px] sm:text-xs text-text-muted uppercase tracking-widest">总项目</span>
                 </div>
                 <div className="w-px h-8 sm:h-11 bg-border" />
-                <div className="flex flex-col items-center gap-0.5 sm:gap-1">
+                <button
+                  type="button"
+                  onClick={() => { setFeaturedOnly(true); setActiveTag(null); setSearchQuery(''); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                  className="flex flex-col items-center gap-0.5 sm:gap-1 hover:opacity-80 transition-opacity cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded-lg px-2 -mx-2"
+                  aria-label="查看精选项目"
+                >
                   <span aria-live="polite" aria-atomic="true" className="font-heading text-[1.5rem] sm:text-[1.75rem] text-accent leading-none tabular-nums">{statsError ? '—' : stats.featured}</span>
-                  <span className="text-[10px] sm:text-xs text-text-muted uppercase tracking-widest">精选项目</span>
-                </div>
+                  <span className="text-[10px] sm:text-xs text-accent uppercase tracking-widest">精选</span>
+                </button>
                 <div className="w-px h-8 sm:h-11 bg-border" />
                 <div className="flex flex-col items-center gap-0.5 sm:gap-1">
                   <span aria-live="polite" aria-atomic="true" className="font-heading text-[1.5rem] sm:text-[1.75rem] text-accent leading-none tabular-nums">{statsError ? '—' : stats.techCount}</span>
