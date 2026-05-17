@@ -142,7 +142,7 @@ export async function analyticsRoutes(app: FastifyInstance) {
       // Daily PV for last 14 days
       const dailyPvRows = await db
         .select({
-          date: sql<string>`to_char(to_timestamp(${analyticsEvents.createdAt}), 'YYYY-MM-DD')`,
+          date: sql<string>`to_char(date_trunc('day', to_timestamp(${analyticsEvents.createdAt})), 'YYYY-MM-DD')`,
           count: sql<number>`count(*)`,
         })
         .from(analyticsEvents)
@@ -152,8 +152,8 @@ export async function analyticsRoutes(app: FastifyInstance) {
             eq(analyticsEvents.eventType, 'pageview')
           )
         )
-        .groupBy(sql`to_char(to_timestamp(${analyticsEvents.createdAt}), 'YYYY-MM-DD')`)
-        .orderBy(sql`to_char(to_timestamp(${analyticsEvents.createdAt}), 'YYYY-MM-DD')`)
+        .groupBy(sql`date_trunc('day', to_timestamp(${analyticsEvents.createdAt}))`)
+        .orderBy(sql`date_trunc('day', to_timestamp(${analyticsEvents.createdAt}))`)
         .execute();
 
       return {
