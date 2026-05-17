@@ -1,5 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import {
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+} from 'recharts';
 import { API_BASE } from '../../lib/api';
 
 interface Stats {
@@ -184,56 +195,186 @@ export default function DashboardPage() {
           />
         </div>
 
-        {/* Top Lists */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Charts Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+          {/* Daily PV Area Chart */}
+          <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5 lg:col-span-2">
+            <h3 className="font-fira-sans text-sm text-[#94A3B8] mb-4">每日浏览量 (近14天)</h3>
+            {analytics?.dailyPV && analytics.dailyPV.length > 0 ? (
+              <ResponsiveContainer width="100%" height={180}>
+                <AreaChart data={analytics.dailyPV} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="pvGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#c97d5c" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#c97d5c" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis
+                    dataKey="date"
+                    tick={{ fill: '#64748B', fontSize: 10, fontFamily: 'Fira Code' }}
+                    tickLine={false}
+                    axisLine={false}
+                    interval="preserveStartEnd"
+                  />
+                  <YAxis
+                    tick={{ fill: '#64748B', fontSize: 10, fontFamily: 'Fira Code' }}
+                    tickLine={false}
+                    axisLine={false}
+                    width={40}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      background: '#1E293B',
+                      border: '1px solid #334155',
+                      borderRadius: 12,
+                      fontSize: 12,
+                      fontFamily: 'Fira Sans',
+                    }}
+                    labelStyle={{ color: '#94A3B8' }}
+                    itemStyle={{ color: '#c97d5c' }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="count"
+                    stroke="#c97d5c"
+                    strokeWidth={2}
+                    fill="url(#pvGradient)"
+                    dot={false}
+                    activeDot={{ r: 4, fill: '#c97d5c' }}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <p className="text-sm text-[#64748B] h-[180px] flex items-center justify-center">暂无数据</p>
+            )}
+          </div>
+
+          {/* Top Projects Bar Chart */}
           <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5">
             <h3 className="font-fira-sans text-sm text-[#94A3B8] mb-3">热门项目 Top 5</h3>
             {analytics?.topProjects && analytics.topProjects.length > 0 ? (
-              <ul className="space-y-2">
-                {analytics.topProjects.map((p, i) => (
-                  <li key={p.projectId} className="flex items-center gap-3">
-                    <span className="font-fira-code text-xs text-[#64748B] w-4">{i + 1}</span>
-                    <span className="font-fira-sans text-sm text-[#F8FAFC] flex-1 truncate">{p.projectName}</span>
-                    <span className="font-fira-code text-xs text-[#c97d5c]">{p.count}</span>
-                  </li>
-                ))}
-              </ul>
+              <ResponsiveContainer width="100%" height={180}>
+                <BarChart
+                  data={analytics.topProjects.slice(0, 5)}
+                  layout="vertical"
+                  margin={{ top: 0, right: 8, left: 0, bottom: 0 }}
+                >
+                  <XAxis type="number" hide />
+                  <YAxis
+                    type="category"
+                    dataKey="projectName"
+                    tick={{ fill: '#94A3B8', fontSize: 10, fontFamily: 'Fira Sans' }}
+                    tickLine={false}
+                    axisLine={false}
+                    width={80}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      background: '#1E293B',
+                      border: '1px solid #334155',
+                      borderRadius: 12,
+                      fontSize: 12,
+                      fontFamily: 'Fira Sans',
+                    }}
+                    labelStyle={{ color: '#94A3B8' }}
+                    itemStyle={{ color: '#c97d5c' }}
+                  />
+                  <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                    {analytics.topProjects.slice(0, 5).map((_, i) => (
+                      <Cell key={i} fill="#c97d5c" fillOpacity={1 - i * 0.15} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             ) : (
-              <p className="text-sm text-[#64748B]">暂无数据</p>
+              <p className="text-sm text-[#64748B] h-[180px] flex items-center justify-center">暂无数据</p>
             )}
           </div>
+        </div>
 
+        {/* Second Charts Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Top Tags Bar Chart */}
           <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5">
             <h3 className="font-fira-sans text-sm text-[#94A3B8] mb-3">热门标签 Top 5</h3>
             {analytics?.topTags && analytics.topTags.length > 0 ? (
-              <ul className="space-y-2">
-                {analytics.topTags.map((t, i) => (
-                  <li key={t.tag} className="flex items-center gap-3">
-                    <span className="font-fira-code text-xs text-[#64748B] w-4">{i + 1}</span>
-                    <span className="font-fira-sans text-sm text-[#F8FAFC] flex-1 truncate">{t.tag}</span>
-                    <span className="font-fira-code text-xs text-[#c97d5c]">{t.count}</span>
-                  </li>
-                ))}
-              </ul>
+              <ResponsiveContainer width="100%" height={180}>
+                <BarChart
+                  data={analytics.topTags.slice(0, 5)}
+                  layout="vertical"
+                  margin={{ top: 0, right: 8, left: 0, bottom: 0 }}
+                >
+                  <XAxis type="number" hide />
+                  <YAxis
+                    type="category"
+                    dataKey="tag"
+                    tick={{ fill: '#94A3B8', fontSize: 10, fontFamily: 'Fira Sans' }}
+                    tickLine={false}
+                    axisLine={false}
+                    width={80}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      background: '#1E293B',
+                      border: '1px solid #334155',
+                      borderRadius: 12,
+                      fontSize: 12,
+                      fontFamily: 'Fira Sans',
+                    }}
+                    labelStyle={{ color: '#94A3B8' }}
+                    itemStyle={{ color: '#7d9a8e' }}
+                  />
+                  <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                    {analytics.topTags.slice(0, 5).map((_, i) => (
+                      <Cell key={i} fill="#7d9a8e" fillOpacity={1 - i * 0.15} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             ) : (
-              <p className="text-sm text-[#64748B]">暂无数据</p>
+              <p className="text-sm text-[#64748B] h-[180px] flex items-center justify-center">暂无数据</p>
             )}
           </div>
 
+          {/* Top Searches Bar Chart */}
           <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5">
             <h3 className="font-fira-sans text-sm text-[#94A3B8] mb-3">热门搜索 Top 5</h3>
             {analytics?.topSearches && analytics.topSearches.length > 0 ? (
-              <ul className="space-y-2">
-                {analytics.topSearches.map((s, i) => (
-                  <li key={s.query} className="flex items-center gap-3">
-                    <span className="font-fira-code text-xs text-[#64748B] w-4">{i + 1}</span>
-                    <span className="font-fira-sans text-sm text-[#F8FAFC] flex-1 truncate">{s.query}</span>
-                    <span className="font-fira-code text-xs text-[#c97d5c]">{s.count}</span>
-                  </li>
-                ))}
-              </ul>
+              <ResponsiveContainer width="100%" height={180}>
+                <BarChart
+                  data={analytics.topSearches.slice(0, 5)}
+                  layout="vertical"
+                  margin={{ top: 0, right: 8, left: 0, bottom: 0 }}
+                >
+                  <XAxis type="number" hide />
+                  <YAxis
+                    type="category"
+                    dataKey="query"
+                    tick={{ fill: '#94A3B8', fontSize: 10, fontFamily: 'Fira Sans' }}
+                    tickLine={false}
+                    axisLine={false}
+                    width={80}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      background: '#1E293B',
+                      border: '1px solid #334155',
+                      borderRadius: 12,
+                      fontSize: 12,
+                      fontFamily: 'Fira Sans',
+                    }}
+                    labelStyle={{ color: '#94A3B8' }}
+                    itemStyle={{ color: '#3B82F6' }}
+                  />
+                  <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                    {analytics.topSearches.slice(0, 5).map((_, i) => (
+                      <Cell key={i} fill="#3B82F6" fillOpacity={1 - i * 0.15} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             ) : (
-              <p className="text-sm text-[#64748B]">暂无数据</p>
+              <p className="text-sm text-[#64748B] h-[180px] flex items-center justify-center">暂无数据</p>
             )}
           </div>
         </div>
