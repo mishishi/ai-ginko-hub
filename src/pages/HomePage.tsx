@@ -117,6 +117,9 @@ export default function HomePage() {
         setProjects(data);
         setHasMore(data.length < totalCount);
         setPage(1);
+        if (data.length === 0 && searchQuery) {
+          track({ eventType: 'search_no_results', query: searchQuery });
+        }
       })
       .catch(() => {
         setProjects([]);

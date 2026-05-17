@@ -3,10 +3,12 @@ import { API_BASE } from '../lib/api';
 
 export function useAnalytics() {
   const track = useCallback(async (event: {
-    eventType: 'pageview' | 'search' | 'filter';
+    eventType: 'pageview' | 'search' | 'filter' | 'external_link_click' | 'search_no_results' | 'favorite_toggle';
     projectId?: string;
     tag?: string;
     query?: string;
+    linkUrl?: string;
+    action?: string;
   }) => {
     try {
       await fetch(`${API_BASE}/api/analytics`, {

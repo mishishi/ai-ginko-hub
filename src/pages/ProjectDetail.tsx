@@ -89,10 +89,12 @@ export default function ProjectDetail() {
 
   const handleToggleFavorite = useCallback(async () => {
     if (!project) return;
+    const wasFavorited = isFavorited(project.id);
     setToggling(true);
+    track({ eventType: 'favorite_toggle', projectId: project.id, action: wasFavorited ? 'remove' : 'add' });
     await toggle(project.id);
     setToggling(false);
-  }, [project, toggle]);
+  }, [project, toggle, isFavorited, track]);
 
   useEffect(() => {
     if (!id) return;
@@ -297,6 +299,7 @@ export default function ProjectDetail() {
                         href={project.url}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={() => track({ eventType: 'external_link_click', projectId: project.id, tag: 'project_url' })}
                         className="flex items-center gap-1.5 text-sm text-accent transition-colors duration-200 hover:text-accent-dim cursor-pointer"
                         aria-label={`打开项目 ${project.name}`}
                       >
@@ -311,6 +314,7 @@ export default function ProjectDetail() {
                           href={project.repoUrl}
                           target="_blank"
                           rel="noopener noreferrer"
+                          onClick={() => track({ eventType: 'external_link_click', projectId: project.id, tag: 'repo_url' })}
                           className="flex items-center gap-1.5 text-sm text-text-muted hover:text-accent transition-colors duration-200"
                           aria-label={`查看 ${project.name} 源码`}
                         >

@@ -4,7 +4,7 @@ import { analyticsEvents, projects } from '../db/schema.js';
 import { sql, eq, and, gte, lt, isNotNull, desc } from 'drizzle-orm';
 import { requireAuth } from '../middleware/auth.js';
 
-const VALID_EVENT_TYPES = ['pageview', 'search', 'filter'] as const;
+const VALID_EVENT_TYPES = ['pageview', 'search', 'filter', 'external_link_click', 'search_no_results', 'favorite_toggle'] as const;
 type EventType = (typeof VALID_EVENT_TYPES)[number];
 
 function getClientIp(request: { ip?: string; headers: Record<string, string | string[] | undefined> }): string | null {
