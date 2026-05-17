@@ -29,7 +29,7 @@
 | U-3 | **内联 style 色值**，如 `style={{ backgroundColor: '#f3f4f6' }}`，应使用 Tailwind 令牌 → ✅ 已修复 | 中 | 多个组件 |
 | U-4 | **卡片 hover 阴影过重**，在深色背景上影响可读性 → ✅ 已修复 | 低 | `src/components/ProjectCard.tsx` |
 | U-5 | **搜索输入框较窄**，在宽屏上显得不协调 → ✅ 已修复 | 低 | `src/components/Header.tsx` |
-| U-6 | **无面包屑导航**，在详情页/编辑页用户难以理解当前位置 | 低 | `src/pages/ProjectDetail.tsx` |
+| U-6 | **无面包屑导航**，在详情页/编辑页用户难以理解当前位置 → ✅ 已修复 | 低 | `src/pages/ProjectDetail.tsx` |
 | U-7 | **favicon 未定制**，使用浏览器默认 → ✅ 已有 (`public/favicon.svg`) | 低 | `index.html` |
 
 ---
@@ -75,7 +75,7 @@
 |---|------|----------|------|
 | P-1 | **无分页/无限滚动**，大数据集一次性加载 → ✅ 已修复 | 中 | `src/data/projects.ts` |
 | P-2 | **缩略图无懒加载**，首屏外图片即时请求 → ✅ 已修复 | 中 | `src/components/ProjectCard.tsx` |
-| P-3 | **无 WebP 格式**，未利用现代图片格式 | 低 | `src/components/ProjectForm.tsx` |
+| P-3 | **无 WebP 格式**，未利用现代图片格式 → ✅ 已修复 | 低 | `src/admin/components/ProjectForm.tsx` |
 | P-4 | **无 HTTP 缓存头**，静态资源无缓存策略 → ✅ 已修复 | 低 | `api/src/routes/projects.ts` |
 
 ---
@@ -122,6 +122,8 @@
 - C-3: 搜索逻辑统一 ✅
 - P-6: 添加 404 页面 ✅
 - U-2: About 页 heading 结构 ✅
+- U-6: 面包屑导航 ✅
+- P-3: WebP 格式提示 ✅
 
 ---
 
