@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { SignInButton, UserButton, useAuth } from '@clerk/react';
 import { useTheme } from '../hooks/useTheme';
 
@@ -10,6 +11,68 @@ interface Props {
 export default function Header({ searchQuery = '', onSearchChange }: Props) {
   const { isSignedIn } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
+
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<any[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Sync internal query with external searchQuery prop (for URL sync)
+  useEffect(() => {
+    setQuery(searchQuery);
+  }, [searchQuery]);
+
+  // Pagefind search logic
+  useEffect(() => {
+    if (!query.trim()) {
+      setResults([]);
+      return;
+    }
+    let cancelled = false;
+    setSearching(true);
+
+    // @ts-expect-error - pagefind is generated at build time, types not available
+    import(/* @vite-ignore */ '/pagefind/pagefind.js')
+      .then(async (pf) => {
+        if (cancelled) return;
+        const search = await pf.search(query);
+        const data = await Promise.all(search.results.slice(0, 5).map((r: any) => r.data()));
+        if (!cancelled) {
+          setResults(data);
+          setSearching(false);
+          setShowResults(true);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setSearching(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [query]);
+
+  // Click outside to close results
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setShowResults(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleResultClick = (url: string) => {
+    navigate(url);
+    setQuery('');
+    setResults([]);
+    setShowResults(false);
+    if (onSearchChange) onSearchChange('');
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-bg-base/85 backdrop-blur-[16px] saturate-[1.2] border-b border-border">
       <div className="mx-auto flex items-center justify-between h-14 sm:h-[72px] gap-4 sm:gap-6 max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -41,7 +104,7 @@ export default function Header({ searchQuery = '', onSearchChange }: Props) {
         </nav>
 
         {onSearchChange && (
-          <div className="relative flex-1 max-w-48 sm:max-w-xl">
+          <div className="relative flex-1 max-w-48 sm:max-w-xl" ref={containerRef}>
             <svg
               className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
               width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
@@ -57,9 +120,42 @@ export default function Header({ searchQuery = '', onSearchChange }: Props) {
               inputMode="search"
               className="w-full h-9 sm:h-11 pl-9 sm:pl-[36px] pr-3 border border-border rounded-[8px] bg-bg-elevated text-text-primary font-body text-sm outline-none transition-[border-color,box-shadow] duration-200 ease-out placeholder:text-text-muted focus:border-accent-dim focus:shadow-[0_0_0_3px_var(--color-accent-glow)]"
               placeholder="搜索..."
-              value={searchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                if (onSearchChange) onSearchChange(e.target.value);
+              }}
+              onFocus={() => results.length > 0 && setShowResults(true)}
             />
+            {showResults && (results.length > 0 || searching) && (
+              <div className="absolute top-full left-0 right-0 mt-2 bg-bg-card border border-border rounded-[8px] shadow-lg overflow-hidden z-50">
+                {searching ? (
+                  <div className="px-4 py-3 text-sm text-text-muted">搜索中...</div>
+                ) : (
+                  <ul className="divide-y divide-border" role="listbox">
+                    {results.map((r, i) => (
+                      <li key={i}>
+                        <button
+                          type="button"
+                          className="w-full px-4 py-3 text-left hover:bg-bg-card-hover transition-colors duration-150"
+                          onClick={() => handleResultClick(r.url)}
+                          role="option"
+                          aria-selected="false"
+                        >
+                          <div className="text-sm font-medium text-text-primary truncate">{r.meta?.title || '无标题'}</div>
+                          {r.excerpt && (
+                            <div
+                              className="text-xs text-text-secondary mt-0.5 line-clamp-2 [&_mark]:bg-accent/30 [&_mark]:text-accent [&_mark]:rounded-sm"
+                              dangerouslySetInnerHTML={{ __html: r.excerpt }}
+                            />
+                          )}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
           </div>
         )}
 

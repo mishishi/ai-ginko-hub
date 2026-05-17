@@ -7,4 +7,9 @@ export default defineConfig({
   server: {
     port: 4000,
   },
+  build: {
+    rollupOptions: {
+      external: ['/pagefind/pagefind.js'],
+    },
+  },
 })
