@@ -30,6 +30,11 @@ export async function buildApp() {
     timeWindow: '1 minute',
   });
 
+  // 所有响应带上 X-Request-ID 方便追踪
+  app.addHook('onSend', async (request, reply) => {
+    reply.header('X-Request-ID', request.id);
+  });
+
   app.get('/health', async () => ({ status: 'ok' }));
 
   await app.register(authRoutes);

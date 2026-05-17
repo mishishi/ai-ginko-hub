@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from 'react';
 import type { Project } from '../types';
 import ProjectCard from './ProjectCard';
 
@@ -10,6 +11,22 @@ interface Props {
 }
 
 export default function ProjectGrid({ projects, loading, hasMore, loadingMore, onLoadMore }: Props) {
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const wasLoading = useRef(false);
+
+  // 仅在首次加载完成（loading: true → false）时触发动画一次
+  useEffect(() => {
+    if (wasLoading.current && !loading && !hasAnimated) {
+      const grid = document.querySelector<HTMLElement>('.project-grid-animated');
+      if (grid) {
+        grid.classList.remove('animate-fade-in');
+        void grid.offsetWidth;
+        grid.classList.add('animate-fade-in');
+      }
+      setHasAnimated(true);
+    }
+    wasLoading.current = !loading;
+  }, [loading, hasAnimated]);
   if (loading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -53,7 +70,7 @@ export default function ProjectGrid({ projects, loading, hasMore, loadingMore, o
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-16 sm:mb-24">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-16 sm:mb-24 project-grid-animated">
       {projects.map((project, index) => (
         <ProjectCard
           key={project.id}

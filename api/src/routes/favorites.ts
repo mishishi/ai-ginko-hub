@@ -1,8 +1,8 @@
 import type { FastifyInstance } from 'fastify';
 import { v4 as uuidv4 } from 'uuid';
 import { getDb } from '../db/index.js';
-import { favorites } from '../db/schema.js';
-import { eq, and } from 'drizzle-orm';
+import { favorites, projects } from '../db/schema.js';
+import { eq, and, sql } from 'drizzle-orm';
 import { requireClerkAuth } from '../middleware/clerk.js';
 
 function generateId(): string {
@@ -55,6 +55,11 @@ export async function favoriteRoutes(app: FastifyInstance) {
     const createdAt = Date.now();
     await db.insert(favorites).values({ id, projectId, userId, createdAt });
 
+    // 同步更新项目的 likeCount
+    await db.update(projects)
+      .set({ likeCount: sql`${projects.likeCount} + 1` })
+      .where(eq(projects.id, projectId));
+
     return reply.status(201).send({ id, projectId, createdAt });
   });
 
@@ -65,9 +70,27 @@ export async function favoriteRoutes(app: FastifyInstance) {
     const { projectId } = request.params as { projectId: string };
 
     const db = getDb();
+
+    // 检查是否存在再删除，避免误减
+    const existing = await db
+      .select()
+      .from(favorites)
+      .where(and(eq(favorites.userId, userId), eq(favorites.projectId, projectId)))
+      .limit(1)
+      .execute();
+
+    if (existing.length === 0) {
+      return reply.status(204).send();
+    }
+
     await db
       .delete(favorites)
       .where(and(eq(favorites.userId, userId), eq(favorites.projectId, projectId)));
+
+    // 同步减少项目的 likeCount
+    await db.update(projects)
+      .set({ likeCount: sql`${projects.likeCount} - 1` })
+      .where(eq(projects.id, projectId));
 
     return reply.status(204).send();
   });

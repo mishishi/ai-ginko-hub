@@ -14,6 +14,7 @@ export const projects = pgTable('projects', {
   ogDescription: text('og_description'),
   ogImage: text('og_image'),
   viewCount: integer('view_count').default(0),
+  likeCount: integer('like_count').default(0),
   createdAtTs: integer('created_at_ts'), // Unix timestamp for sorting
   updatedAt: integer('updated_at'),
 });
