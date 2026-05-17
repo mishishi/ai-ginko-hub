@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
+import { lazy, Suspense } from 'react'
 import HomePage from './pages/HomePage'
 import ProjectDetail from './pages/ProjectDetail'
 import About from './pages/About'
@@ -7,8 +8,10 @@ import FavoritesPage from './pages/FavoritesPage'
 import ProfilePage from './pages/ProfilePage'
 import NotFound from './pages/NotFound'
 import ErrorPage from './pages/ErrorPage'
-import AdminApp from './admin/AdminApp'
 import ErrorBoundary from './components/ErrorBoundary'
+
+// Admin bundle — only loaded when user navigates to /admin/*
+const AdminApp = lazy(() => import('./admin/AdminApp'))
 
 export default function App() {
   return (
@@ -46,7 +49,14 @@ export default function App() {
           <Route path="/about" element={<About />} errorElement={<ErrorPage />} />
           <Route path="/favorites" element={<FavoritesPage />} errorElement={<ErrorPage />} />
           <Route path="/profile" element={<ProfilePage />} errorElement={<ErrorPage />} />
-          <Route path="/admin/*" element={<AdminApp />} />
+          <Route
+            path="/admin/*"
+            element={
+              <Suspense fallback={null}>
+                <AdminApp />
+              </Suspense>
+            }
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </ErrorBoundary>

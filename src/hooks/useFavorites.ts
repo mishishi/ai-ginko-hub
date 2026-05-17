@@ -151,6 +151,8 @@ export function useFavorites() {
     _loading = true;
     _notifyLoading();
 
+    const controller = new AbortController();
+
     _fetchPromise = stableGetToken().then((token) => {
       if (!token) return;
       const userId = _decodeUserId(token);
@@ -159,6 +161,7 @@ export function useFavorites() {
 
       return fetch(`${API_BASE}/api/favorites`, {
         headers: { Authorization: `Bearer ${token}` },
+        signal: controller.signal,
       })
         .then(async (r) => {
           if (r.status === 401) {
@@ -175,13 +178,19 @@ export function useFavorites() {
             _notify();
           }
         })
-        .catch(() => toast.error('加载收藏失败'))
+        .catch((err) => {
+          if (err.name === 'AbortError') return; // intentionally cancelled
+          toast.error('加载收藏失败');
+        })
         .finally(() => {
           _loading = false;
           _fetchPromise = null;
           _notifyLoading();
         });
     });
+
+    // Abort fetch on cleanup (React StrictMode double-invoke, or unmount)
+    return () => controller.abort();
   }, [isSignedIn, stableGetToken]);
 
   const toggle = useCallback(

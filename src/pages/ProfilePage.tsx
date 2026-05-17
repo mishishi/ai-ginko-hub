@@ -40,7 +40,7 @@ export default function ProfilePage() {
               {user.imageUrl && (
                 <img
                   src={user.imageUrl}
-                  alt=""
+                  alt={name}
                   className="w-16 h-16 rounded-full ring-2 ring-border"
                 />
               )}

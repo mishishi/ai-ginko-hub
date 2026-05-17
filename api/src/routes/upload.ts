@@ -37,6 +37,13 @@ export async function uploadRoutes(app: FastifyInstance) {
       return reply.status(400).send({ error: 'unsupported content type' });
     }
 
+    // Reject files larger than 5 MB by checking Content-Length header
+    const contentLength = request.headers['content-length'];
+    const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
+    if (contentLength && Number(contentLength) > MAX_SIZE) {
+      return reply.status(413).send({ error: 'file too large, maximum size is 5 MB' });
+    }
+
     const key = `uploads/${Date.now()}-${stripped}`;
     const client = getR2Client();
     const command = new PutObjectCommand({

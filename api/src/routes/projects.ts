@@ -1,8 +1,8 @@
 import type { FastifyInstance } from 'fastify';
 import { v4 as uuidv4 } from 'uuid';
 import { getDb } from '../db/index.js';
-import { projects } from '../db/schema.js';
-import { eq, sql } from 'drizzle-orm';
+import { projects, favorites } from '../db/schema.js';
+import { eq, sql, asc, desc, like, or, and, inArray } from 'drizzle-orm';
 import { requireAuth } from '../middleware/auth.js';
 import { createProjectSchema, updateProjectSchema } from './projects.schema.js';
 
@@ -36,75 +36,84 @@ export async function projectRoutes(app: FastifyInstance) {
       featured?: string;
     };
 
-    // TODO(P1): Move tag/q/featured filtering and pagination to SQL WHERE/LIMIT/OFFSET.
-    // Currently loads ALL rows into memory then filters/paginates in JS — O(n) memory.
-    let results = await db.select().from(projects).execute();
+    // Build WHERE conditions
+    const conditions = [];
 
-    // Filter by tag
     if (tag) {
-      results = results.filter((p) => {
-        const tags = parseTags(p.tags);
-        return tags.includes(tag);
-      });
+      // PostgreSQL JSON array containment — checks if tags::jsonb contains the given element
+      conditions.push(sql`${projects.tags}::jsonb @> ${JSON.stringify(tag)}::jsonb`);
     }
 
-    // Filter by search query (name, description, or tags)
     if (q) {
-      const query = q.toLowerCase();
-      results = results.filter((p) => {
-        const tags = parseTags(p.tags);
-        return (
-          p.name.toLowerCase().includes(query) ||
-          p.description.toLowerCase().includes(query) ||
-          tags.some((t) => t.toLowerCase().includes(query))
-        );
-      });
+      const query = `%${q}%`;
+      conditions.push(
+        or(
+          like(projects.name, query),
+          like(projects.description, query),
+          // ILIKE on JSON array string for tag search
+          like(sql`${projects.tags}::text`, query)
+        )
+      );
     }
 
-    // Filter by featured
     if (featured === 'true') {
-      results = results.filter((p) => p.featured === true);
+      conditions.push(eq(projects.featured, true));
     }
 
-    // Sort results
+    // Default sort: featured first, then createdAtTs desc
+    let orderBy;
     switch (sort) {
       case 'name':
-        results.sort((a, b) => a.name.localeCompare(b.name));
+        orderBy = asc(projects.name);
         break;
       case 'date':
-        results.sort((a, b) => (b.createdAtTs ?? 0) - (a.createdAtTs ?? 0));
+        orderBy = desc(sql`${projects.createdAtTs}`);
         break;
       case 'views':
-        results.sort((a, b) => (b.viewCount ?? 0) - (a.viewCount ?? 0));
+        orderBy = desc(sql`${projects.viewCount}`);
         break;
       case 'featured':
-        results.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+        orderBy = desc(projects.featured);
         break;
       default:
-        // default: sort by featured first, then by createdAtTs desc
-        results.sort((a, b) => {
-          if (a.featured !== b.featured) return a.featured ? -1 : 1;
-          return (b.createdAtTs ?? 0) - (a.createdAtTs ?? 0);
-        });
+        orderBy = [desc(projects.featured), desc(sql`${projects.createdAtTs}`)];
     }
 
-    const total = results.length;
-
-    // Apply pagination
+    // Pagination
     const parsedLimit = parseInt(limit ?? '', 10);
     const limitNum = Number.isNaN(parsedLimit) ? 12 : Math.min(parsedLimit, 100);
-
     const parsedOffset = parseInt(offset ?? '', 10);
     const offsetNum = Number.isNaN(parsedOffset) ? 0 : Math.max(0, parsedOffset);
-    const paginatedResults = results.slice(offsetNum, offsetNum + limitNum);
 
-    // Parse tags back to array for each project
-    const parsed = paginatedResults.map((p) => ({
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+    // Count total matching rows (without limit/offset)
+    const countResult = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(projects)
+      .where(whereClause)
+      .execute();
+    const total = Number(countResult[0]?.count ?? 0);
+
+    // Fetch paginated results
+    const results = await db
+      .select()
+      .from(projects)
+      .where(whereClause)
+      .orderBy(orderBy)
+      .limit(limitNum)
+      .offset(offsetNum)
+      .execute();
+
+    const parsed = results.map((p) => ({
       ...p,
       tags: parseTags(p.tags),
     }));
 
-    return reply.header('X-Total-Count', total).header('Cache-Control', 'public, max-age=60, stale-while-revalidate=300').send(parsed);
+    return reply
+      .header('X-Total-Count', total)
+      .header('Cache-Control', 'public, max-age=60, stale-while-revalidate=300')
+      .send(parsed);
   });
 
   // GET /api/projects/:id - Get single project by id
@@ -131,6 +140,38 @@ export async function projectRoutes(app: FastifyInstance) {
     });
   });
 
+  // GET /api/projects/batch?ids=id1,id2,... - Batch fetch projects by IDs
+  app.get('/api/projects/batch', async (request, reply) => {
+    const db = getDb();
+    const { ids } = request.query as { ids?: string };
+
+    if (!ids) {
+      return reply.status(400).send({ error: 'ids query parameter required' });
+    }
+
+    const idList = ids.split(',').filter(Boolean);
+    if (idList.length === 0) {
+      return { projects: [] };
+    }
+
+    if (idList.length > 100) {
+      return reply.status(400).send({ error: 'max 100 IDs per request' });
+    }
+
+    const rows = await db
+      .select()
+      .from(projects)
+      .where(inArray(projects.id, idList))
+      .execute();
+
+    const parsed = rows.map((p) => ({
+      ...p,
+      tags: parseTags(p.tags),
+    }));
+
+    return { projects: parsed };
+  });
+
   // POST /api/projects - Create new project (auth required)
   app.post('/api/projects', { preHandler: [requireAuth] }, async (request, reply) => {
     const db = getDb();
@@ -141,6 +182,18 @@ export async function projectRoutes(app: FastifyInstance) {
     }
 
     const body = parsed.data;
+
+    // Check for duplicate name
+    const existing = await db
+      .select({ id: projects.id })
+      .from(projects)
+      .where(eq(projects.name, body.name))
+      .limit(1)
+      .execute();
+    if (existing.length > 0) {
+      return reply.status(409).send({ error: 'a project with this name already exists' });
+    }
+
     const now = Date.now();
     const id = body.id || generateId();
 
@@ -226,8 +279,6 @@ export async function projectRoutes(app: FastifyInstance) {
   });
 
   // DELETE /api/projects/:id - Delete project (auth required)
-  // TODO(P1): Add ON DELETE CASCADE for favorites, or delete associated favorites first.
-  // Currently orphaned favorites rows accumulate and likeCount becomes permanently wrong.
   app.delete('/api/projects/:id', { preHandler: [requireAuth] }, async (request, reply) => {
     const db = getDb();
     const { id } = request.params as { id: string };
@@ -238,6 +289,8 @@ export async function projectRoutes(app: FastifyInstance) {
       return reply.status(404).send({ error: 'Project not found' });
     }
 
+    // Clean up associated favorites to avoid orphaned rows
+    await db.delete(favorites).where(eq(favorites.projectId, id));
     await db.delete(projects).where(eq(projects.id, id));
 
     return reply.status(204).send();

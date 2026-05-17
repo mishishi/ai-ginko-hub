@@ -37,22 +37,24 @@ export default function FavoritesPage() {
     setProjectsError(null);
     setProjectsLoading(true);
     const projectIds = favorites.map((f) => f.projectId);
-    Promise.all(
-      projectIds.map((id) =>
-        fetch(`${API_BASE}/api/projects/${id}`)
-          .then((r) => r.json())
-          .catch(() => null)
-      )
-    ).then((results) => {
-      const valid = results.filter((p): p is Project => p != null && p.id != null);
-      setProjects(valid);
-    }).catch(() => {
-      setProjects([]);
-      setProjectsError('无法加载收藏项目，请稍后重试');
-      toast.error('加载收藏项目失败，请稍后重试');
-    }).finally(() => {
-      setProjectsLoading(false);
-    });
+
+    fetch(`${API_BASE}/api/projects/batch?ids=${projectIds.join(',')}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data.projects)) {
+          setProjects(data.projects as Project[]);
+        } else {
+          setProjects([]);
+        }
+      })
+      .catch(() => {
+        setProjects([]);
+        setProjectsError('无法加载收藏项目，请稍后重试');
+        toast.error('加载收藏项目失败，请稍后重试');
+      })
+      .finally(() => {
+        setProjectsLoading(false);
+      });
   }, [favorites, favoritesLoading]);
 
   const loading = favoritesLoading || projectsLoading;

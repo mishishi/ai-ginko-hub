@@ -53,7 +53,7 @@
 | B-2 | **JWT 存 localStorage**（XSS 风险，应使用 httpOnly cookie）→ ✅ 已修复 | 高 | `src/admin/contexts/AdminAuthContext.tsx` |
 | B-3 | **无 API 限流**，admin 接口暴露在公网 → ✅ 已修复 | 中 | `api/src/routes/admin.ts` |
 | B-4 | **viewCount 未 await saveDb**（更新可能丢失）→ ✅ 已修复 | 中 | `api/src/routes/projects.ts` |
-| B-5 | **CORS 仅允许 localhost**（部署后需修改） | 中 | `api/src/index.js` |
+| B-5 | **CORS 仅允许 localhost**（部署后需修改）→ ⚠️ 生产前处理 | 中 | `api/src/app.ts` |
 | B-6 | **无数据库迁移工具**，生产环境更新 schema 困难 → ✅ 已有（drizzle-kit 在 devDependencies） | 低 | `api/src/db/` |
 
 ---
