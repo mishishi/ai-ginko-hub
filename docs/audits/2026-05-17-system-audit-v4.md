@@ -11,6 +11,7 @@
 - ✅ H5 封面上传清理（R2 delete + 失败回滚）
 - ✅ H7 favorites 独立 rate limit（30 req/min）
 - ✅ M1 空收藏引导 UI
+- ✅ M4 VITE_GITHUB_USERNAME 添加到 .env.local
 - ✅ M4 URL pattern 验证
 - ✅ M5 ProjectCard img onError 降级
 - ✅ M6 收藏按钮 disabled 状态
@@ -136,19 +137,19 @@
 | ID | 维度 | 严重性 | 文件 | 描述 | 状态 |
 |----|------|--------|------|------|------|
 | C1 | Security | P0 | api/src/app.ts:18 | CORS 生产域名未定，部署时配置 | 暂不修 |
-| H1 | Correctness | P1 | api/src/db/schema.ts:5 | name 无 unique 约束，TOCTOU 竞态 | 未变 |
+| H1 | Correctness | P1 | api/src/db/schema.ts:5 | name 无 unique 约束，TOCTOU 竞态 | 已修复（DB 加 unique index + schema 更新 + catch 23505） |
 | H2 | Correctness | P1 | src/hooks/useFavorites.ts:263 | 多 Tab 乐观更新状态撕裂 | 未变 |
 | M1 | Accessibility | P2 | src/pages/HomePage.tsx:204 | aria-live 包含整个 Stats 区域 | 未变 |
 | M2 | Accessibility | P2 | src/pages/ProjectDetail.tsx:49 | RelatedProjectCard alt="" | 未变 |
 | M3 | SEO | P2 | src/pages/ProjectDetail.tsx:141 | og:url 依赖 JS 爬虫 | 已知 limitation |
-| M4 | Correctness | P2 | src/pages/HomePage.tsx:290 | VITE_GITHUB_USERNAME 未定义 | 未变 |
+| M4 | Correctness | P2 | src/pages/HomePage.tsx:290 | VITE_GITHUB_USERNAME 未定义 | 已修复 — 添加到 .env.local |
 | M5 | UX | P2 | src/pages/HomePage.tsx:62 | stats 失败时显示 0 而非 error | 未变 |
 | L1 | Accessibility | P3 | src/components/FilterBar.tsx | 标签无 arrow key 导航 | 未变 |
 | L2 | Performance | P3 | src/components/ProjectCard.tsx:140 | hashTagColor 每渲染重算 | 未变 |
 | L3 | Code Quality | P3 | src/hooks/useFavorites.ts:290 | isFavorited 依赖空数组读模块级变量 | 未变 |
 | L4 | Security | P3 | api/.env:14 | ADMIN_PASSWORD 写在 .env 中 | 未变 |
 
-**总计: 1 P0 · 2 P1 · 5 P2 · 4 P3**（相比 v3 的 2P0 · 6P1 · 9P2 · 6P3，大幅改善）
+**总计: 1 P0 · 1 P1 · 5 P2 · 4 P3**（相比 v3 的 2P0 · 6P1 · 9P2 · 6P3，大幅改善）
 
 ---
 
@@ -156,8 +157,6 @@
 
 **立即（上线前）：**
 1. C1 — 部署前配置 `CORS_ORIGINS=https://你的域名`
-2. H1 — schema 加 unique + catch `23505`（PostgreSQL 唯一冲突）
-3. M4 — `.env.local` 添加 `VITE_GITHUB_USERNAME=mishishi`
 
 **短期迭代：**
 4. H2 — 接受 limitation 或重构 revert 逻辑
