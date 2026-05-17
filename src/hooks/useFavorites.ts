@@ -238,6 +238,7 @@ export function useFavorites() {
             toast.error('操作失败，请重试');
             return;
           }
+          // 204 No Content — no body to parse
           toast.success('已取消收藏');
         } else {
           const res = await fetch(`${API_BASE}/api/favorites`, {

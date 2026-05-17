@@ -30,10 +30,14 @@ export default function Header({ searchQuery = '', onSearchChange }: Props) {
       setResults([]);
       return;
     }
+    // pagefind 索引只在生产构建后存在，dev 时静默跳过
+    if (import.meta.env.DEV) {
+      setSearching(false);
+      return;
+    }
     let cancelled = false;
     setSearching(true);
 
-    // pagefind 索引只在生产构建后存在，dev 时静默忽略
     const pfUrl = '/pagefind/pagefind.js';
     import(/* @vite-ignore */ pfUrl)
       .then(async (pf: any) => {

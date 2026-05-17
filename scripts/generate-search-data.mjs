@@ -85,9 +85,17 @@ async function generateSitemap(projects) {
     `<url><loc>${BASE_URL}/about</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>`,
   ];
 
-  const projectUrls = projects.map(p =>
-    `<url><loc>${BASE_URL}/project/${p.id}</loc><lastmod>${p.updatedAt ? p.updatedAt.split('T')[0] : today}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>`
-  );
+  const projectUrls = projects.map(p => {
+    let lastmod = today;
+    if (p.updatedAt) {
+      if (typeof p.updatedAt === 'number') {
+        lastmod = new Date(p.updatedAt * 1000).toISOString().split('T')[0];
+      } else {
+        lastmod = p.updatedAt.split('T')[0];
+      }
+    }
+    return `<url><loc>${BASE_URL}/project/${p.id}</loc><lastmod>${lastmod}</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>`;
+  });
 
   const urls = [...staticUrls, ...projectUrls].join('\n');
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`;

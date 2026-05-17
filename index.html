@@ -12,15 +12,33 @@
     <meta property="og:title" content="Ginko Hub — AI Project Showcase" />
     <meta property="og:description" content="AI 辅助开发的 Web 项目合集 — 从概念到部署，每一次迭代都是探索。" />
     <meta property="og:image" content="/pixel-banner.svg" />
-    <meta property="og:url" content="https://ginko-hub.example.com" />
+    <meta property="og:url" id="og-url" content="https://ginko-hub.example.com" />
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Ginko Hub — AI Project Showcase" />
     <meta name="twitter:description" content="AI 辅助开发的 Web 项目合集 — 从概念到部署，每一次迭代都是探索。" />
     <meta name="twitter:image" content="/pixel-banner.svg" />
+    <!-- Dynamic og:url: set to full URL before any rendering so crawlers see the correct canonical -->
+    <!-- For non-JS crawlers, defaults to site origin (og:url is best-effort for static SPAs) -->
+    <script>
+      try {
+        var metaOgUrl = document.querySelector('#og-url');
+        if (metaOgUrl) metaOgUrl.setAttribute('content', window.location.href);
+      } catch(e) {}
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet" />
+    <!-- JSON-LD: Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Ginko Hub",
+      "url": "https://ginko-hub.example.com/",
+      "logo": "https://ginko-hub.example.com/favicon.svg"
+    }
+    </script>
     <!-- JSON-LD: WebSite + SearchAction -->
     <script type="application/ld+json">
     {

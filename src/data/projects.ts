@@ -27,8 +27,8 @@ export async function fetchProjects(
   return { projects: await res.json(), total };
 }
 
-export async function fetchProject(id: string): Promise<Project> {
-  const res = await fetch(`${API_BASE}/api/projects/${id}`);
+export async function fetchProject(id: string, signal?: AbortSignal): Promise<Project> {
+  const res = await fetch(`${API_BASE}/api/projects/${id}`, { signal: signal ?? AbortSignal.timeout(8000) });
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: 'Network error' }));
     throw new Error(err.error ?? `Project not found (${res.status})`);

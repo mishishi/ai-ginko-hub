@@ -41,6 +41,7 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
   });
   const [tagInput, setTagInput] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [thumbnailKey, setThumbnailKey] = useState<string | null>(null); // R2 key for cleanup
 
   const set = (key: keyof ProjectFormData, value: unknown) =>
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -59,6 +60,7 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
 
   const handleThumbnailUpload = async (file: File) => {
     setUploading(true);
+    let newKey: string | null = null;
     try {
       const presignedRes = await fetch(`${API_BASE}/api/upload`, {
         method: 'POST',
@@ -66,17 +68,40 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
         credentials: 'include',
         body: JSON.stringify({ filename: file.name, contentType: file.type }),
       });
-      const { presignedUrl, publicUrl } = await presignedRes.json();
+      if (!presignedRes.ok) throw new Error('presign failed');
+      const { presignedUrl, publicUrl, key } = await presignedRes.json();
+      newKey = key;
 
       await fetch(presignedUrl, {
         method: 'PUT',
         headers: { 'Content-Type': file.type },
         body: file,
+        signal: AbortSignal.timeout(30000),
       });
 
+      // Delete previous thumbnail from R2 if replacing
+      if (thumbnailKey) {
+        fetch(`${API_BASE}/api/upload`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ key: thumbnailKey }),
+        }).catch(() => {}); // fire-and-forget cleanup
+      }
+
+      setThumbnailKey(newKey);
       set('thumbnail', publicUrl);
     } catch (err) {
       toast.error('封面上传失败，请重试');
+      // Clean up the R2 object if upload partially succeeded
+      if (newKey) {
+        fetch(`${API_BASE}/api/upload`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ key: newKey }),
+        }).catch(() => {});
+      }
     } finally {
       setUploading(false);
     }
@@ -122,6 +147,8 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
           className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20"
           placeholder="https://github.com/username/project"
           required
+          pattern="https?://.+"
+          title="请输入有效的 URL（以 http:// 或 https:// 开头）"
         />
       </Field>
 
@@ -133,6 +160,8 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
           onChange={(e) => set('repoUrl', e.target.value)}
           className="w-full px-4 py-3 bg-[#020617] border border-[#1E293B] rounded-xl text-[#F8FAFC] font-fira-sans text-sm outline-none transition-all duration-200 focus:border-[#22C55E] focus:ring-1 focus:ring-[#22C55E]/20"
           placeholder="https://github.com/username/repo"
+          pattern="https?://.+"
+          title="请输入有效的 URL（以 http:// 或 https:// 开头）"
         />
       </Field>
 
@@ -182,8 +211,32 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
       {/* Thumbnail */}
       <Field label="封面图">
         {form.thumbnail && (
-          <div className="mb-3">
+          <div className="mb-3 flex items-center gap-3">
             <img src={form.thumbnail} alt="封面预览" className="w-40 h-25 object-cover rounded-xl border border-[#1E293B]" />
+            <button
+              type="button"
+              onClick={async () => {
+                if (thumbnailKey) {
+                  await fetch(`${API_BASE}/api/upload`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ key: thumbnailKey }),
+                  });
+                }
+                setThumbnailKey(null);
+                set('thumbnail', '');
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#0F172A] border border-[#1E293B] text-[#94A3B8] font-fira-sans text-sm rounded-lg hover:border-red-500/50 hover:text-red-400 transition-all duration-200 cursor-pointer"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                <path d="M10 11v6M14 11v6"/>
+                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+              </svg>
+              删除
+            </button>
           </div>
         )}
         <div className="flex items-center gap-3">

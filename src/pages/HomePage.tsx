@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import FilterBar, { type SortOption } from '../components/FilterBar';
 import ProjectGrid from '../components/ProjectGrid';
 import { fetchProjects } from '../data/projects';
+import { API_BASE } from '../lib/api';
 import type { Project } from '../types';
 
 const PAGE_SIZE = 12;
@@ -27,8 +28,18 @@ export default function HomePage() {
   const [featuredOnly, setFeaturedOnly] = useState<boolean>(
     () => new URLSearchParams(window.location.search).get('featured') === 'true'
   );
+  const [stats, setStats] = useState({ total: 0, featured: 0, techCount: 0 });
   const isPopStateRef = useRef(false);
   const isInitialMount = useRef(true);
+
+  // Dynamic meta
+  useEffect(() => {
+    document.title = 'Ginko Hub — AI 项目展示站';
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', 'AI 辅助开发的 Web 项目合集展示站 — 从概念到部署，每一次迭代都是探索。');
+    }
+  }, []);
 
   // Initial load — fetch first page only
   useEffect(() => {
@@ -45,6 +56,27 @@ export default function HomePage() {
         toast.error('加载项目失败，请稍后重试');
       })
       .finally(() => setLoading(false));
+    return () => controller.abort();
+  }, []);
+
+  // Fetch full stats for Hero section — runs once on mount
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch(`${API_BASE}/api/stats`, { signal: controller.signal })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.total !== undefined) {
+          setStats({
+            total: Number(data.total) || 0,
+            featured: Number(data.featured) || 0,
+            techCount: Number(data.techCount) || 0,
+          });
+        }
+      })
+      .catch((err) => {
+        if (err.name === 'AbortError') return;
+        // stats are non-critical — silently ignore fetch errors
+      });
     return () => controller.abort();
   }, []);
 
@@ -137,8 +169,7 @@ export default function HomePage() {
   }, []);
 
   // API 已经按 tag/q/search 做服务端过滤，客户端不需要二次过滤
-  // featuredCount / allTags 从全部已加载数据推导（不受 activeTag 过滤影响）
-  const featuredCount = projects.filter((p) => p.featured).length;
+  // allTags 从全部已加载数据推导（不受 activeTag 过滤影响）；featuredCount / total / techCount 来自 /api/stats 全量数据
   const allTags = Array.from(new Set(projects.flatMap((p) => p.tags)));
 
   return (
@@ -173,19 +204,17 @@ export default function HomePage() {
             <div className="hero-animate" aria-live="polite" aria-atomic="true">
               <div className="inline-flex items-center gap-4 sm:gap-8 px-6 sm:px-10 py-4 sm:py-5 rounded-2xl border border-border bg-bg-card/60 backdrop-blur-sm">
                 <div className="flex flex-col items-center gap-0.5 sm:gap-1">
-                  <span className="font-heading text-[1.5rem] sm:text-[1.75rem] text-accent leading-none tabular-nums">{projects.length}</span>
+                  <span className="font-heading text-[1.5rem] sm:text-[1.75rem] text-accent leading-none tabular-nums">{stats.total}</span>
                   <span className="text-[10px] sm:text-xs text-text-muted uppercase tracking-widest">总项目</span>
                 </div>
                 <div className="w-px h-8 sm:h-11 bg-border" />
                 <div className="flex flex-col items-center gap-0.5 sm:gap-1">
-                  <span className="font-heading text-[1.5rem] sm:text-[1.75rem] text-accent leading-none tabular-nums">{featuredCount}</span>
+                  <span className="font-heading text-[1.5rem] sm:text-[1.75rem] text-accent leading-none tabular-nums">{stats.featured}</span>
                   <span className="text-[10px] sm:text-xs text-text-muted uppercase tracking-widest">精选项目</span>
                 </div>
                 <div className="w-px h-8 sm:h-11 bg-border" />
                 <div className="flex flex-col items-center gap-0.5 sm:gap-1">
-                  <span className="font-heading text-[1.5rem] sm:text-[1.75rem] text-accent leading-none tabular-nums">
-                    {new Set(projects.flatMap((p) => p.tags)).size}
-                  </span>
+                  <span className="font-heading text-[1.5rem] sm:text-[1.75rem] text-accent leading-none tabular-nums">{stats.techCount}</span>
                   <span className="text-[10px] sm:text-xs text-text-muted uppercase tracking-widest">技术栈</span>
                 </div>
               </div>
@@ -258,7 +287,7 @@ export default function HomePage() {
               <Link to="/" className="text-xs text-text-muted hover:text-accent transition-colors duration-200">项目</Link>
               <Link to="/about" className="text-xs text-text-muted hover:text-accent transition-colors duration-200">关于</Link>
               <a
-                href="https://github.com/mishishi"
+                href={`https://github.com/${import.meta.env.VITE_GITHUB_USERNAME}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs text-text-muted hover:text-accent transition-colors duration-200"

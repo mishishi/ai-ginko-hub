@@ -27,7 +27,7 @@ export const admin = pgTable('admin', {
 
 export const favorites = pgTable('favorites', {
   id: text('id').primaryKey(), // UUID
-  projectId: text('project_id').notNull().references(() => projects.id),
+  projectId: text('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
   userId: text('user_id').notNull(), // Clerk user.id
   createdAt: integer('created_at_ts').notNull(), // Unix timestamp
 });

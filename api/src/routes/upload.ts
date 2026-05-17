@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { requireAuth } from '../middleware/auth.js';
 
@@ -37,13 +37,6 @@ export async function uploadRoutes(app: FastifyInstance) {
       return reply.status(400).send({ error: 'unsupported content type' });
     }
 
-    // Reject files larger than 5 MB by checking Content-Length header
-    const contentLength = request.headers['content-length'];
-    const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
-    if (contentLength && Number(contentLength) > MAX_SIZE) {
-      return reply.status(413).send({ error: 'file too large, maximum size is 5 MB' });
-    }
-
     const key = `uploads/${Date.now()}-${stripped}`;
     const client = getR2Client();
     const command = new PutObjectCommand({
@@ -56,5 +49,27 @@ export async function uploadRoutes(app: FastifyInstance) {
     const publicUrl = `https://${process.env.CLOUDFLARE_BUCKET}.public.r2.cloudflarestorage.com/${key}`;
 
     return reply.send({ presignedUrl, publicUrl, key });
+  });
+
+  // DELETE /api/upload — delete a previously uploaded R2 object (auth required)
+  app.delete('/api/upload', { preHandler: [requireAuth] }, async (request, reply) => {
+    const { key } = request.body as { key?: string };
+
+    if (!key) {
+      return reply.status(400).send({ error: 'key is required' });
+    }
+
+    // Basic path validation — only allow keys under uploads/
+    if (!key.startsWith('uploads/') || key.includes('..')) {
+      return reply.status(400).send({ error: 'invalid key' });
+    }
+
+    const client = getR2Client();
+    await client.send(new DeleteObjectCommand({
+      Bucket: process.env.CLOUDFLARE_BUCKET!,
+      Key: key,
+    }));
+
+    return reply.status(204).send();
   });
 }

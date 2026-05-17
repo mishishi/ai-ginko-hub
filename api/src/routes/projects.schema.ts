@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 export const createProjectSchema = z.object({
-  id: z.string().optional(),
   name: z.string().min(1, 'name is required'),
   description: z.string().min(1, 'description is required'),
   tags: z.array(z.string()).min(1, 'tags must be a non-empty array'),

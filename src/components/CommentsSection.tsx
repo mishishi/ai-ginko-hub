@@ -10,7 +10,6 @@ export default function CommentsSection({ projectId }: Props) {
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Clear any existing utterances iframe
     containerRef.current.innerHTML = '';
 
     const script = document.createElement('script');

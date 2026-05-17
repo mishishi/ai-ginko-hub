@@ -100,7 +100,7 @@ export async function projectRoutes(app: FastifyInstance) {
       .select()
       .from(projects)
       .where(whereClause)
-      .orderBy(orderBy)
+      .orderBy(...(Array.isArray(orderBy) ? orderBy : [orderBy]))
       .limit(limitNum)
       .offset(offsetNum)
       .execute();
@@ -154,20 +154,25 @@ export async function projectRoutes(app: FastifyInstance) {
       return { projects: [] };
     }
 
-    if (idList.length > 100) {
-      return reply.status(400).send({ error: 'max 100 IDs per request' });
+    // Auto-paginate internally: split into chunks of 100 to avoid URI too long errors
+    const CHUNK_SIZE = 100;
+    const rows: typeof projects.$inferSelect[] = [];
+    for (let i = 0; i < idList.length; i += CHUNK_SIZE) {
+      const chunk = idList.slice(i, i + CHUNK_SIZE);
+      const chunkRows = await db
+        .select()
+        .from(projects)
+        .where(inArray(projects.id, chunk))
+        .execute();
+      rows.push(...chunkRows);
     }
 
-    const rows = await db
-      .select()
-      .from(projects)
-      .where(inArray(projects.id, idList))
-      .execute();
-
-    const parsed = rows.map((p) => ({
-      ...p,
-      tags: parseTags(p.tags),
-    }));
+    // Build ordered result matching idList order (DB returns in arbitrary order)
+    const byId = new Map(rows.map((p) => [p.id, p]));
+    const parsed = idList
+      .map((id) => byId.get(id))
+      .filter((p): p is typeof projects.$inferSelect => p !== undefined)
+      .map((p) => ({ ...p, tags: parseTags(p.tags) }));
 
     return { projects: parsed };
   });
@@ -182,20 +187,8 @@ export async function projectRoutes(app: FastifyInstance) {
     }
 
     const body = parsed.data;
-
-    // Check for duplicate name
-    const existing = await db
-      .select({ id: projects.id })
-      .from(projects)
-      .where(eq(projects.name, body.name))
-      .limit(1)
-      .execute();
-    if (existing.length > 0) {
-      return reply.status(409).send({ error: 'a project with this name already exists' });
-    }
-
     const now = Date.now();
-    const id = body.id || generateId();
+    const id = generateId(); // always server-generated, ignore client-supplied id
 
     const newProject = {
       id,
@@ -215,7 +208,19 @@ export async function projectRoutes(app: FastifyInstance) {
       updatedAt: now,
     };
 
-    await db.insert(projects).values(newProject);
+    try {
+      await db.insert(projects).values(newProject);
+    } catch (err) {
+      // PostgreSQL unique_violation — duplicate name
+      if (
+        typeof err === 'object' &&
+        err !== null &&
+        (err as { code?: string }).code === '23505'
+      ) {
+        return reply.status(409).send({ error: 'a project with this name already exists' });
+      }
+      throw err;
+    }
 
     return reply.status(201).send({
       ...newProject,

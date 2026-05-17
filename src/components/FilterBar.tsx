@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 export type SortOption = 'default' | 'name' | 'date' | 'views' | 'featured';
 
 interface Props {
@@ -19,6 +20,51 @@ const SORT_LABELS: Record<SortOption, string> = {
 };
 
 export default function FilterBar({ tags, activeTag, onTagChange, sort, onSortChange, featuredOnly, onFeaturedChange }: Props) {
+  const tagButtonsRef = useRef<(HTMLButtonElement | null)[]>([]);
+
+  const handleTagKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+      e.preventDefault();
+      const direction = e.key === 'ArrowRight' ? 1 : -1;
+      const nextIndex = (index + direction + tagButtonsRef.current.length) % tagButtonsRef.current.length;
+      tagButtonsRef.current[nextIndex]?.focus();
+    }
+  };
+
+  const allTagButtons = [<button
+    key="__all__"
+    ref={(el) => { tagButtonsRef.current[0] = el; }}
+    type="button"
+    className={`px-3 sm:px-4 py-1.5 sm:py-2 min-h-[44px] flex items-center rounded-full border text-[11px] sm:text-xs font-medium cursor-pointer whitespace-nowrap transition-[color,border-color,background] duration-200 ease-out ${
+      activeTag === null
+        ? 'border-accent-dim text-accent bg-accent-glow'
+        : 'border-border text-text-secondary bg-transparent hover:border-border-hover hover:text-text-primary hover:bg-bg-elevated'
+    }`}
+    onClick={() => onTagChange(null)}
+    aria-pressed={activeTag === null}
+    onKeyDown={(e) => handleTagKeyDown(e, 0)}
+    tabIndex={activeTag === null ? 0 : -1}
+  >
+    全部
+  </button>, ...tags.map((tag, i) => (
+    <button
+      key={tag}
+      ref={(el) => { tagButtonsRef.current[i + 1] = el; }}
+      type="button"
+      className={`px-3 sm:px-4 py-1.5 sm:py-2 min-h-[44px] flex items-center rounded-full border text-[11px] sm:text-xs font-medium cursor-pointer whitespace-nowrap transition-[color,border-color,background] duration-200 ease-out ${
+        activeTag === tag
+          ? 'border-accent-dim text-accent bg-accent-glow'
+          : 'border-border text-text-secondary bg-transparent hover:border-border-hover hover:text-text-primary hover:bg-bg-elevated'
+      }`}
+      onClick={() => onTagChange(tag === activeTag ? null : tag)}
+      aria-pressed={activeTag === tag}
+      onKeyDown={(e) => handleTagKeyDown(e, i + 1)}
+      tabIndex={activeTag === tag ? 0 : -1}
+    >
+      {tag}
+    </button>
+  ))];
+
   return (
     <div className="flex flex-wrap gap-2 mb-6 sm:mb-8 pb-4 sm:pb-6" role="group" aria-label="标签筛选">
       {/* Sort dropdown */}
@@ -67,33 +113,7 @@ export default function FilterBar({ tags, activeTag, onTagChange, sort, onSortCh
         </svg>
         精选
       </button>
-      <button
-        type="button"
-        className={`px-3 sm:px-4 py-1.5 sm:py-2 min-h-[44px] flex items-center rounded-full border text-[11px] sm:text-xs font-medium cursor-pointer whitespace-nowrap transition-[color,border-color,background] duration-200 ease-out ${
-          activeTag === null
-            ? 'border-accent-dim text-accent bg-accent-glow'
-            : 'border-border text-text-secondary bg-transparent hover:border-border-hover hover:text-text-primary hover:bg-bg-elevated'
-        }`}
-        onClick={() => onTagChange(null)}
-        aria-pressed={activeTag === null}
-      >
-        全部
-      </button>
-      {tags.map((tag) => (
-        <button
-          key={tag}
-          type="button"
-          className={`px-3 sm:px-4 py-1.5 sm:py-2 min-h-[44px] flex items-center rounded-full border text-[11px] sm:text-xs font-medium cursor-pointer whitespace-nowrap transition-[color,border-color,background] duration-200 ease-out ${
-            activeTag === tag
-              ? 'border-accent-dim text-accent bg-accent-glow'
-              : 'border-border text-text-secondary bg-transparent hover:border-border-hover hover:text-text-primary hover:bg-bg-elevated'
-          }`}
-          onClick={() => onTagChange(tag === activeTag ? null : tag)}
-          aria-pressed={activeTag === tag}
-        >
-          {tag}
-        </button>
-      ))}
+      {allTagButtons}
     </div>
   );
 }

@@ -15,10 +15,11 @@ export async function buildApp() {
     bodyLimit: 10 * 1024 * 1024,
   });
 
-  // TODO(P0-4): 生产环境需从环境变量动态读取 origins，
-  // 当前硬编码 localhost 仅适用于本地开发
+  const corsOrigins = process.env.CORS_ORIGINS
+    ? process.env.CORS_ORIGINS.split(',').map((s) => s.trim())
+    : ['http://localhost:4000', 'http://localhost:4173'];
   await app.register(cors, {
-    origin: ['http://localhost:4000', 'http://localhost:4173'],
+    origin: corsOrigins,
     credentials: true,
   });
 

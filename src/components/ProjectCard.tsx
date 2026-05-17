@@ -30,6 +30,7 @@ export default function ProjectCard({ project, index }: Props) {
   const { isFavorited, toggle } = useFavorites();
   const [toggling, setToggling] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   const gradient = cardGradients[index % cardGradients.length];
   const isFav = isFavorited(project.id);
@@ -38,19 +39,25 @@ export default function ProjectCard({ project, index }: Props) {
     navigate(`/project/${project.id}`);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      navigate(`/project/${project.id}`);
-    }
-  };
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        navigate(`/project/${project.id}`);
+      }
+    },
+    [navigate, project.id]
+  );
 
   const toggleFavorite = useCallback(
     async (e: React.MouseEvent) => {
       e.stopPropagation();
       setToggling(true);
-      await toggle(project.id);
-      setToggling(false);
+      try {
+        await toggle(project.id);
+      } finally {
+        setToggling(false);
+      }
     },
     [project.id, toggle]
   );
@@ -67,13 +74,14 @@ export default function ProjectCard({ project, index }: Props) {
     >
       {/* Thumbnail */}
       <div className="relative w-full aspect-[16/10] overflow-hidden" style={{ background: gradient }}>
-        {project.thumbnail && (
+        {project.thumbnail && !imgError && (
           <img
             src={project.thumbnail}
             alt={project.name}
             loading="lazy"
             fetchPriority={index < 3 ? 'high' : 'low'}
             onLoad={() => setImgLoaded(true)}
+            onError={() => setImgError(true)}
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
           />
         )}

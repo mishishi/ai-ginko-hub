@@ -32,11 +32,16 @@ const PALETTES: TagColor[] = [
 ];
 
 /** Deterministic hash: tag name → palette index */
+const _cache = new Map<string, TagColor>();
 export function hashTagColor(tag: string): TagColor {
+  const cached = _cache.get(tag);
+  if (cached) return cached;
   let hash = 0;
   for (let i = 0; i < tag.length; i++) {
     hash = (hash << 5) - hash + tag.charCodeAt(i);
     hash |= 0; // Convert to 32bit int
   }
-  return PALETTES[Math.abs(hash) % PALETTES.length]!;
+  const color = PALETTES[Math.abs(hash) % PALETTES.length]!;
+  _cache.set(tag, color);
+  return color;
 }

@@ -17,10 +17,16 @@ export default function About() {
     Promise.all([
       fetch(`${API_BASE}/api/stats`).then((r) => r.json()),
       fetch(`${API_BASE}/api/tags`).then((r) => r.json()),
-    ]).then(([statsData, tagsData]) => {
-      setStats(statsData);
-      setAllTags(tagsData.tags);
-    });
+    ])
+      .then(([statsData, tagsData]) => {
+        setStats(statsData);
+        setAllTags(tagsData.tags ?? []);
+      })
+      .catch(() => {
+        // 网络错误时显示空状态，不阻塞页面
+        setStats({ total: 0, featured: 0, techCount: 0, totalViews: 0 });
+        setAllTags([]);
+      });
   }, []);
 
   if (!stats) {
@@ -118,7 +124,7 @@ export default function About() {
             <div className="flex flex-wrap gap-6">
               {/* GitHub */}
               <a
-                href="https://github.com/mishishi"
+                href={`https://github.com/${import.meta.env.VITE_GITHUB_USERNAME}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-text-secondary hover:text-accent transition-colors duration-200"
