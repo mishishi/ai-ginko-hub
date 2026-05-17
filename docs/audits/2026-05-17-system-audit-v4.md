@@ -24,11 +24,11 @@
 
 ## P0 CRITICAL（立即修复，部署阻断）
 
-### C1 · CORS 环境变量仍未在生产文档中说明
+### C1 · CORS 生产域名未定，部署时配置
 - **文件**: `api/src/app.ts:18-20`
-- **现状**: 代码已支持 `CORS_ORIGINS` env var 动态读取，**但** `.env.example` / 部署文档未说明此变量必须配置
-- **风险**: 部署时不设置 `CORS_ORIGINS` 会 fallback 到 localhost，生产环境跨域请求全部 403
-- **修复**: 在 `api/.env.example` 中添加 `CORS_ORIGINS=https://yourdomain.com`，并在 README 部署章节说明
+- **现状**: 代码已支持 `CORS_ORIGINS` env var，生产域名尚未确定
+- **风险**: 部署时不设置 `CORS_ORIGINS` 会 fallback 到 localhost，生产跨域请求 403
+- **处理**: 上线前在 `api/.env.example` 添加说明，部署时配置 `CORS_ORIGINS=https://你的域名`
 
 ---
 
@@ -135,7 +135,7 @@
 
 | ID | 维度 | 严重性 | 文件 | 描述 | 状态 |
 |----|------|--------|------|------|------|
-| C1 | Security | P0 | api/src/app.ts:18 | CORS env var 未在文档说明 | 新增说明项 |
+| C1 | Security | P0 | api/src/app.ts:18 | CORS 生产域名未定，部署时配置 | 暂不修 |
 | H1 | Correctness | P1 | api/src/db/schema.ts:5 | name 无 unique 约束，TOCTOU 竞态 | 未变 |
 | H2 | Correctness | P1 | src/hooks/useFavorites.ts:263 | 多 Tab 乐观更新状态撕裂 | 未变 |
 | M1 | Accessibility | P2 | src/pages/HomePage.tsx:204 | aria-live 包含整个 Stats 区域 | 未变 |
@@ -155,9 +155,9 @@
 ## 优先修复建议
 
 **立即（上线前）：**
-1. H1 — schema 加 unique + catch `23505`（PostgreSQL 唯一冲突）
-2. M4 — `.env.local` 添加 `VITE_GITHUB_USERNAME=mishishi`
-3. C1 — `api/.env.example` 添加 `CORS_ORIGINS=https://yourdomain.com`
+1. C1 — 部署前配置 `CORS_ORIGINS=https://你的域名`
+2. H1 — schema 加 unique + catch `23505`（PostgreSQL 唯一冲突）
+3. M4 — `.env.local` 添加 `VITE_GITHUB_USERNAME=mishishi`
 
 **短期迭代：**
 4. H2 — 接受 limitation 或重构 revert 逻辑
