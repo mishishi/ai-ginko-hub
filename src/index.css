@@ -49,6 +49,7 @@
   --font-body: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
 
   /* ---------- Tag Colors (dynamically generated via hashTagColor) ---------- */
+}
 
 /* ---------- Base Layer ---------- */
 @layer base {

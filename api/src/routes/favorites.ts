@@ -87,9 +87,9 @@ export async function favoriteRoutes(app: FastifyInstance) {
       .delete(favorites)
       .where(and(eq(favorites.userId, userId), eq(favorites.projectId, projectId)));
 
-    // 同步减少项目的 likeCount
+    // 同步减少项目的 likeCount，最小值 0
     await db.update(projects)
-      .set({ likeCount: sql`${projects.likeCount} - 1` })
+      .set({ likeCount: sql`GREATEST(${projects.likeCount} - 1, 0)` })
       .where(eq(projects.id, projectId));
 
     return reply.status(204).send();

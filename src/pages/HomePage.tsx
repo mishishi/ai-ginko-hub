@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Header from '../components/Header';
@@ -111,7 +111,11 @@ export default function HomePage() {
     if (searchQuery) params.set('q', searchQuery);
     if (activeTag) params.set('tag', activeTag);
     if (sort && sort !== 'default') params.set('sort', sort);
-    if (featuredOnly) params.set('featured', 'true');
+    if (featuredOnly) {
+      params.set('featured', 'true');
+    } else {
+      params.delete('featured');
+    }
     const url = params.toString()
       ? `${window.location.pathname}?${params.toString()}`
       : window.location.pathname;
@@ -132,25 +136,8 @@ export default function HomePage() {
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
 
-  const filtered = useMemo(() => {
-    let result = projects;
-
-    if (activeTag) {
-      result = result.filter((p) => p.tags.includes(activeTag));
-    }
-
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q)
-      );
-    }
-
-    return result;
-  }, [projects, searchQuery, activeTag]);
-
+  // API 已经按 tag/q/search 做服务端过滤，客户端不需要二次过滤
+  // featuredCount / allTags 从全部已加载数据推导（不受 activeTag 过滤影响）
   const featuredCount = projects.filter((p) => p.featured).length;
   const allTags = Array.from(new Set(projects.flatMap((p) => p.tags)));
 
@@ -233,13 +220,13 @@ export default function HomePage() {
               aria-live="polite"
               aria-atomic="true"
             >
-              找到 {filtered.length} 个结果
+              找到 {projects.length} 个结果
             </span>
           </div>
 
           {/* Project Grid */}
           <ProjectGrid
-            projects={filtered}
+            projects={projects}
             loading={loading}
             hasMore={hasMore}
             loadingMore={loadingMore}

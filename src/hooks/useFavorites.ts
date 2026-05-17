@@ -27,6 +27,18 @@ let _storageListenerActive = false;
 // guard (_storageListenerActive) prevents duplicate registration.
 _favorites = _loadFromStorage();
 
+/** Decode Clerk JWT payload to extract the `sub` (userId) claim. */
+function _decodeUserId(token: string): string | null {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+    return typeof payload.sub === 'string' ? payload.sub : null;
+  } catch {
+    return null;
+  }
+}
+
 function _loadFromStorage(): FavoriteItem[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -140,7 +152,10 @@ export function useFavorites() {
     _notifyLoading();
 
     _fetchPromise = stableGetToken().then((token) => {
-      if (_fetchedForUserId === token) return;
+      if (!token) return;
+      const userId = _decodeUserId(token);
+      // Use userId (sub claim) as cache key — stable across token refreshes
+      if (userId && _fetchedForUserId === userId) return;
 
       return fetch(`${API_BASE}/api/favorites`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -155,7 +170,8 @@ export function useFavorites() {
         .then((data: FavoriteItem[]) => {
           if (Array.isArray(data)) {
             _favorites = data;
-            _fetchedForUserId = token;
+            // Only cache if we resolved a stable userId; otherwise skip caching
+            if (userId) _fetchedForUserId = userId;
             _notify();
           }
         })

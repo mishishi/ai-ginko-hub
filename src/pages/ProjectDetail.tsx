@@ -93,11 +93,15 @@ export default function ProjectDetail() {
     if (!id) return;
     setLoading(true);
     setLoadError(null);
-    Promise.all([fetchProject(id), fetchProjects()])
-      .then(([p, all]) => {
+
+    // 项目详情优先；related projects 为辅助，失败不影响主内容
+    fetchProject(id)
+      .then((p) => {
         setProject(p);
-        setAllProjects(all.projects);
+        // 加载全部项目用于 related 推荐（失败则 related 为空，不阻塞页面）
+        return fetchProjects();
       })
+      .then((all) => setAllProjects(all.projects))
       .catch(() => setLoadError('无法加载项目，请稍后重试'))
       .finally(() => setLoading(false));
   }, [id]);

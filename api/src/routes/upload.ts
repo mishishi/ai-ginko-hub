@@ -37,7 +37,7 @@ export async function uploadRoutes(app: FastifyInstance) {
       return reply.status(400).send({ error: 'unsupported content type' });
     }
 
-    const key = `uploads/${Date.now()}-${safeName}`;
+    const key = `uploads/${Date.now()}-${stripped}`;
     const client = getR2Client();
     const command = new PutObjectCommand({
       Bucket: process.env.CLOUDFLARE_BUCKET!,
