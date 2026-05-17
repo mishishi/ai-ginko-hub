@@ -19,13 +19,19 @@ export async function fetchProjects(
   if (featured) params.set('featured', 'true');
   const url = `${API_BASE}/api/projects${params.toString() ? '?' + params.toString() : ''}`;
   const res = await fetch(url, { signal });
-  if (!res.ok) throw new Error('Failed to fetch projects');
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: 'Network error' }));
+    throw new Error(err.error ?? `Failed to fetch projects (${res.status})`);
+  }
   const total = Number(res.headers.get('X-Total-Count') || 0);
   return { projects: await res.json(), total };
 }
 
 export async function fetchProject(id: string): Promise<Project> {
   const res = await fetch(`${API_BASE}/api/projects/${id}`);
-  if (!res.ok) throw new Error('Project not found');
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: 'Network error' }));
+    throw new Error(err.error ?? `Project not found (${res.status})`);
+  }
   return res.json();
 }

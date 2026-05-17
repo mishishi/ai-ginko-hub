@@ -205,10 +205,20 @@ export async function projectRoutes(app: FastifyInstance) {
 
     return {
       id: current.id,
+      name: updatedProject.name,
+      description: updatedProject.description,
+      tags: parseTags(updatedProject.tags),
+      url: updatedProject.url,
+      thumbnail: updatedProject.thumbnail,
+      repoUrl: updatedProject.repoUrl,
       createdAt: current.createdAt,
+      featured: updatedProject.featured,
+      ogTitle: updatedProject.ogTitle,
+      ogDescription: updatedProject.ogDescription,
+      ogImage: updatedProject.ogImage,
       viewCount: current.viewCount,
       createdAtTs: current.createdAtTs,
-      tags: parseTags(updatedProject.tags),
+      updatedAt: updatedProject.updatedAt,
     };
   });
 

@@ -47,7 +47,8 @@ export async function requireClerkAuth(
 
     request.clerkUser = { userId: payload.sub };
   } catch (err) {
-    console.error('[Clerk] verifyToken threw:', err);
+    // 仅记录类型，避免打印敏感信息
+    console.error('[Clerk] verifyToken threw:', err instanceof Error ? err.message : err);
     return reply.status(401).send({ error: 'Invalid token' });
   }
 }

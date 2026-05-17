@@ -11,6 +11,8 @@ import { favoriteRoutes } from './routes/favorites.js';
 export async function buildApp() {
   const app = Fastify({
     logger: true,
+    requestTimeout: 30000,
+    bodyLimit: 10 * 1024 * 1024,
   });
 
   // TODO(P0-4): 生产环境需从环境变量动态读取 origins，
