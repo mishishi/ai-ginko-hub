@@ -262,7 +262,19 @@ export async function projectRoutes(app: FastifyInstance) {
       updatedAt: Date.now(),
     };
 
-    await db.update(projects).set(updatedProject).where(eq(projects.id, id));
+    try {
+      await db.update(projects).set(updatedProject).where(eq(projects.id, id));
+    } catch (err) {
+      // PostgreSQL unique_violation — name conflict on update
+      if (
+        typeof err === 'object' &&
+        err !== null &&
+        (err as { code?: string }).code === '23505'
+      ) {
+        return reply.status(409).send({ error: 'a project with this name already exists' });
+      }
+      throw err;
+    }
 
     return {
       id: current.id,

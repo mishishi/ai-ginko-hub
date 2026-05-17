@@ -2,7 +2,7 @@ import { pgTable, text, integer, serial, boolean } from 'drizzle-orm/pg-core';
 
 export const projects = pgTable('projects', {
   id: text('id').primaryKey(),
-  name: text('name').notNull(),
+  name: text('name').notNull().unique(),
   description: text('description').notNull(),
   tags: text('tags').notNull(), // JSON array string
   url: text('url').notNull(),
