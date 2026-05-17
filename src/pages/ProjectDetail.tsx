@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '@clerk/react';
 import { fetchProject, fetchProjects } from '../data/projects';
 import { cardGradients } from '../data/cardGradients';
 import Header from '../components/Header';
+import CommentsSection from '../components/CommentsSection';
 import type { Project } from '../types';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useFavorites } from '../hooks/useFavorites';
@@ -79,6 +81,7 @@ export default function ProjectDetail() {
   const [allProjects, setAllProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const { isSignedIn } = useAuth();
   const { isFavorited, toggle } = useFavorites();
   const [toggling, setToggling] = useState(false);
 
@@ -118,10 +121,26 @@ export default function ProjectDetail() {
       metaDescription.setAttribute('content', project.description);
     }
 
+    // Dynamic og:title and og:description
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) {
+      ogTitle.setAttribute('content', `${project.name} — Ginko Hub`);
+    }
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc) {
+      ogDesc.setAttribute('content', project.description);
+    }
+
     // Dynamic OG image
     const ogImage = document.querySelector('meta[property="og:image"]');
     if (ogImage) {
       ogImage.setAttribute('content', project.thumbnail || `${window.location.origin}/og-image.svg`);
+    }
+
+    // Dynamic og:url
+    const ogUrl = document.querySelector('meta[property="og:url"]');
+    if (ogUrl) {
+      ogUrl.setAttribute('content', window.location.href);
     }
 
     // JSON-LD: SoftwareApplication schema
@@ -168,7 +187,7 @@ export default function ProjectDetail() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen" role="status" aria-label="加载中">
-        <span className="text-text-muted">Loading...</span>
+        <span className="text-text-muted">加载中...</span>
       </div>
     );
   }
@@ -294,12 +313,12 @@ export default function ProjectDetail() {
                       )}
                       <button
                         onClick={handleToggleFavorite}
-                        disabled={toggling}
+                        disabled={toggling || !isSignedIn}
                         className={`flex items-center gap-1.5 text-sm transition-colors duration-200 ${
                           isFavorited(project.id)
                             ? 'text-accent hover:text-accent-dim'
                             : 'text-text-muted hover:text-accent'
-                        }`}
+                        } ${!isSignedIn ? 'opacity-40 cursor-not-allowed' : ''}`}
                         aria-label={isFavorited(project.id) ? '取消收藏' : '添加收藏'}
                       >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill={isFavorited(project.id) ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -366,25 +385,7 @@ export default function ProjectDetail() {
             </section>
           )}
 
-          {/* Comments Placeholder */}
-          <section className="mb-12" aria-labelledby="comments-heading">
-            <div className="flex items-baseline gap-3 mb-6 pb-4 border-b border-border">
-              <h2 id="comments-heading" className="font-heading text-2xl text-text-primary">
-                评论
-              </h2>
-              <span className="text-sm text-text-muted">
-                待接入
-              </span>
-            </div>
-            <div className="bg-bg-card border border-border rounded-xl p-8 text-center" role="status" aria-label="评论功能开发中">
-              <div className="flex flex-col items-center gap-3">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-text-muted" aria-hidden="true">
-                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                </svg>
-                <p className="text-text-muted text-sm">评论功能正在开发中</p>
-              </div>
-            </div>
-          </section>
+          <CommentsSection projectId={id!} />
         </div>
       </main>
     </div>
