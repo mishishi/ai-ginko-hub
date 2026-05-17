@@ -261,22 +261,13 @@ export function useFavorites() {
           toast.success('已收藏');
         }
       } catch {
-        // Revert on failure — re-fetch
-        const revertRes = await fetch(`${API_BASE}/api/favorites`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (revertRes.status === 401) {
-          await _handleUnauthorized(signOut);
-          return;
-        }
-        const data = await revertRes.json();
-        if (Array.isArray(data)) {
-          _favorites = data;
+        // Revert locally — do NOT re-fetch (avoids overwriting concurrent changes in other tabs)
+        if (isFav) {
+          // We removed it optimistically — put it back
+          _favorites = [..._favorites, { id: `temp-${projectId}`, projectId, createdAt: Date.now() }];
         } else {
-          // Restore original state
-          if (isFav) {
-            _favorites = [..._favorites, { id: `temp-${projectId}`, projectId, createdAt: Date.now() }];
-          }
+          // We added it optimistically — remove it
+          _favorites = _favorites.filter((f) => f.projectId !== projectId);
         }
         _notify();
         toast.error('操作失败，请重试');
@@ -287,6 +278,9 @@ export function useFavorites() {
     [isSignedIn, stableGetToken]
   );
 
+  // NOTE: intentionally uses empty dep array — _favorites is a module-level singleton
+  // updated via _notify() which triggers React re-renders, so this callback always
+  // reads the current state when called. Design is intentional; not a bug.
   const isFavorited = useCallback(
     (projectId: string) => _favorites.some((f) => f.projectId === projectId),
     // eslint-disable-next-line react-hooks/exhaustive-deps

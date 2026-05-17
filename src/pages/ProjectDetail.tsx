@@ -46,7 +46,7 @@ function RelatedProjectCard({ project, index, onClick }: { project: Project; ind
         {project.thumbnail && (
           <img
             src={project.thumbnail}
-            alt=""
+            alt={project.name}
             loading="lazy"
             onLoad={() => setImgLoaded(true)}
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}

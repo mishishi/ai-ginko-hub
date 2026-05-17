@@ -29,6 +29,7 @@ export default function HomePage() {
     () => new URLSearchParams(window.location.search).get('featured') === 'true'
   );
   const [stats, setStats] = useState({ total: 0, featured: 0, techCount: 0 });
+  const [statsError, setStatsError] = useState(false);
   const isPopStateRef = useRef(false);
   const isInitialMount = useRef(true);
 
@@ -75,7 +76,7 @@ export default function HomePage() {
       })
       .catch((err) => {
         if (err.name === 'AbortError') return;
-        // stats are non-critical — silently ignore fetch errors
+        setStatsError(true);
       });
     return () => controller.abort();
   }, []);
@@ -201,20 +202,20 @@ export default function HomePage() {
             </p>
 
             {/* Stats */}
-            <div className="hero-animate" aria-live="polite" aria-atomic="true">
+            <div className="hero-animate">
               <div className="inline-flex items-center gap-4 sm:gap-8 px-6 sm:px-10 py-4 sm:py-5 rounded-2xl border border-border bg-bg-card/60 backdrop-blur-sm">
                 <div className="flex flex-col items-center gap-0.5 sm:gap-1">
-                  <span className="font-heading text-[1.5rem] sm:text-[1.75rem] text-accent leading-none tabular-nums">{stats.total}</span>
+                  <span aria-live="polite" aria-atomic="true" className="font-heading text-[1.5rem] sm:text-[1.75rem] text-accent leading-none tabular-nums">{statsError ? '—' : stats.total}</span>
                   <span className="text-[10px] sm:text-xs text-text-muted uppercase tracking-widest">总项目</span>
                 </div>
                 <div className="w-px h-8 sm:h-11 bg-border" />
                 <div className="flex flex-col items-center gap-0.5 sm:gap-1">
-                  <span className="font-heading text-[1.5rem] sm:text-[1.75rem] text-accent leading-none tabular-nums">{stats.featured}</span>
+                  <span aria-live="polite" aria-atomic="true" className="font-heading text-[1.5rem] sm:text-[1.75rem] text-accent leading-none tabular-nums">{statsError ? '—' : stats.featured}</span>
                   <span className="text-[10px] sm:text-xs text-text-muted uppercase tracking-widest">精选项目</span>
                 </div>
                 <div className="w-px h-8 sm:h-11 bg-border" />
                 <div className="flex flex-col items-center gap-0.5 sm:gap-1">
-                  <span className="font-heading text-[1.5rem] sm:text-[1.75rem] text-accent leading-none tabular-nums">{stats.techCount}</span>
+                  <span aria-live="polite" aria-atomic="true" className="font-heading text-[1.5rem] sm:text-[1.75rem] text-accent leading-none tabular-nums">{statsError ? '—' : stats.techCount}</span>
                   <span className="text-[10px] sm:text-xs text-text-muted uppercase tracking-widest">技术栈</span>
                 </div>
               </div>
