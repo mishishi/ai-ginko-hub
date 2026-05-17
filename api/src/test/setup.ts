@@ -3,6 +3,9 @@ import initSqlJs from 'sql.js';
 import { drizzle } from 'drizzle-orm/sql-js';
 import * as schema from '../db/schema.js';
 
+// Set test JWT_SECRET before any modules that import auth middleware
+process.env.JWT_SECRET ??= 'test-secret-for-unit-tests-only';
+
 const MIGRATION_SQL = `
 CREATE TABLE IF NOT EXISTS projects (
   id text PRIMARY KEY NOT NULL,

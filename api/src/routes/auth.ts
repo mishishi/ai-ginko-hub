@@ -6,7 +6,8 @@ import { SignJWT } from 'jose';
 import { verifyPassword } from '../utils/password.js';
 import { requireAuth } from '../middleware/auth.js';
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) throw new Error('JWT_SECRET env var is required');
 
 export async function authRoutes(app: FastifyInstance) {
   app.post('/api/auth/login', {
@@ -37,7 +38,7 @@ export async function authRoutes(app: FastifyInstance) {
     const token = await new SignJWT({ sub: String(user.id), username: user.username })
       .setProtectedHeader({ alg: 'HS256' })
       .setExpirationTime('7d')
-      .sign(JWT_SECRET);
+      .sign(new TextEncoder().encode(JWT_SECRET));
 
     const isProd = process.env.NODE_ENV === 'production';
     reply.setCookie('admin_token', token, {

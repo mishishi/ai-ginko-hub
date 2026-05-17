@@ -6,10 +6,13 @@ function parseTags(tagsJson: string): string[] {
   try {
     return JSON.parse(tagsJson);
   } catch {
+    console.warn(`[stats] failed to parse tags JSON: "${tagsJson}"`);
     return [];
   }
 }
 
+// TODO(P1): Replace full-table scans with SQL aggregation (COUNT, SUM, GROUP BY)
+// to avoid loading all rows into memory when the project table grows large.
 export async function statsRoutes(app: FastifyInstance) {
   app.get('/api/stats', async () => {
     const db = getDb();

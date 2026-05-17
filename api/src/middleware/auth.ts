@@ -1,7 +1,8 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import { jwtVerify } from 'jose';
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) throw new Error('JWT_SECRET env var is required');
 
 export interface AuthUser {
   sub: number;
@@ -29,7 +30,7 @@ export async function requireAuth(
   }
 
   try {
-    const { payload } = await jwtVerify(token, JWT_SECRET);
+    const { payload } = await jwtVerify(token, new TextEncoder().encode(JWT_SECRET));
     request.user = {
       sub: Number(payload.sub),
       username: (payload as { username?: string }).username ?? '',

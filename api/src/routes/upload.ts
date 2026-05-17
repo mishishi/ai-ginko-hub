@@ -24,9 +24,10 @@ export async function uploadRoutes(app: FastifyInstance) {
       return reply.status(400).send({ error: 'filename and contentType required' });
     }
 
-    // Sanitize filename: strip path components and reject path traversal
-    const safeName = filename.replace(/^.*[/\\]/, '').replace(/\.\./g, '');
-    if (!safeName || safeName !== filename.replace(/^.*[/\\]/, '')) {
+    // Strip any path components (e.g. "foo/bar/baz.png" → "baz.png")
+    // Then reject any path-traversal remnants (".." or extra slashes)
+    const stripped = filename.replace(/^.*[/\\]/, '');
+    if (!stripped || stripped.includes('..') || /[<>:"|?*]/.test(stripped)) {
       return reply.status(400).send({ error: 'invalid filename' });
     }
 

@@ -14,6 +14,7 @@ function parseTags(tagsJson: string): string[] {
   try {
     return JSON.parse(tagsJson);
   } catch {
+    console.warn(`[projects] failed to parse tags JSON: "${tagsJson}"`);
     return [];
   }
 }
@@ -35,6 +36,8 @@ export async function projectRoutes(app: FastifyInstance) {
       featured?: string;
     };
 
+    // TODO(P1): Move tag/q/featured filtering and pagination to SQL WHERE/LIMIT/OFFSET.
+    // Currently loads ALL rows into memory then filters/paginates in JS — O(n) memory.
     let results = await db.select().from(projects).execute();
 
     // Filter by tag
@@ -223,6 +226,8 @@ export async function projectRoutes(app: FastifyInstance) {
   });
 
   // DELETE /api/projects/:id - Delete project (auth required)
+  // TODO(P1): Add ON DELETE CASCADE for favorites, or delete associated favorites first.
+  // Currently orphaned favorites rows accumulate and likeCount becomes permanently wrong.
   app.delete('/api/projects/:id', { preHandler: [requireAuth] }, async (request, reply) => {
     const db = getDb();
     const { id } = request.params as { id: string };

@@ -22,6 +22,9 @@ let _toggleInflight = new Set<string>(); // Prevent rapid toggles for same proje
 let _storageListenerActive = false;
 
 // Initialize _favorites from localStorage at module load
+// NOTE: React StrictMode double-invokes effects in dev — all cleanup
+// must be idempotent. The storage read is pure; the storage listener
+// guard (_storageListenerActive) prevents duplicate registration.
 _favorites = _loadFromStorage();
 
 function _loadFromStorage(): FavoriteItem[] {
@@ -198,6 +201,16 @@ export function useFavorites() {
           });
           if (res.status === 401) {
             await _handleUnauthorized(signOut);
+            return;
+          }
+          if (!res.ok) {
+            // Revert: re-add the removed favorite entry
+            _favorites = [
+              ..._favorites,
+              { id: `temp-${projectId}`, projectId, createdAt: Date.now() },
+            ];
+            _notify();
+            toast.error('操作失败，请重试');
             return;
           }
           toast.success('已取消收藏');
