@@ -9,8 +9,19 @@ interface Stats {
   totalViews: number;
 }
 
+interface AnalyticsSummary {
+  pv: number;
+  uv: number;
+  periodDays: number;
+  topProjects: { projectId: string; projectName: string; count: number }[];
+  topTags: { tag: string; count: number }[];
+  topSearches: { query: string; count: number }[];
+  dailyPV: { date: string; count: number }[];
+}
+
 export default function DashboardPage() {
   const [stats, setStats] = useState<Stats | null>(null);
+  const [analytics, setAnalytics] = useState<AnalyticsSummary | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,6 +32,11 @@ export default function DashboardPage() {
         setLoading(false);
       })
       .catch(() => setLoading(false));
+
+    fetch(`${API_BASE}/api/analytics/summary`, { credentials: 'include' })
+      .then((r) => r.json())
+      .then((data) => setAnalytics(data))
+      .catch(() => {});
   }, []);
 
   if (loading) {
@@ -133,6 +149,93 @@ export default function DashboardPage() {
             </svg>
             查看全部项目
           </Link>
+        </div>
+      </div>
+
+      {/* Analytics Summary */}
+      <div className="mt-8">
+        <h2 className="font-fira-code text-sm text-[#64748B] uppercase tracking-wider mb-4">访客分析 (近30天)</h2>
+
+        {/* PV & UV Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+          <StatCard
+            label="页面浏览"
+            value={analytics?.pv ?? 0}
+            icon={
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            }
+            color="#3B82F6"
+          />
+          <StatCard
+            label="独立访客"
+            value={analytics?.uv ?? 0}
+            icon={
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            }
+            color="#8B5CF6"
+          />
+        </div>
+
+        {/* Top Lists */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5">
+            <h3 className="font-fira-sans text-sm text-[#94A3B8] mb-3">热门项目 Top 5</h3>
+            {analytics?.topProjects && analytics.topProjects.length > 0 ? (
+              <ul className="space-y-2">
+                {analytics.topProjects.map((p, i) => (
+                  <li key={p.projectId} className="flex items-center gap-3">
+                    <span className="font-fira-code text-xs text-[#64748B] w-4">{i + 1}</span>
+                    <span className="font-fira-sans text-sm text-[#F8FAFC] flex-1 truncate">{p.projectName}</span>
+                    <span className="font-fira-code text-xs text-[#c97d5c]">{p.count}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-[#64748B]">暂无数据</p>
+            )}
+          </div>
+
+          <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5">
+            <h3 className="font-fira-sans text-sm text-[#94A3B8] mb-3">热门标签 Top 5</h3>
+            {analytics?.topTags && analytics.topTags.length > 0 ? (
+              <ul className="space-y-2">
+                {analytics.topTags.map((t, i) => (
+                  <li key={t.tag} className="flex items-center gap-3">
+                    <span className="font-fira-code text-xs text-[#64748B] w-4">{i + 1}</span>
+                    <span className="font-fira-sans text-sm text-[#F8FAFC] flex-1 truncate">{t.tag}</span>
+                    <span className="font-fira-code text-xs text-[#c97d5c]">{t.count}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-[#64748B]">暂无数据</p>
+            )}
+          </div>
+
+          <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5">
+            <h3 className="font-fira-sans text-sm text-[#94A3B8] mb-3">热门搜索 Top 5</h3>
+            {analytics?.topSearches && analytics.topSearches.length > 0 ? (
+              <ul className="space-y-2">
+                {analytics.topSearches.map((s, i) => (
+                  <li key={s.query} className="flex items-center gap-3">
+                    <span className="font-fira-code text-xs text-[#64748B] w-4">{i + 1}</span>
+                    <span className="font-fira-sans text-sm text-[#F8FAFC] flex-1 truncate">{s.query}</span>
+                    <span className="font-fira-code text-xs text-[#c97d5c]">{s.count}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-[#64748B]">暂无数据</p>
+            )}
+          </div>
         </div>
       </div>
     </div>
