@@ -36,6 +36,7 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [analytics, setAnalytics] = useState<AnalyticsSummary | null>(null);
   const [loading, setLoading] = useState(true);
+  const [range, setRange] = useState(30);
 
   useEffect(() => {
     fetch(`${API_BASE}/api/stats`, { credentials: 'include' })
@@ -46,11 +47,11 @@ export default function DashboardPage() {
       })
       .catch(() => setLoading(false));
 
-    fetch(`${API_BASE}/api/analytics/summary`, { credentials: 'include' })
+    fetch(`${API_BASE}/api/analytics/summary?range=${range}`, { credentials: 'include' })
       .then((r) => r.json())
       .then((data) => setAnalytics(data))
       .catch(() => {});
-  }, []);
+  }, [range]);
 
   if (loading) {
     return (
@@ -84,6 +85,23 @@ export default function DashboardPage() {
           </svg>
           新建项目
         </Link>
+      </div>
+
+      {/* Time Range Selector */}
+      <div className="flex items-center gap-1 mb-6 p-1 bg-[#1E293B] rounded-xl w-fit">
+        {([7, 30, 90] as const).map((d) => (
+          <button
+            key={d}
+            onClick={() => setRange(d)}
+            className={`px-4 py-1.5 rounded-lg font-fira-sans text-sm transition-all duration-200 ${
+              range === d
+                ? 'bg-[#22C55E] text-[#020617] font-semibold'
+                : 'text-[#94A3B8] hover:text-[#F8FAFC]'
+            }`}
+          >
+            {d}天
+          </button>
+        ))}
       </div>
 
       {/* Stats Grid - Bento style */}
@@ -447,9 +465,9 @@ export default function DashboardPage() {
                       fontFamily: 'Fira Sans',
                     }}
                     labelStyle={{ color: '#94A3B8' }}
-                    formatter={(value: number, name: string, props: { payload?: { linkType?: string } }) => [
+                    formatter={(value, _name, props) => [
                       value,
-                      props.payload?.linkType === 'repo_url' ? '源码链接' : '项目链接',
+                      (props.payload as { linkType?: string } | undefined)?.linkType === 'repo_url' ? '源码链接' : '项目链接',
                     ]}
                   />
                   <Bar dataKey="count" radius={[0, 4, 4, 0]}>
