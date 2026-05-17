@@ -212,6 +212,7 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
             </span>
           )}
         </div>
+        <p className="mt-2 text-xs text-[#64748B] font-fira-sans">推荐使用 WebP 格式，可获得更好的压缩率和画质</p>
       </Field>
 
       {/* Featured */}
