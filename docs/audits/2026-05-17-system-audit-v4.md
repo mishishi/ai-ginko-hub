@@ -20,6 +20,14 @@
 - ✅ L2 上传 AbortSignal timeout
 - ✅ L4 标签 trim 后添加
 - ✅ L1 GitHub 用户名改用 `VITE_GITHUB_USERNAME` env var
+- ✅ H2 useFavorites catch 改为本地 revert
+- ✅ M1 aria-live 仅包裹数字 span
+- ✅ M2 RelatedProjectCard alt 改为项目名
+- ✅ M5 stats fetch 失败显示 "-"
+- ✅ L1 FilterBar arrow key 导航已有实现
+- ✅ L2 hashTagColor 已有内部缓存
+- ✅ L3 isFavorited 添加设计意图注释
+- ✅ L4 ADMIN_PASSWORD 从 .env 移除
 
 ---
 
@@ -138,18 +146,18 @@
 |----|------|--------|------|------|------|
 | C1 | Security | P0 | api/src/app.ts:18 | CORS 生产域名未定，部署时配置 | 暂不修 |
 | H1 | Correctness | P1 | api/src/db/schema.ts:5 | name 无 unique 约束，TOCTOU 竞态 | 已修复（DB 加 unique index + schema 更新 + catch 23505） |
-| H2 | Correctness | P1 | src/hooks/useFavorites.ts:263 | 多 Tab 乐观更新状态撕裂 | 未变 |
-| M1 | Accessibility | P2 | src/pages/HomePage.tsx:204 | aria-live 包含整个 Stats 区域 | 未变 |
-| M2 | Accessibility | P2 | src/pages/ProjectDetail.tsx:49 | RelatedProjectCard alt="" | 未变 |
+| H2 | Correctness | P1 | src/hooks/useFavorites.ts:263 | 多 Tab 乐观更新状态撕裂 | 已修复 — catch 改为本地 revert |
+| M1 | Accessibility | P2 | src/pages/HomePage.tsx:204 | aria-live 包含整个 Stats 区域 | 已修复 — aria-live 仅包裹数字 span |
+| M2 | Accessibility | P2 | src/pages/ProjectDetail.tsx:49 | RelatedProjectCard alt="" | 已修复 — 改为 alt={project.name} |
 | M3 | SEO | P2 | src/pages/ProjectDetail.tsx:141 | og:url 依赖 JS 爬虫 | 已知 limitation |
 | M4 | Correctness | P2 | src/pages/HomePage.tsx:290 | VITE_GITHUB_USERNAME 未定义 | 已修复 — 添加到 .env.local |
-| M5 | UX | P2 | src/pages/HomePage.tsx:62 | stats 失败时显示 0 而非 error | 未变 |
-| L1 | Accessibility | P3 | src/components/FilterBar.tsx | 标签无 arrow key 导航 | 未变 |
-| L2 | Performance | P3 | src/components/ProjectCard.tsx:140 | hashTagColor 每渲染重算 | 未变 |
-| L3 | Code Quality | P3 | src/hooks/useFavorites.ts:290 | isFavorited 依赖空数组读模块级变量 | 未变 |
-| L4 | Security | P3 | api/.env:14 | ADMIN_PASSWORD 写在 .env 中 | 未变 |
+| M5 | UX | P2 | src/pages/HomePage.tsx:62 | stats 失败时显示 0 而非 error | 已修复 — 失败显示 "-" |
+| L1 | Accessibility | P3 | src/components/FilterBar.tsx | 标签无 arrow key 导航 | 已有实现 — handleTagKeyDown + aria-pressed |
+| L2 | Performance | P3 | src/components/ProjectCard.tsx:140 | hashTagColor 每渲染重算 | 已有缓存 — Map 内部缓存，不重算 |
+| L3 | Code Quality | P3 | src/hooks/useFavorites.ts:290 | isFavorited 依赖空数组读模块级变量 | 已修复 — 添加设计意图注释 |
+| L4 | Security | P3 | api/.env:14 | ADMIN_PASSWORD 写在 .env 中 | 已修复 — .env 留空，注明需 env var |
 
-**总计: 1 P0 · 1 P1 · 5 P2 · 4 P3**（相比 v3 的 2P0 · 6P1 · 9P2 · 6P3，大幅改善）
+**总计: 1 P0 · 0 P1 · 1 P2 · 0 P3**（H2/M1/M2/M5/L1/L2/L3/L4 全部已处理）
 
 ---
 
@@ -157,9 +165,3 @@
 
 **立即（上线前）：**
 1. C1 — 部署前配置 `CORS_ORIGINS=https://你的域名`
-
-**短期迭代：**
-4. H2 — 接受 limitation 或重构 revert 逻辑
-5. M1 — aria-live 只包裹数字
-6. M2 — RelatedProjectCard alt 改为项目名
-7. M5 — stats fetch 失败显示 "-"
