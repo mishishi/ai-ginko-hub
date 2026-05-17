@@ -33,9 +33,10 @@ export default function Header({ searchQuery = '', onSearchChange }: Props) {
     let cancelled = false;
     setSearching(true);
 
-    // @ts-expect-error - pagefind is generated at build time, types not available
-    import(/* @vite-ignore */ '/pagefind/pagefind.js')
-      .then(async (pf) => {
+    // pagefind 索引只在生产构建后存在，dev 时静默忽略
+    const pfUrl = '/pagefind/pagefind.js';
+    import(/* @vite-ignore */ pfUrl)
+      .then(async (pf: any) => {
         if (cancelled) return;
         const search = await pf.search(query);
         const data = await Promise.all(search.results.slice(0, 5).map((r: any) => r.data()));
