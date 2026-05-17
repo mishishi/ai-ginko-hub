@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { getDb } from '../db/index.js';
 import { analyticsEvents, projects } from '../db/schema.js';
-import { sql, eq, and, gte, lt, isNotNull, desc } from 'drizzle-orm';
+import { sql, eq, and, gte, isNotNull, desc } from 'drizzle-orm';
 import { requireAuth } from '../middleware/auth.js';
 
 const VALID_EVENT_TYPES = ['pageview', 'search', 'filter', 'external_link_click', 'search_no_results', 'favorite_toggle'] as const;
@@ -156,6 +156,62 @@ export async function analyticsRoutes(app: FastifyInstance) {
         .orderBy(sql`date_trunc('day', to_timestamp(${analyticsEvents.createdAt}))`)
         .execute();
 
+      // Top 10 projects by external_link_click (with project_url / repo_url breakdown)
+      const topExternalLinks = await db
+        .select({
+          projectId: analyticsEvents.projectId,
+          projectName: projects.name,
+          linkType: analyticsEvents.tag,
+          count: sql<number>`count(*)`,
+        })
+        .from(analyticsEvents)
+        .leftJoin(projects, eq(analyticsEvents.projectId, projects.id))
+        .where(
+          and(
+            gte(analyticsEvents.createdAt, thirtyDaysAgo),
+            eq(analyticsEvents.eventType, 'external_link_click'),
+            isNotNull(analyticsEvents.projectId)
+          )
+        )
+        .groupBy(analyticsEvents.projectId, projects.name, analyticsEvents.tag)
+        .orderBy(desc(sql`count(*)`))
+        .limit(10)
+        .execute();
+
+      // Top 10 failed search queries (search_no_results)
+      const topFailedSearches = await db
+        .select({
+          query: analyticsEvents.query,
+          count: sql<number>`count(*)`,
+        })
+        .from(analyticsEvents)
+        .where(
+          and(
+            gte(analyticsEvents.createdAt, thirtyDaysAgo),
+            eq(analyticsEvents.eventType, 'search_no_results'),
+            isNotNull(analyticsEvents.query)
+          )
+        )
+        .groupBy(analyticsEvents.query)
+        .orderBy(desc(sql`count(*)`))
+        .limit(10)
+        .execute();
+
+      // Favorite toggle stats
+      const [favoriteStatsRow] = await db
+        .select({
+          totalAdds: sql<number>`count(*) filter (where ${analyticsEvents.tag} = 'add')`,
+          totalRemoves: sql<number>`count(*) filter (where ${analyticsEvents.tag} = 'remove')`,
+        })
+        .from(analyticsEvents)
+        .where(
+          and(
+            gte(analyticsEvents.createdAt, thirtyDaysAgo),
+            eq(analyticsEvents.eventType, 'favorite_toggle')
+          )
+        )
+        .execute();
+
       return {
         pv: Number(pvRow?.pv ?? 0),
         uv: Number(uvRow?.uv ?? 0),
@@ -176,6 +232,21 @@ export async function analyticsRoutes(app: FastifyInstance) {
           date: r.date,
           count: Number(r.count),
         })),
+        topExternalLinks: topExternalLinks.map((r) => ({
+          projectId: r.projectId,
+          projectName: r.projectName,
+          linkType: r.linkType as string,
+          count: Number(r.count),
+        })),
+        topFailedSearches: topFailedSearches.map((r) => ({
+          query: r.query as string,
+          count: Number(r.count),
+        })),
+        favoriteStats: {
+          adds: Number(favoriteStatsRow?.totalAdds ?? 0),
+          removes: Number(favoriteStatsRow?.totalRemoves ?? 0),
+          net: Number(favoriteStatsRow?.totalAdds ?? 0) - Number(favoriteStatsRow?.totalRemoves ?? 0),
+        },
       };
     } catch (err) {
       app.log.error(err, '[analytics] GET /api/analytics/summary failed');

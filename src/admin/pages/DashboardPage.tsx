@@ -23,11 +23,13 @@ interface Stats {
 interface AnalyticsSummary {
   pv: number;
   uv: number;
-  periodDays: number;
   topProjects: { projectId: string; projectName: string; count: number }[];
   topTags: { tag: string; count: number }[];
   topSearches: { query: string; count: number }[];
   dailyPV: { date: string; count: number }[];
+  topExternalLinks: { projectId: string; projectName: string; linkType: string; count: number }[];
+  topFailedSearches: { query: string; count: number }[];
+  favoriteStats: { adds: number; removes: number; net: number };
 }
 
 export default function DashboardPage() {
@@ -369,6 +371,132 @@ export default function DashboardPage() {
                   <Bar dataKey="count" radius={[0, 4, 4, 0]}>
                     {analytics.topSearches.slice(0, 5).map((_, i) => (
                       <Cell key={i} fill="#3B82F6" fillOpacity={1 - i * 0.15} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <p className="text-sm text-[#64748B] h-[180px] flex items-center justify-center">暂无数据</p>
+            )}
+          </div>
+        </div>
+
+        {/* Favorite Stats Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+          <StatCard
+            label="收藏次数"
+            value={analytics?.favoriteStats?.adds ?? 0}
+            icon={
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            }
+            color="#F59E0B"
+          />
+          <StatCard
+            label="取消收藏"
+            value={analytics?.favoriteStats?.removes ?? 0}
+            icon={
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                <line x1="3" y1="3" x2="21" y2="21" strokeWidth="2"/>
+              </svg>
+            }
+            color="#EF4444"
+          />
+          <StatCard
+            label="净收藏量"
+            value={analytics?.favoriteStats?.net ?? 0}
+            icon={
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                <polyline points="17 6 23 6 23 12"/>
+              </svg>
+            }
+            color="#22C55E"
+          />
+        </div>
+
+        {/* External Links & Failed Searches Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Top External Link Clicks */}
+          <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5">
+            <h3 className="font-fira-sans text-sm text-[#94A3B8] mb-3">外链点击 Top 5</h3>
+            {analytics?.topExternalLinks && analytics.topExternalLinks.length > 0 ? (
+              <ResponsiveContainer width="100%" height={180}>
+                <BarChart
+                  data={analytics.topExternalLinks.slice(0, 5)}
+                  layout="vertical"
+                  margin={{ top: 0, right: 8, left: 0, bottom: 0 }}
+                >
+                  <XAxis type="number" hide />
+                  <YAxis
+                    type="category"
+                    dataKey="projectName"
+                    tick={{ fill: '#94A3B8', fontSize: 10, fontFamily: 'Fira Sans' }}
+                    tickLine={false}
+                    axisLine={false}
+                    width={80}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      background: '#1E293B',
+                      border: '1px solid #334155',
+                      borderRadius: 12,
+                      fontSize: 12,
+                      fontFamily: 'Fira Sans',
+                    }}
+                    labelStyle={{ color: '#94A3B8' }}
+                    formatter={(value: number, name: string, props: { payload?: { linkType?: string } }) => [
+                      value,
+                      props.payload?.linkType === 'repo_url' ? '源码链接' : '项目链接',
+                    ]}
+                  />
+                  <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                    {analytics.topExternalLinks.slice(0, 5).map((r, i) => (
+                      <Cell key={i} fill={r.linkType === 'repo_url' ? '#8B5CF6' : '#c97d5c'} fillOpacity={1 - i * 0.15} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <p className="text-sm text-[#64748B] h-[180px] flex items-center justify-center">暂无数据</p>
+            )}
+          </div>
+
+          {/* Top Failed Searches */}
+          <div className="bg-[#0F172A] border border-[#1E293B] rounded-2xl p-5">
+            <h3 className="font-fira-sans text-sm text-[#94A3B8] mb-3">无结果搜索 Top 5</h3>
+            {analytics?.topFailedSearches && analytics.topFailedSearches.length > 0 ? (
+              <ResponsiveContainer width="100%" height={180}>
+                <BarChart
+                  data={analytics.topFailedSearches.slice(0, 5)}
+                  layout="vertical"
+                  margin={{ top: 0, right: 8, left: 0, bottom: 0 }}
+                >
+                  <XAxis type="number" hide />
+                  <YAxis
+                    type="category"
+                    dataKey="query"
+                    tick={{ fill: '#94A3B8', fontSize: 10, fontFamily: 'Fira Sans' }}
+                    tickLine={false}
+                    axisLine={false}
+                    width={80}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      background: '#1E293B',
+                      border: '1px solid #334155',
+                      borderRadius: 12,
+                      fontSize: 12,
+                      fontFamily: 'Fira Sans',
+                    }}
+                    labelStyle={{ color: '#94A3B8' }}
+                    itemStyle={{ color: '#EF4444' }}
+                  />
+                  <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                    {analytics.topFailedSearches.slice(0, 5).map((_, i) => (
+                      <Cell key={i} fill="#EF4444" fillOpacity={1 - i * 0.15} />
                     ))}
                   </Bar>
                 </BarChart>
