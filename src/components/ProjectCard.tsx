@@ -4,6 +4,7 @@ import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useFavorites } from '../hooks/useFavorites';
 import { hashTagColor } from '../lib/tagColors';
 import type { Project } from '../types';
+import toast from 'react-hot-toast';
 
 import { cardGradients } from '../data/cardGradients';
 
@@ -85,20 +86,43 @@ export default function ProjectCard({ project, index }: Props) {
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
           />
         )}
-        <div aria-hidden="true" className="absolute inset-0 bg-black/50 flex items-center justify-center gap-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100">
-          <span className="flex items-center gap-2 px-4 py-3 min-h-[44px] border border-white/30 rounded-lg text-white text-sm font-medium backdrop-blur-[4px] translate-y-2 transition-all duration-200 group-hover:bg-white/10 group-hover:border-white/50">
+        <div aria-hidden="true" className="absolute inset-0 bg-black/50 flex items-center justify-center gap-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100 group-active:opacity-100">
+          <span style={{ touchAction: 'manipulation' }} className="flex items-center gap-2 px-4 py-3 min-h-[44px] border border-white/30 rounded-lg text-white text-sm font-medium backdrop-blur-[4px] translate-y-2 transition-all duration-200 group-hover:bg-white/10 group-hover:border-white/50">
             打开项目
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <line x1="7" y1="17" x2="17" y2="7" />
               <polyline points="7 7 17 7 17 17" />
             </svg>
           </span>
+          <button
+            onClick={async (e) => {
+              e.stopPropagation();
+              const url = `${window.location.origin}/projects/${project.id}`;
+              if (navigator.share) {
+                try {
+                  await navigator.share({ title: project.name, url });
+                } catch { /* user cancelled */ }
+              } else {
+                await navigator.clipboard.writeText(url);
+                toast.success('链接已复制');
+              }
+            }}
+            style={{ touchAction: 'manipulation' }}
+            className="flex items-center gap-2 px-4 py-3 min-h-[44px] border border-white/30 rounded-lg text-white text-sm font-medium backdrop-blur-[4px] translate-y-2 transition-all duration-200 group-hover:bg-white/10 group-hover:border-white/50 cursor-pointer"
+            aria-label="分享项目"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+            </svg>
+            分享
+          </button>
           {project.repoUrl && (
             <a
               href={project.repoUrl}
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
+              style={{ touchAction: 'manipulation' }}
               className="flex items-center gap-2 px-4 py-3 min-h-[44px] border border-white/30 rounded-lg text-white text-sm font-medium backdrop-blur-[4px] translate-y-2 transition-all duration-200 group-hover:bg-white/10 group-hover:border-white/50"
               aria-label={`查看 ${project.name} 源码`}
             >
@@ -149,7 +173,12 @@ export default function ProjectCard({ project, index }: Props) {
             return (
               <span
                 key={tag}
-                className="px-2.5 py-0.5 rounded-full border text-[0.6875rem] font-medium tracking-wide transition-all duration-200"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  navigate(`/?tag=${encodeURIComponent(tag)}`);
+                }}
+                className="px-2.5 py-0.5 rounded-full border text-[0.6875rem] font-medium tracking-wide transition-all duration-200 cursor-pointer"
                 style={{ color, borderColor: border, backgroundColor: bg }}
               >
                 {tag}
