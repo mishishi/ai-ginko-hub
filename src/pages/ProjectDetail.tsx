@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { fetchProject, fetchProjects } from '../data/projects';
 import { cardGradients } from '../data/cardGradients';
 import Header from '../components/Header';
@@ -214,6 +214,27 @@ export default function ProjectDetail() {
 
       <main id="main-content" className="relative flex-1">
         <div className="mx-auto max-w-[90rem] px-4 sm:px-6 lg:px-8">
+          {/* Breadcrumb */}
+          <nav aria-label="面包屑" className="pt-6 pb-2">
+            <ol className="flex items-center gap-2 text-sm">
+              <li>
+                <Link to="/" className="text-text-muted hover:text-accent transition-colors duration-200">
+                  首页
+                </Link>
+              </li>
+              <li aria-hidden="true" className="text-text-muted select-none">/</li>
+              <li>
+                <Link to="/" className="text-text-muted hover:text-accent transition-colors duration-200">
+                  项目列表
+                </Link>
+              </li>
+              <li aria-hidden="true" className="text-text-muted select-none">/</li>
+              <li aria-current="page" className="text-text-secondary">
+                {project.name}
+              </li>
+            </ol>
+          </nav>
+
           <div className="bg-bg-card border border-border rounded-xl p-6 sm:p-8 mb-8">
             <div className="flex flex-col sm:flex-row gap-6">
               {/* Thumbnail — left on desktop, top on mobile */}
