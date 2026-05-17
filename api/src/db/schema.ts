@@ -1,6 +1,6 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { pgTable, text, integer, serial, boolean } from 'drizzle-orm/pg-core';
 
-export const projects = sqliteTable('projects', {
+export const projects = pgTable('projects', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
   description: text('description').notNull(),
@@ -9,7 +9,7 @@ export const projects = sqliteTable('projects', {
   thumbnail: text('thumbnail'), // R2 URL
   repoUrl: text('repo_url'),
   createdAt: text('created_at').notNull(), // ISO date string
-  featured: integer('featured', { mode: 'boolean' }).default(false),
+  featured: boolean('featured').default(false),
   ogTitle: text('og_title'),
   ogDescription: text('og_description'),
   ogImage: text('og_image'),
@@ -18,13 +18,13 @@ export const projects = sqliteTable('projects', {
   updatedAt: integer('updated_at'),
 });
 
-export const admin = sqliteTable('admin', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
+export const admin = pgTable('admin', {
+  id: serial('id').primaryKey(),
   username: text('username').notNull().unique(),
   passwordHash: text('password_hash').notNull(),
 });
 
-export const favorites = sqliteTable('favorites', {
+export const favorites = pgTable('favorites', {
   id: text('id').primaryKey(), // UUID
   projectId: text('project_id').notNull().references(() => projects.id),
   userId: text('user_id').notNull(), // Clerk user.id

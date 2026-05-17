@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useFavorites } from '../hooks/useFavorites';
+import { hashTagColor } from '../lib/tagColors';
 import type { Project } from '../types';
 
 import { cardGradients } from '../data/cardGradients';
@@ -136,17 +137,12 @@ export default function ProjectCard({ project, index }: Props) {
         </p>
         <div className="flex flex-wrap gap-2">
           {project.tags.map((tag) => {
-            const key = tag.toLowerCase().replace(/\s+/g, '-').replace(/\./g, '');
+            const { color, border, bg } = hashTagColor(tag);
             return (
               <span
                 key={tag}
-                data-tag={key}
                 className="px-2.5 py-0.5 rounded-full border text-[0.6875rem] font-medium tracking-wide transition-all duration-200"
-                style={{
-                  color: `var(--color-tag-${key})`,
-                  borderColor: `var(--color-tag-${key}-border)`,
-                  backgroundColor: `var(--color-tag-${key}-bg)`,
-                }}
+                style={{ color, borderColor: border, backgroundColor: bg }}
               >
                 {tag}
               </span>

@@ -11,8 +11,9 @@ import { favoriteRoutes } from '../routes/favorites.js';
 import { testDb } from './setup.js';
 
 // Patch getDb before routes load
-const { getDb } = await import('../db/index.js');
-vi.spyOn(await import('../db/index.js'), 'getDb').mockImplementation(() => Promise.resolve(testDb) as ReturnType<typeof getDb>);
+vi.mock('../db/index.js', () => ({
+  getDb: () => testDb,
+}));
 
 export async function buildTestApp(): Promise<FastifyInstance> {
   const app = Fastify({ logger: false });

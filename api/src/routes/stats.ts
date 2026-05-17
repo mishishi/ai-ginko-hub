@@ -12,8 +12,8 @@ function parseTags(tagsJson: string): string[] {
 
 export async function statsRoutes(app: FastifyInstance) {
   app.get('/api/stats', async () => {
-    const db = await getDb();
-    const all = db.select().from(projects).all();
+    const db = getDb();
+    const all = await db.select().from(projects).execute();
     const total = all.length;
     const featured = all.filter((p) => p.featured).length;
     const allTags = new Set<string>();
@@ -29,8 +29,8 @@ export async function statsRoutes(app: FastifyInstance) {
   });
 
   app.get('/api/tags', async () => {
-    const db = await getDb();
-    const all = db.select().from(projects).all();
+    const db = getDb();
+    const all = await db.select().from(projects).execute();
     const allTags = new Set<string>();
     all.forEach((p: typeof projects.$inferSelect) => {
       parseTags(p.tags).forEach((t: string) => allTags.add(t));

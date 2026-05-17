@@ -11,8 +11,8 @@ vi.mock('../db/index.js', async () => {
   const { initTestDb } = await import('../test/setup.js');
   const testDb = await initTestDb();
   return {
-    getDb: () => Promise.resolve(testDb),
-    saveDb: async () => {},
+    getDb: () => testDb,
+    schema: {},
   };
 });
 
@@ -52,7 +52,7 @@ describe('Projects API', () => {
     const res = await app.inject({ method: 'GET', url: '/api/projects' });
     const body = JSON.parse(res.body);
     // featured 项目应该在最前
-    expect(body[0].featured).toBe(true);
+    expect(body[0].featured).toBeTruthy();
     expect(body[0].name).toBe('Test Project One');
   });
 

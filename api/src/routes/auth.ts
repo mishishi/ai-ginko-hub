@@ -20,8 +20,8 @@ export async function authRoutes(app: FastifyInstance) {
       return reply.status(400).send({ error: 'Username and password are required' });
     }
 
-    const db = await getDb();
-    const results = await db.select().from(admin).where(eq(admin.username, username)).limit(1);
+    const db = getDb();
+    const results = await db.select().from(admin).where(eq(admin.username, username)).limit(1).execute();
 
     if (results.length === 0) {
       return reply.status(401).send({ error: 'Invalid credentials' });

@@ -14,7 +14,7 @@ if (!jwtSecret || jwtSecret === 'undefined' || jwtSecret === 'your-secret-key-he
   process.exit(1);
 }
 
-await getDb(); // warm up DB connection before accepting requests
+getDb(); // warm up DB connection before accepting requests
 const app = await buildApp();
 const port = Number(process.env.PORT) || 4001;
 

@@ -16,8 +16,7 @@ vi.mock('../db/index.js', async () => {
   const { initTestDb } = await import('../test/setup.js');
   const testDb = await initTestDb();
   return {
-    getDb: () => Promise.resolve(testDb),
-    saveDb: async () => {},
+    getDb: () => testDb,
     schema: {},
   };
 });

@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import { v4 as uuidv4 } from 'uuid';
-import { getDb, saveDb } from '../db/index.js';
+import { getDb } from '../db/index.js';
 import { projects } from '../db/schema.js';
 import { eq } from 'drizzle-orm';
 import { requireAuth } from '../middleware/auth.js';
@@ -25,7 +25,7 @@ function serializeTags(tags: string[]): string {
 export async function projectRoutes(app: FastifyInstance) {
   // GET /api/projects - List all projects with optional filtering, sorting and pagination
   app.get('/api/projects', async (request, reply) => {
-    const db = await getDb();
+    const db = getDb();
     const { tag, q, limit, offset, sort, featured } = request.query as {
       tag?: string;
       q?: string;
@@ -35,7 +35,7 @@ export async function projectRoutes(app: FastifyInstance) {
       featured?: string;
     };
 
-    let results = await db.select().from(projects).all();
+    let results = await db.select().from(projects).execute();
 
     // Filter by tag
     if (tag) {
@@ -106,10 +106,10 @@ export async function projectRoutes(app: FastifyInstance) {
 
   // GET /api/projects/:id - Get single project by id
   app.get('/api/projects/:id', async (request, reply) => {
-    const db = await getDb();
+    const db = getDb();
     const { id } = request.params as { id: string };
 
-    const results = await db.select().from(projects).where(eq(projects.id, id)).limit(1);
+    const results = await db.select().from(projects).where(eq(projects.id, id)).limit(1).execute();
 
     if (results.length === 0) {
       return reply.status(404).send({ error: 'Project not found' });
@@ -120,9 +120,7 @@ export async function projectRoutes(app: FastifyInstance) {
     // Increment viewCount
     await db.update(projects)
       .set({ viewCount: (project.viewCount || 0) + 1 })
-      .where(eq(projects.id, id))
-      .run();
-    await saveDb();
+      .where(eq(projects.id, id));
 
     return reply.header('Cache-Control', 'public, max-age=60, stale-while-revalidate=300').send({
       ...project,
@@ -132,7 +130,7 @@ export async function projectRoutes(app: FastifyInstance) {
 
   // POST /api/projects - Create new project (auth required)
   app.post('/api/projects', { preHandler: [requireAuth] }, async (request, reply) => {
-    const db = await getDb();
+    const db = getDb();
     const parsed = createProjectSchema.safeParse(request.body);
 
     if (!parsed.success) {
@@ -162,7 +160,6 @@ export async function projectRoutes(app: FastifyInstance) {
     };
 
     await db.insert(projects).values(newProject);
-    await saveDb();
 
     return reply.status(201).send({
       ...newProject,
@@ -172,7 +169,7 @@ export async function projectRoutes(app: FastifyInstance) {
 
   // PUT /api/projects/:id - Update project (auth required)
   app.put('/api/projects/:id', { preHandler: [requireAuth] }, async (request, reply) => {
-    const db = await getDb();
+    const db = getDb();
     const { id } = request.params as { id: string };
 
     const parsed = updateProjectSchema.safeParse(request.body);
@@ -182,7 +179,7 @@ export async function projectRoutes(app: FastifyInstance) {
 
     const body = parsed.data;
 
-    const existing = await db.select().from(projects).where(eq(projects.id, id)).limit(1);
+    const existing = await db.select().from(projects).where(eq(projects.id, id)).limit(1).execute();
 
     if (existing.length === 0) {
       return reply.status(404).send({ error: 'Project not found' });
@@ -204,11 +201,9 @@ export async function projectRoutes(app: FastifyInstance) {
       updatedAt: Date.now(),
     };
 
-    await db.update(projects).set(updatedProject).where(eq(projects.id, id)).run();
-    await saveDb();
+    await db.update(projects).set(updatedProject).where(eq(projects.id, id));
 
     return {
-      ...updatedProject,
       id: current.id,
       createdAt: current.createdAt,
       viewCount: current.viewCount,
@@ -219,17 +214,16 @@ export async function projectRoutes(app: FastifyInstance) {
 
   // DELETE /api/projects/:id - Delete project (auth required)
   app.delete('/api/projects/:id', { preHandler: [requireAuth] }, async (request, reply) => {
-    const db = await getDb();
+    const db = getDb();
     const { id } = request.params as { id: string };
 
-    const existing = await db.select().from(projects).where(eq(projects.id, id)).limit(1);
+    const existing = await db.select().from(projects).where(eq(projects.id, id)).limit(1).execute();
 
     if (existing.length === 0) {
       return reply.status(404).send({ error: 'Project not found' });
     }
 
-    await db.delete(projects).where(eq(projects.id, id)).run();
-    await saveDb();
+    await db.delete(projects).where(eq(projects.id, id));
 
     return reply.status(204).send();
   });
