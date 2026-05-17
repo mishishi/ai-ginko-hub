@@ -13,6 +13,8 @@ export async function buildApp() {
     logger: true,
   });
 
+  // TODO(P0-4): 生产环境需从环境变量动态读取 origins，
+  // 当前硬编码 localhost 仅适用于本地开发
   await app.register(cors, {
     origin: ['http://localhost:4000', 'http://localhost:4173'],
     credentials: true,

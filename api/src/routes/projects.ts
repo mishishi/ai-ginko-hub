@@ -2,7 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import { v4 as uuidv4 } from 'uuid';
 import { getDb } from '../db/index.js';
 import { projects } from '../db/schema.js';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { requireAuth } from '../middleware/auth.js';
 import { createProjectSchema, updateProjectSchema } from './projects.schema.js';
 
@@ -117,9 +117,9 @@ export async function projectRoutes(app: FastifyInstance) {
 
     const project = results[0];
 
-    // Increment viewCount
+    // Increment viewCount atomically to avoid race condition
     await db.update(projects)
-      .set({ viewCount: (project.viewCount || 0) + 1 })
+      .set({ viewCount: sql`${projects.viewCount} + 1` })
       .where(eq(projects.id, id));
 
     return reply.header('Cache-Control', 'public, max-age=60, stale-while-revalidate=300').send({
