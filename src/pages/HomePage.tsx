@@ -98,6 +98,7 @@ export default function HomePage() {
       .catch((err) => {
         if (err.name === 'AbortError') return;
         setStatsError(true);
+        toast.error('加载统计数据失败');
       });
     return () => controller.abort();
   }, []);

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useFavorites } from '../hooks/useFavorites';
@@ -62,6 +62,17 @@ export default function ProjectCard({ project, index }: Props) {
     },
     [project.id, toggle]
   );
+
+  // Memoize tag colors to avoid recomputing hash on every render
+  const tagColorMap = useMemo(() => {
+    const map = new Map<string, ReturnType<typeof hashTagColor>>();
+    for (const tag of project.tags) {
+      if (!map.has(tag)) {
+        map.set(tag, hashTagColor(tag));
+      }
+    }
+    return map;
+  }, [project.tags]);
 
   return (
     <div
@@ -169,7 +180,7 @@ export default function ProjectCard({ project, index }: Props) {
         </p>
         <div className="flex flex-wrap gap-2">
           {project.tags.map((tag) => {
-            const { color, border, bg } = hashTagColor(tag);
+            const { color, border, bg } = tagColorMap.get(tag)!;
             return (
               <span
                 key={tag}

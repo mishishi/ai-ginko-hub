@@ -48,7 +48,7 @@ export default function ProjectForm({ initialData, onSubmit, isLoading }: Projec
 
   const addTag = () => {
     const tag = tagInput.trim();
-    if (tag && !form.tags.includes(tag)) {
+    if (tag.length > 0 && !form.tags.includes(tag)) {
       set('tags', [...form.tags, tag]);
     }
     setTagInput('');
