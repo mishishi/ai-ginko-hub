@@ -1,6 +1,8 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { useNavigate } from 'react-router-dom';
+import { useFavorites } from '../hooks/useFavorites';
 import ProjectCard from './ProjectCard';
 import type { Project } from '../types';
 
@@ -12,7 +14,7 @@ vi.mock('react-router-dom', () => {
   const actual = vi.importActual('react-router-dom');
   return {
     ...actual,
-    useNavigate: vi.fn(() => vi.fn((path: string) => {})),
+    useNavigate: vi.fn(() => vi.fn(() => {})),
   };
 });
 
@@ -44,8 +46,18 @@ const mockProject: Project = {
 };
 
 describe('ProjectCard', () => {
+  const navigateMock = vi.fn();
+  const toggleMock = vi.fn();
+
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(useNavigate).mockReturnValue(navigateMock);
+    vi.mocked(useFavorites).mockReturnValue({
+      isFavorited: vi.fn(() => false),
+      toggle: toggleMock,
+      loading: false,
+      favorites: [],
+    });
   });
 
   it('renders project name and description', () => {
@@ -56,7 +68,7 @@ describe('ProjectCard', () => {
 
   it('renders tags as clickable spans', () => {
     render(<ProjectCard project={mockProject} index={0} />);
-    const tagSpans = screen.getAllByText(/react|typescript/);
+    const tagSpans = screen.getAllByText((content) => content === 'react' || content === 'typescript');
     expect(tagSpans.length).toBe(2);
     tagSpans.forEach((span) => {
       expect(span.tagName.toLowerCase()).toBe('span');
@@ -65,24 +77,13 @@ describe('ProjectCard', () => {
 
   it('tag click calls navigate with correct tag param', async () => {
     const user = userEvent.setup();
-    const { useNavigate } = await import('react-router-dom');
-    const navigateMock = vi.fn();
-    (useNavigate as ReturnType<typeof vi.fn>).mockReturnValue(navigateMock);
-
     render(<ProjectCard project={mockProject} index={0} />);
     const tagSpan = screen.getByText('react');
     await user.click(tagSpan);
     expect(navigateMock).toHaveBeenCalledWith('/?tag=react');
   });
 
-  it('favorite button calls onFavoriteToggle prop', async () => {
-    const { useFavorites } = await import('../hooks/useFavorites');
-    const toggleMock = vi.fn();
-    (useFavorites as ReturnType<typeof vi.fn>).mockReturnValue({
-      isFavorited: vi.fn(() => false),
-      toggle: toggleMock,
-    });
-
+  it('favorite button calls useFavorites toggle', async () => {
     render(<ProjectCard project={mockProject} index={0} />);
     const favButton = screen.getByRole('button', { name: /添加收藏/ });
     await userEvent.click(favButton);

@@ -2,7 +2,6 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import ProjectGrid from './ProjectGrid';
-import ProjectCard from './ProjectCard';
 import type { Project } from '../types';
 
 // Mock ProjectCard to avoid react-router-dom dependency
@@ -28,8 +27,8 @@ describe('ProjectGrid', () => {
     render(<ProjectGrid projects={[]} loading={true} />);
 
     // Should render 6 skeleton cards (Array(6))
-    const skeletons = screen.getAllByText((content, element) => {
-      // Match the pulse animation divs inside skeleton cards
+    // Note: query relies on classList.contains('animate-pulse') — fragile against CSS class renaming
+    const skeletons = screen.getAllByText((_content, element) => {
       return element?.classList?.contains('animate-pulse') ?? false;
     });
     expect(skeletons.length).toBe(6);
@@ -56,6 +55,12 @@ describe('ProjectGrid', () => {
 
     const loadMoreButton = screen.getByRole('button', { name: '加载更多项目' });
     expect(loadMoreButton).toBeInTheDocument();
+  });
+
+  it('load more button absent when hasMore=false', () => {
+    render(<ProjectGrid projects={[mockProject]} loading={false} hasMore={false} />);
+
+    expect(screen.queryByRole('button', { name: '加载更多项目' })).not.toBeInTheDocument();
   });
 
   it('calls onLoadMore when load more clicked', async () => {
