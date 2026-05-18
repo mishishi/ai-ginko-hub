@@ -68,6 +68,20 @@ export default function AdminLayout() {
             </svg>
             Projects
           </Link>
+          <Link
+            to="/admin/tags"
+            className={`flex items-center px-3 py-2.5 text-sm font-fira-sans rounded-xl transition-all duration-200 cursor-pointer ${
+              isActive('/admin/tags')
+                ? 'bg-[var(--admin-border)] text-[var(--admin-text)]'
+                : 'text-[var(--admin-text-muted)] hover:text-[var(--admin-text)] hover:bg-[var(--admin-border)]/50'
+            }`}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="mr-2.5">
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+              <line x1="7" y1="7" x2="7.01" y2="7"/>
+            </svg>
+            标签管理
+          </Link>
         </nav>
 
         {/* User */}
