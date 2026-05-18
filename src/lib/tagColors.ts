@@ -4,7 +4,7 @@ export interface TagColor {
   bg: string;
 }
 
-const PALETTES: TagColor[] = [
+export const PALETTES: TagColor[] = [
   { color: '#61dafb', border: 'rgba(97,218,251,0.25)', bg: 'rgba(97,218,251,0.06)' }, // react
   { color: '#3178c6', border: 'rgba(49,120,198,0.25)', bg: 'rgba(49,120,198,0.06)' }, // typescript
   { color: '#ece8e3', border: 'rgba(236,232,227,0.25)', bg: 'rgba(236,232,227,0.06)' }, // next.js
