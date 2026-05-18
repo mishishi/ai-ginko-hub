@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { getDb } from '../db/index.js';
 import { projects } from '../db/schema.js';
-import { sql } from 'drizzle-orm';
+import { count, eq, sql } from 'drizzle-orm';
 
 // In-memory cache for tags (30-second TTL)
 let _tagsCache: { tags: string[]; expiresAt: number } | null = null;
@@ -12,29 +12,36 @@ export async function statsRoutes(app: FastifyInstance) {
     const db = getDb();
 
     try {
-      // SQL aggregation — single round-trip for count metrics
+      // Use Drizzle query builder for cross-database compatibility
       const [row] = await db
         .select({
-          total: sql<number>`count(*)`,
-          featured: sql<number>`count(*) filter (where ${projects.featured} = true)`,
+          total: count(),
+          featured: sql<number>`sum(case when ${projects.featured} = 1 or ${projects.featured} = true then 1 else 0 end)`.as('featured_count'),
           totalViews: sql<number>`coalesce(sum(${projects.viewCount}), 0)`,
         })
         .from(projects)
         .execute();
 
-      // Unique tech count via PostgreSQL JSON array unnesting — avoids loading all rows
-      const [tagRow] = await db
-        .select({ techCount: sql<number>`count(distinct elem)` })
-        .from(
-          sql`${projects}, jsonb_array_elements_text(${projects.tags}::jsonb) as elem`
-        )
-        .execute();
+      // techCount: need to extract distinct tags from JSON arrays
+      // Use cross-database approach: fetch all tags and deduplicate in JS
+      const allProjects = await db.select({ tags: projects.tags }).from(projects).execute();
+      const tagSet = new Set<string>();
+      for (const p of allProjects) {
+        try {
+          const tags = JSON.parse(p.tags || '[]');
+          for (const t of tags) {
+            if (typeof t === 'string') tagSet.add(t);
+          }
+        } catch {
+          // skip invalid JSON
+        }
+      }
 
       return {
         total: Number(row?.total ?? 0),
         featured: Number(row?.featured ?? 0),
         totalViews: Number(row?.totalViews ?? 0),
-        techCount: Number(tagRow?.techCount ?? 0),
+        techCount: tagSet.size,
       };
     } catch (err) {
       app.log.error(err, '[stats] /api/stats failed');
@@ -52,13 +59,21 @@ export async function statsRoutes(app: FastifyInstance) {
     }
 
     try {
-      // Extract and deduplicate all tags via PostgreSQL JSON unnesting
-      const rows = await db
-        .select({ tag: sql<string>`elem` })
-        .from(sql`${projects}, jsonb_array_elements_text(${projects.tags}::jsonb) as elem`)
-        .execute();
+      // Extract and deduplicate all tags from project JSON arrays
+      const allProjects = await db.select({ tags: projects.tags }).from(projects).execute();
+      const tagSet = new Set<string>();
+      for (const p of allProjects) {
+        try {
+          const tags = JSON.parse(p.tags || '[]');
+          for (const t of tags) {
+            if (typeof t === 'string') tagSet.add(t);
+          }
+        } catch {
+          // skip invalid JSON
+        }
+      }
 
-      const tags = [...new Set(rows.map((r) => r.tag))].sort();
+      const tags = [...tagSet].sort();
 
       _tagsCache = { tags, expiresAt: now + TAGS_CACHE_TTL_MS };
       return { tags };

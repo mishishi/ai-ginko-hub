@@ -6,5 +6,9 @@ export default defineConfig({
     environment: 'node',
     include: ['src/**/*.test.ts'],
     setupFiles: ['./src/test/setup.ts'],
+    env: {
+      JWT_SECRET: 'test-secret-for-unit-tests-only',
+      CLERK_SECRET_KEY: 'test-clerk-secret-key',
+    },
   },
 });
