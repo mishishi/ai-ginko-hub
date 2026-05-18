@@ -1,6 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { buildTestApp } from '../test/helpers.js';
 import { seedTestProjects } from '../test/setup.js';
+
+const TEST_KEY = 'uploads/1234567890-test.png';
 
 vi.mock('@aws-sdk/client-s3', () => ({
   S3Client: vi.fn(() => ({ send: vi.fn().mockResolvedValue({}) })),
@@ -27,7 +29,8 @@ async function getAuthToken(): Promise<string> {
   const setCookie = loginRes.headers['set-cookie'];
   const cookieStr = Array.isArray(setCookie) ? setCookie.join() : String(setCookie);
   const tokenMatch = cookieStr.match(/admin_token=([^;]+)/);
-  return tokenMatch![1];
+  if (!tokenMatch) throw new Error('Failed to extract auth token from cookie');
+  return tokenMatch[1];
 }
 
 describe('Upload API', () => {
@@ -93,7 +96,7 @@ describe('Upload API', () => {
       method: 'DELETE',
       url: '/api/upload',
       headers: { authorization: `Bearer ${token}` },
-      payload: { key: 'uploads/1234567890-test.png' },
+      payload: { key: TEST_KEY },
     });
     expect(res.statusCode).toBe(204);
   });
@@ -103,7 +106,7 @@ describe('Upload API', () => {
     const res = await app.inject({
       method: 'DELETE',
       url: '/api/upload',
-      payload: { key: 'uploads/1234567890-test.png' },
+      payload: { key: TEST_KEY },
     });
     expect(res.statusCode).toBe(401);
     const body = JSON.parse(res.body);
