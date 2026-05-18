@@ -85,7 +85,7 @@ export async function favoriteRoutes(app: FastifyInstance) {
       }
 
       await tx.update(projects)
-        .set({ likeCount: sql`GREATEST(${projects.likeCount} - 1, 0)` })
+        .set({ likeCount: sql`CASE WHEN ${projects.likeCount} > 0 THEN ${projects.likeCount} - 1 ELSE 0 END` })
         .where(eq(projects.id, projectId));
     });
 
