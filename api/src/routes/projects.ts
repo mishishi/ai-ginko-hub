@@ -40,8 +40,9 @@ export async function projectRoutes(app: FastifyInstance) {
     const conditions = [];
 
     if (tag) {
-      // PostgreSQL JSON array containment — checks if tags::jsonb contains the given element
-      conditions.push(sql`${projects.tags}::jsonb @> ${JSON.stringify(tag)}::jsonb`);
+      // JSON array containment: check if the tag appears in the JSON string
+      // Works with both PostgreSQL (::jsonb) and SQLite (json string)
+      conditions.push(like(projects.tags, `%"${tag}"%`));
     }
 
     if (q) {
@@ -50,8 +51,7 @@ export async function projectRoutes(app: FastifyInstance) {
         or(
           like(projects.name, query),
           like(projects.description, query),
-          // ILIKE on JSON array string for tag search
-          like(sql`${projects.tags}::text`, query)
+          like(projects.tags, query)
         )
       );
     }

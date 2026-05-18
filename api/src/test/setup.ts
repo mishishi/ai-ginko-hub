@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS projects (
   og_description text,
   og_image text,
   view_count integer DEFAULT 0,
+  discovery_score integer DEFAULT 0,
   like_count integer DEFAULT 0,
   created_at_ts integer,
   updated_at integer
@@ -124,6 +125,7 @@ afterEach(async () => {
   if (testDb) {
     await testDb.delete(schema.projects).run();
     await testDb.delete(schema.favorites).run();
+    await testDb.delete(schema.admin).run();
   }
 });
 
