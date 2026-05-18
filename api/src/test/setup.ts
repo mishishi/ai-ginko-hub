@@ -40,6 +40,18 @@ CREATE TABLE IF NOT EXISTS admin (
   username text NOT NULL,
   password_hash text NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS analytics_events (
+  id integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+  event_type text NOT NULL,
+  project_id text,
+  tag text,
+  query text,
+  referrer text,
+  ip text,
+  user_agent text,
+  created_at integer NOT NULL
+);
 `;
 
 // Shared singleton — created once, reused by both setup.ts consumers and vi.mock factory
