@@ -2,6 +2,7 @@ import { beforeAll, afterEach, afterAll } from 'vitest';
 import initSqlJs from 'sql.js';
 import { drizzle } from 'drizzle-orm/sql-js';
 import * as schema from '../db/schema.js';
+import { hashPassword } from '../utils/password.js';
 
 // Set test JWT_SECRET before any modules that import auth middleware
 process.env.JWT_SECRET ??= 'test-secret-for-unit-tests-only';
@@ -60,7 +61,7 @@ export async function initTestDb() {
 
 export async function seedTestProjects() {
   if (!testDb) throw new Error('testDb not initialized');
-  const { projects } = schema;
+  const { projects, admin } = schema;
   const now = Date.now();
   await testDb.insert(projects).values([
     {
@@ -106,6 +107,13 @@ export async function seedTestProjects() {
       updatedAt: now,
     },
   ]).run();
+
+  // Seed admin user for auth tests
+  await testDb.insert(admin).values({
+    id: 1,
+    username: 'testadmin',
+    passwordHash: hashPassword('testpass123'),
+  }).run();
 }
 
 beforeAll(async () => {

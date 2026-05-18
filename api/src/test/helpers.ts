@@ -8,6 +8,7 @@ import { projectRoutes } from '../routes/projects.js';
 import { statsRoutes } from '../routes/stats.js';
 import { uploadRoutes } from '../routes/upload.js';
 import { favoriteRoutes } from '../routes/favorites.js';
+import { analyticsRoutes } from '../routes/analytics.js';
 import { testDb } from './setup.js';
 
 // Patch getDb before routes load
@@ -29,6 +30,7 @@ export async function buildTestApp(): Promise<FastifyInstance> {
   await app.register(favoriteRoutes);
   await app.register(statsRoutes);
   await app.register(uploadRoutes);
+  await app.register(analyticsRoutes);
 
   return app;
 }
