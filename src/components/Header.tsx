@@ -193,10 +193,9 @@ export default function Header({ searchQuery = '', onSearchChange }: Props) {
                         >
                           <div className="text-sm font-medium text-text-primary truncate">{r.meta?.title || '无标题'}</div>
                           {r.excerpt && (
-                            <div
-                              className="text-xs text-text-secondary mt-0.5 line-clamp-2 [&_mark]:bg-accent/30 [&_mark]:text-accent [&_mark]:rounded-sm"
-                              dangerouslySetInnerHTML={{ __html: r.excerpt }}
-                            />
+                            <div className="text-xs text-text-secondary mt-0.5 line-clamp-2">
+                              {r.excerpt.replace(/<[^>]*>/g, '')}
+                            </div>
                           )}
                         </button>
                       </li>

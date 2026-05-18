@@ -3,15 +3,20 @@ import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { requireAuth } from '../middleware/auth.js';
 
+let r2Client: S3Client | null = null;
+
 function getR2Client(): S3Client {
-  return new S3Client({
-    region: 'auto',
-    endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-    credentials: {
-      accessKeyId: process.env.CLOUDFLARE_ACCESS_KEY_ID!,
-      secretAccessKey: process.env.CLOUDFLARE_SECRET_ACCESS_KEY!,
-    },
-  });
+  if (!r2Client) {
+    r2Client = new S3Client({
+      region: 'auto',
+      endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+      credentials: {
+        accessKeyId: process.env.CLOUDFLARE_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.CLOUDFLARE_SECRET_ACCESS_KEY!,
+      },
+    });
+  }
+  return r2Client;
 }
 
 // POST /api/upload — returns presigned PUT URL (auth required)

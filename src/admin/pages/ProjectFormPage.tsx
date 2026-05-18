@@ -19,6 +19,10 @@ export default function ProjectFormPage() {
       .then((data) => {
         setInitialData(data);
         setIsLoading(false);
+      })
+      .catch(() => {
+        setIsLoading(false);
+        toast.error('加载项目失败');
       });
   }, [id, isEditing]);
 

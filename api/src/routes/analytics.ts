@@ -17,7 +17,15 @@ function getClientIp(request: { ip?: string; headers: Record<string, string | st
 
 export async function analyticsRoutes(app: FastifyInstance) {
   // POST /api/analytics — public, record an analytics event
-  app.post('/api/analytics', async (request, reply) => {
+  // Stricter rate limit for this public endpoint: 60 req/min per IP
+  app.post('/api/analytics', {
+    config: {
+      rateLimit: {
+        max: 60,
+        timeWindow: '1 minute',
+      },
+    },
+  }, async (request, reply) => {
     const body = request.body as Record<string, unknown> | undefined;
     if (!body || typeof body !== 'object') {
       return reply.status(400).send({ error: 'invalid body' });
@@ -55,11 +63,13 @@ export async function analyticsRoutes(app: FastifyInstance) {
   });
 
   // GET /api/analytics/summary — auth-protected, aggregated analytics
-  app.get('/api/analytics/summary', { preHandler: [requireAuth] }, async (_request, reply) => {
+  app.get('/api/analytics/summary', { preHandler: [requireAuth] }, async (request, reply) => {
     const db = getDb();
     const now = Math.floor(Date.now() / 1000);
-    const thirtyDaysAgo = now - 30 * 24 * 60 * 60;
-    const fourteenDaysAgo = now - 14 * 24 * 60 * 60;
+    const rangeParam = (request.query as { range?: string }).range;
+    const rangeDays = Math.min(Number(rangeParam) || 30, 365);
+    const thirtyDaysAgo = now - rangeDays * 24 * 60 * 60;
+    const fourteenDaysAgo = now - Math.min(rangeDays, 14) * 24 * 60 * 60;
 
     try {
       // Total PV and UV (distinct IP) for last 30 days

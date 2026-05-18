@@ -16,6 +16,12 @@ export async function buildApp() {
     bodyLimit: 10 * 1024 * 1024,
   });
 
+  if (!process.env.CORS_ORIGINS) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('CORS_ORIGINS environment variable is required in production');
+    }
+    console.warn('[CORS] CORS_ORIGINS not set, defaulting to localhost (dev only)');
+  }
   const corsOrigins = process.env.CORS_ORIGINS
     ? process.env.CORS_ORIGINS.split(',').map((s) => s.trim())
     : ['http://localhost:4000', 'http://localhost:4173'];

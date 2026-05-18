@@ -1,17 +1,9 @@
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useAdminAuth } from '../contexts/AdminAuthContext';
-import { useEffect } from 'react';
 
 export default function AdminLayout() {
   const { username, logout } = useAdminAuth();
-  const navigate = useNavigate();
   const location = useLocation();
-
-  useEffect(() => {
-    if (!username) {
-      navigate('/admin/login', { replace: true });
-    }
-  }, [username, navigate]);
 
   const handleLogout = () => {
     logout();

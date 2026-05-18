@@ -33,6 +33,8 @@ export default function CommentsSection({ projectId }: Props) {
       <div
         ref={containerRef}
         className="bg-bg-card border border-border rounded-xl p-6"
+        aria-label="评论区"
+        role="region"
       />
     </section>
   );
